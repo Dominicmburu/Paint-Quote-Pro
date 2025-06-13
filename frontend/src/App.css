@@ -1,0 +1,25 @@
+@import "tailwindcss";
+/* @import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import "tailwindcss/typography";
+@import "tailwindcss/forms";
+@import "tailwindcss/line-clamp";
+@import "tailwindcss/animate";
+@import "tailwindcss/scrollbar";
+@import "tailwindcss/scroll-snap";
+@import "tailwindcss/scroll-snap-align";
+@import "tailwindcss/scroll-snap-type";
+@import "tailwindcss/scrollbar-thumb";
+@import "tailwindcss/scrollbar-track";
+@import "tailwindcss/scrollbar-width";
+@import "tailwindcss/scrollbar-color";
+@import "tailwindcss/scrollbar-thumb-hover";
+@import "tailwindcss/scrollbar-thumb-active";
+@import "tailwindcss/scrollbar-thumb-focus";
+@import "tailwindcss/scrollbar-thumb-selected";
+@import "tailwindcss/scrollbar-thumb-rounded";
+@import "tailwindcss/scrollbar-thumb-rounded-full";  */
+
+.App {
+  text-align: left;
+}
