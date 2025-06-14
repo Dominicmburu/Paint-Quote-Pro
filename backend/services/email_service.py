@@ -35,7 +35,7 @@ def send_welcome_email(email: str, first_name: str, company_name: str):
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/dashboard" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:5173')}/dashboard" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Get Started
                     </a>
@@ -48,7 +48,7 @@ def send_welcome_email(email: str, first_name: str, company_name: str):
             
             <div style="background-color: #F3F4F6; padding: 20px; text-align: center; font-size: 12px; color: #6B7280;">
                 <p>Paint Quote Pro - Professional Painting Quote Software</p>
-                <p>© 2024 Paint Quote Pro. All rights reserved.</p>
+                <p>© 2025 Paint Quote Pro. All rights reserved.</p>
             </div>
         </body>
         </html>

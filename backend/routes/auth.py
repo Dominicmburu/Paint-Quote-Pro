@@ -52,7 +52,7 @@ def register():
         )
         
         db.session.add(company)
-        db.session.flush()  # Get company ID
+        db.session.flush()
         
         # Create user
         user = User(
@@ -61,7 +61,7 @@ def register():
             last_name=data['last_name'],
             phone=data.get('phone'),
             company_id=company.id,
-            role='admin'  # First user is admin
+            role='user'  # First user is admin # user, admin, super_admin
         )
         user.set_password(data['password'])
         

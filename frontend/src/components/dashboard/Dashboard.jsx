@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useSubscription } from '../../hooks/useSubscription';
 import api from '../../services/api';
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { user, company } = useAuth();
   const { subscription, canCreateProject, getProjectsRemaining } = useSubscription();
   const [projects, setProjects] = useState([]);
@@ -57,12 +58,12 @@ const Dashboard = () => {
     }
   };
 
-  const handleCreateProject = async () => {
+  const handleCreateProject = () => {
     if (!canCreateProject()) {
       alert('You have reached your project limit for this month. Please upgrade your plan.');
       return;
     }
-    // Navigate to project creation or open modal
+    navigate('/projects/new');
   };
 
   const handleSearch = (e) => {
@@ -254,127 +255,5 @@ const Dashboard = () => {
     </div>
   );
 };
-
-// ProjectCard component
-// const ProjectCard = ({ project }) => {
-//   const getStatusColor = (status) => {
-//     const colors = {
-//       draft: 'bg-gray-100 text-gray-800',
-//       analyzing: 'bg-yellow-100 text-yellow-800',
-//       ready: 'bg-green-100 text-green-800',
-//       quoted: 'bg-blue-100 text-blue-800',
-//       completed: 'bg-purple-100 text-purple-800'
-//     };
-//     return colors[status] || 'bg-gray-100 text-gray-800';
-//   };
-
-//   const getStatusIcon = (status) => {
-//     const icons = {
-//       draft: <FileText className="h-4 w-4" />,
-//       analyzing: <Clock className="h-4 w-4" />,
-//       ready: <CheckCircle className="h-4 w-4" />,
-//       quoted: <FileText className="h-4 w-4" />,
-//       completed: <CheckCircle className="h-4 w-4" />
-//     };
-//     return icons[status] || <FileText className="h-4 w-4" />;
-//   };
-
-//   return (
-//     <Link
-//       to={`/projects/${project.id}`}
-//       className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 block"
-//     >
-//       <div className="flex items-start justify-between mb-4">
-//         <h3 className="text-lg font-semibold text-purple-700 truncate">
-//           {project.name}
-//         </h3>
-//         <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
-//           {getStatusIcon(project.status)}
-//           <span className="capitalize">{project.status}</span>
-//         </span>
-//       </div>
-
-//       {project.client_name && (
-//         <p className="text-gray-600 mb-2">
-//           <span className="font-medium">Client:</span> {project.client_name}
-//         </p>
-//       )}
-
-//       {project.description && (
-//         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-//           {project.description}
-//         </p>
-//       )}
-
-//       <div className="flex items-center justify-between text-sm text-gray-500">
-//         <span>
-//           {project.project_type} • {project.property_type}
-//         </span>
-//         <span>
-//           {new Date(project.created_at).toLocaleDateString()}
-//         </span>
-//       </div>
-
-//       {project.quote_data && (
-//         <div className="mt-4 pt-4 border-t border-gray-200">
-//           <div className="flex items-center justify-between">
-//             <span className="text-sm text-gray-600">Quote Total:</span>
-//             <span className="text-lg font-semibold text-green-600">
-//               £{project.quote_data.total_amount?.toFixed(2)}
-//             </span>
-//           </div>
-//         </div>
-//       )}
-//     </Link>
-//   );
-// };
-
-// QuickStats component
-// const QuickStats = ({ stats, subscription }) => {
-//   const statCards = [
-//     {
-//       title: 'Total Projects',
-//       value: stats.total_projects,
-//       icon: <FileText className="h-6 w-6 text-purple-600" />,
-//       color: 'bg-purple-50 border-purple-200'
-//     },
-//     {
-//       title: 'Ready for Quote',
-//       value: stats.ready_projects,
-//       icon: <CheckCircle className="h-6 w-6 text-green-600" />,
-//       color: 'bg-green-50 border-green-200'
-//     },
-//     {
-//       title: 'This Month',
-//       value: `${stats.projects_this_month}${subscription?.max_projects > 0 ? `/${subscription.max_projects}` : ''}`,
-//       icon: <TrendingUp className="h-6 w-6 text-blue-600" />,
-//       color: 'bg-blue-50 border-blue-200'
-//     },
-//     {
-//       title: 'Days Remaining',
-//       value: subscription?.days_remaining || 0,
-//       icon: <Clock className="h-6 w-6 text-yellow-600" />,
-//       color: 'bg-yellow-50 border-yellow-200'
-//     }
-//   ];
-
-//   return (
-//     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-//       {statCards.map((stat, index) => (
-//         <div key={index} className={`bg-white rounded-lg border p-6 ${stat.color}`}>
-//           <div className="flex items-center justify-between">
-//             <div>
-//               <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-//               <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-//             </div>
-//             <div className="flex-shrink-0">
-//               {stat.icon}
-//             </div>
-//           </div>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
 
 export default Dashboard;

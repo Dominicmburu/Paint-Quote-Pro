@@ -15,6 +15,7 @@ subscriptions_bp = Blueprint('subscriptions', __name__)
 # Initialize Stripe
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
+
 @subscriptions_bp.route('/current', methods=['GET'])
 @jwt_required()
 def get_current_subscription():
@@ -29,15 +30,29 @@ def get_current_subscription():
         subscription = user.company.subscription
         
         if not subscription:
-            return jsonify({'error': 'No subscription found'}), 404
+            # Create a default trial subscription
+            from datetime import datetime, timedelta
+            subscription = Subscription(
+                company_id=user.company_id,
+                plan_name='starter',
+                billing_cycle='monthly',
+                status='trial',
+                current_period_start=datetime.utcnow(),
+                current_period_end=datetime.utcnow() + timedelta(days=14),
+                trial_end=datetime.utcnow() + timedelta(days=14)
+            )
+            db.session.add(subscription)
+            db.session.commit()
         
         return jsonify({
-            'subscription': subscription.to_dict()
+            'subscription': subscription.to_dict(),
+            'company': user.company.to_dict()
         })
         
     except Exception as e:
         current_app.logger.error(f'Get subscription error: {e}')
         return jsonify({'error': 'Failed to get subscription'}), 500
+
 
 @subscriptions_bp.route('/plans', methods=['GET'])
 def get_subscription_plans():
@@ -45,6 +60,7 @@ def get_subscription_plans():
     return jsonify({
         'plans': current_app.config['SUBSCRIPTION_PLANS']
     })
+
 
 @subscriptions_bp.route('/create-checkout-session', methods=['POST'])
 @jwt_required()

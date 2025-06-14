@@ -17,11 +17,24 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import ForgotPassword from './components/auth/ForgotPassword';
 import Dashboard from './components/dashboard/Dashboard';
+
+// Project Components
 import ProjectDetails from './components/projects/ProjectDetails';
+import CreateProject from './components/projects/CreateProject';
+import EditProject from './components/projects/EditProject';
+import ProjectList from './components/dashboard/ProjectList';
+
+// Quote Components
 import QuoteGenerator from './components/quotes/QuoteGenerator';
+
+// Settings & Subscription Components
 import CompanySettings from './components/settings/CompanySettings';
 import PricingPlans from './components/subscription/PricingPlans';
+
+// Admin Components
 import AdminDashboard from './components/admin/AdminDashboard';
+
+// Error Pages
 import NotFound from './pages/NotFound';
 
 // Styles
@@ -49,10 +62,23 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 
-                {/* Protected Routes */}
+                {/* Protected Routes - Dashboard */}
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Protected Routes - Projects */}
+                <Route path="/projects" element={
+                  <ProtectedRoute>
+                    <ProjectList />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/projects/new" element={
+                  <ProtectedRoute>
+                    <CreateProject />
                   </ProtectedRoute>
                 } />
                 
@@ -62,12 +88,26 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
+                <Route path="/projects/:id/edit" element={
+                  <ProtectedRoute>
+                    <EditProject />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Protected Routes - Quotes */}
                 <Route path="/projects/:id/quote" element={
                   <ProtectedRoute>
                     <QuoteGenerator />
                   </ProtectedRoute>
                 } />
                 
+                <Route path="/quotes" element={
+                  <ProtectedRoute>
+                    <QuoteGenerator />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Protected Routes - Settings & Subscription */}
                 <Route path="/settings" element={
                   <ProtectedRoute>
                     <CompanySettings />
@@ -87,7 +127,11 @@ function App() {
                   </ProtectedRoute>
                 } />
                 
-                {/* Catch all */}
+                {/* Redirects for convenience */}
+                <Route path="/project" element={<Navigate to="/projects" replace />} />
+                <Route path="/quote" element={<Navigate to="/quotes" replace />} />
+                
+                {/* Catch all - 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
