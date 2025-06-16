@@ -26,10 +26,20 @@ import ProjectList from './components/dashboard/ProjectList';
 
 // Quote Components
 import QuoteGenerator from './components/quotes/QuoteGenerator';
+import QuoteHistory from './components/quotes/QuoteHistory';
+import QuotePreview from './components/quotes/QuotePreview';
+import QuoteSettings from './components/quotes/QuoteSettings';
 
-// Settings & Subscription Components
+// Settings Components
+import Settings from './pages/Settings';
 import CompanySettings from './components/settings/CompanySettings';
+import UserProfile from './components/settings/UserProfile';
+import PaintBrandSettings from './components/settings/PaintBrandSettings';
+
+// Subscription Components
 import PricingPlans from './components/subscription/PricingPlans';
+import SubscriptionStatus from './components/subscription/SubscriptionStatus';
+import BillingInfo from './components/subscription/BillingInfo';
 
 // Admin Components
 import AdminDashboard from './components/admin/AdminDashboard';
@@ -95,28 +105,74 @@ function App() {
                 } />
                 
                 {/* Protected Routes - Quotes */}
+                {/* Generate new quote for a specific project */}
                 <Route path="/projects/:id/quote" element={
                   <ProtectedRoute>
                     <QuoteGenerator />
                   </ProtectedRoute>
                 } />
                 
-                <Route path="/quotes" element={
+                {/* View/preview a specific quote */}
+                <Route path="/quotes/:id" element={
                   <ProtectedRoute>
-                    <QuoteGenerator />
+                    <QuotePreview />
                   </ProtectedRoute>
                 } />
                 
-                {/* Protected Routes - Settings & Subscription */}
+                {/* Quote management pages */}
+                <Route path="/quotes" element={
+                  <ProtectedRoute>
+                    <QuoteHistory />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/quotes/settings" element={
+                  <ProtectedRoute>
+                    <QuoteSettings />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Protected Routes - Settings */}
                 <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/settings/company" element={
                   <ProtectedRoute>
                     <CompanySettings />
                   </ProtectedRoute>
                 } />
                 
+                <Route path="/settings/profile" element={
+                  <ProtectedRoute>
+                    <UserProfile />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/settings/paint" element={
+                  <ProtectedRoute>
+                    <PaintBrandSettings />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Protected Routes - Subscription */}
                 <Route path="/subscription" element={
                   <ProtectedRoute>
                     <PricingPlans />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/subscription/status" element={
+                  <ProtectedRoute>
+                    <SubscriptionStatus />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/subscription/billing" element={
+                  <ProtectedRoute>
+                    <BillingInfo />
                   </ProtectedRoute>
                 } />
                 

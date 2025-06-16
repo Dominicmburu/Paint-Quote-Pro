@@ -10,7 +10,7 @@ const Pricing = () => {
       yearlyPrice: 290,
       description: 'Perfect for small painting businesses',
       features: [
-        'Up to 50 projects per month',
+        'Up to 5 projects per month',
         'Basic floor plan analysis',
         'PDF quote generation',
         '2 team members',
@@ -31,7 +31,7 @@ const Pricing = () => {
       yearlyPrice: 790,
       description: 'Most popular for growing businesses',
       features: [
-        'Up to 200 projects per month',
+        'Up to 25 projects per month',
         'Advanced AI floor plan analysis',
         'Custom quote templates',
         '10 team members',

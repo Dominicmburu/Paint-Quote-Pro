@@ -15,6 +15,8 @@ const QuotePreview = () => {
     loadQuote();
   }, [id]);
 
+  console.log(quote);
+
   const loadQuote = async () => {
     try {
       const response = await api.get(`/quotes/${id}`);
