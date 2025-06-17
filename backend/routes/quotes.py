@@ -110,7 +110,7 @@ def generate_quote(project_id):
         
         return jsonify({
             'message': 'Quote generated successfully',
-            'quote': quote.to_dict(),
+            'quote': quote.to_dict(include_project=True),
             'pdf_path': pdf_path
         }), 201
         
@@ -294,7 +294,7 @@ def auto_generate_quote(project_id):
         
         return jsonify({
             'message': 'Quote auto-generated successfully',
-            'quote': quote.to_dict(),
+            'quote': quote.to_dict(include_project=True),
             'line_items_count': len(line_items),
             'pdf_path': pdf_path
         }), 201
@@ -320,9 +320,9 @@ def get_quote(quote_id):
         if not quote:
             return jsonify({'error': 'Quote not found'}), 404
         
+        # Return quote with project data included
         return jsonify({
-            'quote': quote.to_dict(),
-            'project': quote.project.to_dict()
+            'quote': quote.to_dict(include_project=True)
         })
         
     except Exception as e:
@@ -384,7 +384,7 @@ def update_quote(quote_id):
         
         return jsonify({
             'message': 'Quote updated successfully',
-            'quote': quote.to_dict()
+            'quote': quote.to_dict(include_project=True)
         })
         
     except Exception as e:
@@ -433,7 +433,7 @@ def send_quote(quote_id):
         
         return jsonify({
             'message': 'Quote sent successfully',
-            'quote': quote.to_dict()
+            'quote': quote.to_dict(include_project=True)
         })
         
     except Exception as e:
@@ -473,9 +473,9 @@ def download_quote_pdf(quote_id):
         current_app.logger.error(f'Download quote PDF error: {e}')
         return jsonify({'error': 'Failed to download quote PDF'}), 500
 
-@quotes_bp.route('/company', methods=['GET'])
+@quotes_bp.route('/', methods=['GET'])  # Changed from '/company' to '/'
 @jwt_required()
-def get_company_quotes():
+def get_quotes():
     """Get all quotes for the company"""
     try:
         current_user_id = get_jwt_identity()
@@ -485,12 +485,24 @@ def get_company_quotes():
         page = request.args.get('page', 1, type=int)
         per_page = min(request.args.get('per_page', 20, type=int), 100)
         status_filter = request.args.get('status')
+        search_term = request.args.get('search')
         
         # Build query
         query = Quote.query.join(Project).filter(Project.company_id == user.company_id)
         
         if status_filter:
             query = query.filter(Quote.status == status_filter)
+        
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(
+                db.or_(
+                    Quote.title.ilike(search),
+                    Quote.quote_number.ilike(search),
+                    Project.name.ilike(search),
+                    Project.client_name.ilike(search)
+                )
+            )
         
         # Order by most recent
         query = query.order_by(Quote.created_at.desc())
@@ -502,10 +514,7 @@ def get_company_quotes():
         
         quotes_data = []
         for quote in quotes_paginated.items:
-            quote_dict = quote.to_dict()
-            quote_dict['project_name'] = quote.project.name
-            quote_dict['client_name'] = quote.project.client_name
-            quotes_data.append(quote_dict)
+            quotes_data.append(quote.to_dict(include_project=True))
         
         return jsonify({
             'quotes': quotes_data,
@@ -520,7 +529,7 @@ def get_company_quotes():
         })
         
     except Exception as e:
-        current_app.logger.error(f'Get company quotes error: {e}')
+        current_app.logger.error(f'Get quotes error: {e}')
         return jsonify({'error': 'Failed to get quotes'}), 500
 
 @quotes_bp.route('/pricing-templates', methods=['GET'])

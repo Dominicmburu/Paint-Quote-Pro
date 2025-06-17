@@ -1,3 +1,5 @@
+# Update your Quote model's to_dict method in models/quote.py
+
 from datetime import datetime, timedelta
 from . import db
 
@@ -44,8 +46,9 @@ class Quote(db.Model):
     def is_expired(self):
         return datetime.utcnow() > self.valid_until
     
-    def to_dict(self):
-        return {
+    def to_dict(self, include_project=True):
+        """Convert quote to dictionary with optional project data"""
+        quote_dict = {
             'id': self.id,
             'quote_number': self.quote_number,
             'title': self.title,
@@ -61,5 +64,31 @@ class Quote(db.Model):
             'accepted_at': self.accepted_at.isoformat() if self.accepted_at else None,
             'pdf_path': self.pdf_path,
             'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat()
+            'updated_at': self.updated_at.isoformat(),
+            'project_id': self.project_id
         }
+        
+        # Include project data if requested and available
+        if include_project and self.project:
+            quote_dict['project'] = {
+                'id': self.project.id,
+                'name': self.project.name,
+                'description': self.project.description,
+                'client_name': self.project.client_name,
+                'client_email': self.project.client_email,
+                'client_phone': self.project.client_phone,
+                'client_address': self.project.client_address,
+                'project_type': self.project.project_type,
+                'property_type': self.project.property_type,
+                'status': self.project.status,
+                'created_at': self.project.created_at.isoformat() if self.project.created_at else None
+            }
+            
+            # Also add client info directly to quote for easier access
+            quote_dict['client_name'] = self.project.client_name
+            quote_dict['client_email'] = self.project.client_email
+            quote_dict['client_phone'] = self.project.client_phone
+            quote_dict['client_address'] = self.project.client_address
+            quote_dict['project_name'] = self.project.name
+        
+        return quote_dict

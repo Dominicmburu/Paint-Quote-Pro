@@ -42,7 +42,19 @@ import SubscriptionStatus from './components/subscription/SubscriptionStatus';
 import BillingInfo from './components/subscription/BillingInfo';
 
 // Admin Components
+import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
+import UserManagement from './components/admin/UserManagement';
+import CompanyManagement from './components/admin/CompanyManagement';
+import SubscriptionOverview from './components/admin/SubscriptionOverview';
+import ProjectsOverview from './components/admin/ProjectsOverview';
+import QuotesOverview from './components/admin/QuotesOverview';
+import Analytics from './components/admin/Analytics';
+import Billing from './components/admin/Billing';
+import Support from './components/admin/Support';
+import Reports from './components/admin/Reports';
+import ActivityLogs from './components/admin/ActivityLogs';
+import SystemSettings from './components/admin/SystemSettings';
 
 // Error Pages
 import NotFound from './pages/NotFound';
@@ -50,6 +62,7 @@ import NotFound from './pages/NotFound';
 // Styles
 import './App.css';
 import './styles/globals.css';
+import AdminProfile from './components/admin/AdminProfile';
 
 function App() {
   return (
@@ -57,141 +70,221 @@ function App() {
       <SubscriptionProvider>
         <Router>
           <div className="App min-h-screen bg-yellow-50">
-            <Header />
-            <main className="flex-1">
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/features" element={<Features />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                
-                {/* Auth Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                
-                {/* Protected Routes - Dashboard */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Protected Routes - Projects */}
-                <Route path="/projects" element={
-                  <ProtectedRoute>
-                    <ProjectList />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/projects/new" element={
-                  <ProtectedRoute>
-                    <CreateProject />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/projects/:id" element={
-                  <ProtectedRoute>
-                    <ProjectDetails />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/projects/:id/edit" element={
-                  <ProtectedRoute>
-                    <EditProject />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Protected Routes - Quotes */}
-                {/* Generate new quote for a specific project */}
-                <Route path="/projects/:id/quote" element={
-                  <ProtectedRoute>
-                    <QuoteGenerator />
-                  </ProtectedRoute>
-                } />
-                
-                {/* View/preview a specific quote */}
-                <Route path="/quotes/:id" element={
-                  <ProtectedRoute>
-                    <QuotePreview />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Quote management pages */}
-                <Route path="/quotes" element={
-                  <ProtectedRoute>
-                    <QuoteHistory />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/quotes/settings" element={
-                  <ProtectedRoute>
-                    <QuoteSettings />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Protected Routes - Settings */}
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/settings/company" element={
-                  <ProtectedRoute>
-                    <CompanySettings />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/settings/profile" element={
-                  <ProtectedRoute>
-                    <UserProfile />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/settings/paint" element={
-                  <ProtectedRoute>
-                    <PaintBrandSettings />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Protected Routes - Subscription */}
-                <Route path="/subscription" element={
-                  <ProtectedRoute>
-                    <PricingPlans />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/subscription/status" element={
-                  <ProtectedRoute>
-                    <SubscriptionStatus />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/subscription/billing" element={
-                  <ProtectedRoute>
-                    <BillingInfo />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Admin Routes */}
-                <Route path="/admin/*" element={
-                  <ProtectedRoute requireAdmin>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Redirects for convenience */}
-                <Route path="/project" element={<Navigate to="/projects" replace />} />
-                <Route path="/quote" element={<Navigate to="/quotes" replace />} />
-                
-                {/* Catch all - 404 */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Home />
+                  </main>
+                  <Footer />
+                </>
+              } />
+
+              <Route path="/pricing" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Pricing />
+                  </main>
+                  <Footer />
+                </>
+              } />
+
+              <Route path="/features" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Features />
+                  </main>
+                  <Footer />
+                </>
+              } />
+
+              <Route path="/about" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <About />
+                  </main>
+                  <Footer />
+                </>
+              } />
+
+              <Route path="/contact" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Contact />
+                  </main>
+                  <Footer />
+                </>
+              } />
+
+              {/* Auth Routes */}
+              <Route path="/login" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Login />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/register" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Register />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+
+              {/* Admin Routes - All admin routes go through AdminLayout */}
+              <Route path="/admin/*" element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <Routes>
+                      <Route index element={<AdminDashboard />} />
+                      <Route path="users" element={<UserManagement />} />
+                      <Route path="companies" element={<CompanyManagement />} />
+                      <Route path="subscriptions" element={<SubscriptionOverview />} />
+                      <Route path="projects" element={<ProjectsOverview />} />
+                      <Route path="quotes" element={<QuotesOverview />} />
+                      <Route path="analytics" element={<Analytics />} />
+                      <Route path="billing" element={<Billing />} />
+                      <Route path="support" element={<Support />} />
+                      <Route path="reports" element={<Reports />} />
+                      <Route path="logs" element={<ActivityLogs />} />
+                      <Route path="settings" element={<SystemSettings />} />
+                      <Route path="profile" element={<AdminProfile />} />
+                    </Routes>
+                  </AdminLayout>
+                </ProtectedRoute>
+              } />
+
+              {/* Regular User Routes - All regular routes go through normal layout */}
+              <Route path="/*" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Routes>
+                      {/* Protected Routes - Dashboard */}
+                      <Route path="/dashboard" element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      } />
+
+                      {/* Protected Routes - Projects */}
+                      <Route path="/projects" element={
+                        <ProtectedRoute>
+                          <ProjectList />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/projects/new" element={
+                        <ProtectedRoute>
+                          <CreateProject />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/projects/:id" element={
+                        <ProtectedRoute>
+                          <ProjectDetails />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/projects/:id/edit" element={
+                        <ProtectedRoute>
+                          <EditProject />
+                        </ProtectedRoute>
+                      } />
+
+                      {/* Protected Routes - Quotes */}
+                      <Route path="/projects/:id/quote" element={
+                        <ProtectedRoute>
+                          <QuoteGenerator />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/quotes/:id" element={
+                        <ProtectedRoute>
+                          <QuotePreview />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/quotes" element={
+                        <ProtectedRoute>
+                          <QuoteHistory />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/quotes/settings" element={
+                        <ProtectedRoute>
+                          <QuoteSettings />
+                        </ProtectedRoute>
+                      } />
+
+                      {/* Protected Routes - Settings */}
+                      <Route path="/settings" element={
+                        <ProtectedRoute>
+                          <Settings />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/settings/company" element={
+                        <ProtectedRoute>
+                          <CompanySettings />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/settings/profile" element={
+                        <ProtectedRoute>
+                          <UserProfile />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/settings/paint" element={
+                        <ProtectedRoute>
+                          <PaintBrandSettings />
+                        </ProtectedRoute>
+                      } />
+
+                      {/* Protected Routes - Subscription */}
+                      <Route path="/subscription" element={
+                        <ProtectedRoute>
+                          <PricingPlans />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/subscription/status" element={
+                        <ProtectedRoute>
+                          <SubscriptionStatus />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/subscription/billing" element={
+                        <ProtectedRoute>
+                          <BillingInfo />
+                        </ProtectedRoute>
+                      } />
+
+                      {/* Redirects for convenience */}
+                      <Route path="/project" element={<Navigate to="/projects" replace />} />
+                      <Route path="/quote" element={<Navigate to="/quotes" replace />} />
+
+                      {/* Catch all - 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+                  <Footer />
+                </>
+              } />
+            </Routes>
           </div>
         </Router>
       </SubscriptionProvider>

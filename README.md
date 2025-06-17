@@ -9,7 +9,8 @@ paint-quote-pro/
 │   │   ├── company.py                  # Company model
 │   │   ├── project.py                  # Project model
 │   │   ├── subscription.py             # Subscription model
-│   │   └── quote.py                    # Quote model
+│   │   ├── quote.py                    # Quote model
+│   │   └── admin_log.py                # Admin activity logging
 │   ├── routes/
 │   │   ├── __init__.py
 │   │   ├── auth.py                     # Authentication routes
@@ -19,10 +20,12 @@ paint-quote-pro/
 │   │   └── admin.py                    # Admin panel routes
 │   ├── services/
 │   │   ├── __init__.py
-│   │   ├── floor_plan_analyzer.py      # Your existing floor plan analysis
+│   │   ├── floor_plan_analyzer.py      # Floor plan analysis
 │   │   ├── quote_generator.py          # Quote PDF generation
 │   │   ├── subscription_service.py     # Stripe integration
-│   │   └── email_service.py            # Email notifications
+│   │   ├── email_service.py            # Email notifications
+│   │   ├── analytics_service.py        # Admin analytics
+│   │   └── export_service.py           # Data export functionality
 │   ├── utils/
 │   │   ├── __init__.py
 │   │   ├── decorators.py               # Authentication decorators
@@ -32,7 +35,8 @@ paint-quote-pro/
 │   │   ├── emails/
 │   │   │   ├── welcome.html
 │   │   │   ├── quote_ready.html
-│   │   │   └── subscription_reminder.html
+│   │   │   ├── subscription_reminder.html
+│   │   │   └── admin_notifications.html
 │   │   └── pdf/
 │   │       └── quote_template.html     # PDF quote template
 │   ├── static/
@@ -54,7 +58,10 @@ paint-quote-pro/
 │   │   │   │   ├── Footer.js
 │   │   │   │   ├── Sidebar.js
 │   │   │   │   ├── Loading.js
-│   │   │   │   └── Modal.js
+│   │   │   │   ├── Modal.js
+│   │   │   │   ├── DataTable.js        # Reusable data table
+│   │   │   │   ├── StatsCard.js        # Statistics card component
+│   │   │   │   └── Charts.js           # Chart components
 │   │   │   ├── auth/
 │   │   │   │   ├── Login.js
 │   │   │   │   ├── Register.js
@@ -70,6 +77,8 @@ paint-quote-pro/
 │   │   │   │   ├── ProjectDetails.js
 │   │   │   │   ├── ImageUpload.js
 │   │   │   │   ├── ManualInput.js
+│   │   │   │   ├── CreateProject.js
+│   │   │   │   ├── EditProject.js
 │   │   │   │   └── FloorPlanAnalysis.js
 │   │   │   ├── quotes/
 │   │   │   │   ├── QuoteGenerator.js
@@ -82,13 +91,24 @@ paint-quote-pro/
 │   │   │   │   ├── PaymentForm.js
 │   │   │   │   └── SubscriptionStatus.js
 │   │   │   ├── settings/
+│   │   │   │   ├── Settings.js         # Main settings navigation
 │   │   │   │   ├── CompanySettings.js
 │   │   │   │   ├── UserProfile.js
 │   │   │   │   └── PaintBrandSettings.js
 │   │   │   └── admin/
-│   │   │       ├── AdminDashboard.js
-│   │   │       ├── UserManagement.js
-│   │   │       └── SubscriptionOverview.js
+│   │   │       ├── AdminDashboard.js   # Main admin dashboard
+│   │   │       ├── AdminLayout.js      # Admin sidebar/navigation
+│   │   │       ├── UserManagement.js   # User CRUD operations
+│   │   │       ├── CompanyManagement.js # Company management
+│   │   │       ├── SubscriptionOverview.js # Subscription analytics
+│   │   │       ├── ProjectsOverview.js # All projects view
+│   │   │       ├── QuotesOverview.js   # All quotes view
+│   │   │       ├── Analytics.js        # Business analytics
+│   │   │       ├── SystemSettings.js   # System configuration
+│   │   │       ├── ActivityLogs.js     # System activity logs
+│   │   │       ├── Reports.js          # Generate reports
+│   │   │       ├── Support.js          # Customer support tools
+│   │   │       └── Billing.js          # Billing overview
 │   │   ├── pages/
 │   │   │   ├── Home.js
 │   │   │   ├── About.js
@@ -99,19 +119,24 @@ paint-quote-pro/
 │   │   ├── hooks/
 │   │   │   ├── useAuth.js
 │   │   │   ├── useSubscription.js
-│   │   │   └── useProjects.js
+│   │   │   ├── useProjects.js
+│   │   │   └── useAdmin.js             # Admin-specific hooks
 │   │   ├── services/
 │   │   │   ├── api.js                  # API client
 │   │   │   ├── auth.js                 # Authentication service
-│   │   │   └── stripe.js               # Stripe integration
+│   │   │   ├── stripe.js               # Stripe integration
+│   │   │   └── admin.js                # Admin API calls
 │   │   ├── utils/
 │   │   │   ├── constants.js
 │   │   │   ├── helpers.js
-│   │   │   └── validation.js
+│   │   │   ├── validation.js
+│   │   │   ├── formatting.js           # Data formatting utilities
+│   │   │   └── export.js               # Data export utilities
 │   │   ├── styles/
 │   │   │   ├── globals.css
 │   │   │   ├── components.css
-│   │   │   └── themes.css
+│   │   │   ├── themes.css
+│   │   │   └── admin.css               # Admin-specific styles
 │   │   ├── App.js
 │   │   ├── App.css
 │   │   └── index.js
@@ -126,16 +151,18 @@ paint-quote-pro/
 ├── docs/
 │   ├── API.md                          # API documentation
 │   ├── DEPLOYMENT.md                   # Deployment guide
-│   └── USER_GUIDE.md                   # User guide
+│   ├── USER_GUIDE.md                   # User guide
+│   └── ADMIN_GUIDE.md                  # Admin user guide
 │
 ├── scripts/
 │   ├── setup.sh                       # Initial setup script
 │   ├── deploy.sh                      # Deployment script
-│   └── backup.sh                      # Database backup script
+│   ├── backup.sh                      # Database backup script
+│   └── create_admin.py                 # Create super admin script
 │
 ├── .gitignore
 ├── README.md
-└── .env.example                       # Environment variables template# Paint-Quote-Pro
+└── .env.example                       # Environment variables template
 
 
 pip freeze > requirements.txt

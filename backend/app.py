@@ -38,6 +38,7 @@ def create_app(config_name=None):
         )
     
     app = Flask(__name__)
+    application = app
     
     # Load configuration using the new config system
     config_class = get_config(config_name)

@@ -10,6 +10,7 @@ import {
   Quote,
   TrendingUp,
   Settings,
+  ShieldCheckIcon,
   Activity,
   FileDown,
   HeadphonesIcon,
@@ -76,29 +77,35 @@ const AdminLayout = ({ children }) => {
       icon: DollarSign,
       current: location.pathname.startsWith('/admin/billing')
     },
+    // {
+    //   name: 'Support',
+    //   href: '/admin/support',
+    //   icon: HeadphonesIcon,
+    //   current: location.pathname.startsWith('/admin/support')
+    // },
+    // {
+    //   name: 'Reports',
+    //   href: '/admin/reports',
+    //   icon: FileDown,
+    //   current: location.pathname.startsWith('/admin/reports')
+    // },
+    // {
+    //   name: 'Activity Logs',
+    //   href: '/admin/logs',
+    //   icon: Activity,
+    //   current: location.pathname.startsWith('/admin/logs')
+    // },
+    // {
+    //   name: 'System Settings',
+    //   href: '/admin/settings',
+    //   icon: Settings,
+    //   current: location.pathname.startsWith('/admin/settings')
+    // },
     {
-      name: 'Support',
-      href: '/admin/support',
-      icon: HeadphonesIcon,
-      current: location.pathname.startsWith('/admin/support')
-    },
-    {
-      name: 'Reports',
-      href: '/admin/reports',
-      icon: FileDown,
-      current: location.pathname.startsWith('/admin/reports')
-    },
-    {
-      name: 'Activity Logs',
-      href: '/admin/logs',
-      icon: Activity,
-      current: location.pathname.startsWith('/admin/logs')
-    },
-    {
-      name: 'System Settings',
-      href: '/admin/settings',
-      icon: Settings,
-      current: location.pathname.startsWith('/admin/settings')
+      name: 'Profile',
+      href: '/admin/profile',
+      icon: ShieldCheckIcon,
+      current: location.pathname.startsWith('/admin/profile')
     }
   ];
 
@@ -237,19 +244,16 @@ const AdminLayout = ({ children }) => {
           <div className="px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="mr-4 p-2 text-gray-400 hover:text-gray-600 md:hidden"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </button>
+                <span className=" md:hidden inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Admin Mode
+                  </span>
                 <div className="hidden md:block">
                   <Link
                     to="/dashboard"
                     className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
                   >
-                    <ArrowLeft className="h-4 w-4 mr-1" />
-                    Back to App
+                    {/* <ArrowLeft className="h-4 w-4 mr-1" /> */}
+                    {/* Back to App */}
                   </Link>
                 </div>
               </div>

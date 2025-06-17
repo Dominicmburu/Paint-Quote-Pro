@@ -17,6 +17,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  console.log('🔍 AuthProvider: Initializing state', { user, company, loading, isAuthenticated });
+
   useEffect(() => {
     console.log('🔍 AuthProvider: Initializing...');
     const token = localStorage.getItem('accessToken');
