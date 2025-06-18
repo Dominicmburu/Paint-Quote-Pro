@@ -109,7 +109,7 @@ const PricingPlans = () => {
       <div className="mb-8">
         <div className="flex items-center mb-4">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/subscription')}
             className="text-gray-500 hover:text-gray-700 mr-4"
           >
             <ArrowLeft className="h-5 w-5" />

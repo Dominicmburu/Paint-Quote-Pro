@@ -472,8 +472,8 @@ def init_database_tables(app):
                     billing_cycle='monthly',
                     status='trial',
                     current_period_start=datetime.utcnow(),
-                    current_period_end=datetime.utcnow() + timedelta(days=14),
-                    trial_end=datetime.utcnow() + timedelta(days=14)
+                    current_period_end=datetime.utcnow() + timedelta(days=0),
+                    trial_end=datetime.utcnow() + timedelta(days=0)
                 )
                 db.session.add(subscription)
                 

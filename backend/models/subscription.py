@@ -18,13 +18,13 @@ class Subscription(db.Model):
     status = db.Column(db.String(20), default='trial')  # trial, active, past_due, cancelled, unpaid
     
     # Usage limits
-    max_projects = db.Column(db.Integer, default=50)
+    max_projects = db.Column(db.Integer, default=1)  # projects default
     max_users = db.Column(db.Integer, default=2)
     projects_used_this_month = db.Column(db.Integer, default=0)
     
     # Dates
     trial_start = db.Column(db.DateTime, default=datetime.utcnow)
-    trial_end = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=14))
+    trial_end = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=0)) # Default 0-day trial
     current_period_start = db.Column(db.DateTime, nullable=True)
     current_period_end = db.Column(db.DateTime, nullable=True)
     cancelled_at = db.Column(db.DateTime, nullable=True)

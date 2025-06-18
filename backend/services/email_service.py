@@ -119,6 +119,215 @@ def send_password_reset_email(email: str, first_name: str, reset_token: str):
         logger.error(f"Failed to send password reset email: {e}")
         raise
 
+def send_payment_success_email(email: str, first_name: str, company_name: str, plan_name: str, billing_cycle: str, amount: float):
+    """Send payment success confirmation email"""
+    try:
+        mail = Mail(current_app)
+        
+        subject = f"Payment Successful - Welcome to {plan_name.title()}!"
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #10B981; color: white; padding: 20px; text-align: center;">
+                <h1>🎉 Payment Successful!</h1>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h2>Hi {first_name},</h2>
+                
+                <p>Great news! Your payment has been processed successfully and your {plan_name.title()} subscription is now active.</p>
+                
+                <div style="background-color: #ECFDF5; border: 1px solid #10B981; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #059669; margin-top: 0;">Subscription Details</h3>
+                    <p><strong>Company:</strong> {company_name}</p>
+                    <p><strong>Plan:</strong> {plan_name.title()}</p>
+                    <p><strong>Amount:</strong> £{amount:.2f}</p>
+                    <p><strong>Billing:</strong> {billing_cycle.title()}</p>
+                </div>
+                
+                <h3>What's next?</h3>
+                <ul>
+                    <li>Access your dashboard and start creating projects</li>
+                    <li>Upload floor plans for AI analysis</li>
+                    <li>Generate professional quotes instantly</li>
+                    <li>Customize your company branding</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/dashboard" 
+                       style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        Go to Dashboard
+                    </a>
+                </div>
+                
+                <p>Your receipt and billing details are available in your account settings.</p>
+                
+                <p>Thank you for choosing Paint Quote Pro!</p>
+                
+                <p>Best regards,<br>The Paint Quote Pro Team</p>
+            </div>
+            
+            <div style="background-color: #F3F4F6; padding: 20px; text-align: center; font-size: 12px; color: #6B7280;">
+                <p>Paint Quote Pro - Professional Painting Quote Software</p>
+                <p>Need help? Contact us at support@paintquotepro.com</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg = Message(
+            subject=subject,
+            recipients=[email],
+            html=html_body
+        )
+        
+        mail.send(msg)
+        logger.info(f"Payment success email sent to {email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send payment success email: {e}")
+        raise
+
+
+def send_payment_failed_email(email: str, first_name: str, company_name: str, plan_name: str, attempt_count: int):
+    """Send payment failure notification email"""
+    try:
+        mail = Mail(current_app)
+        
+        subject = "Payment Issue - Let's Get You Back on Track"
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #EF4444; color: white; padding: 20px; text-align: center;">
+                <h1>Payment Issue</h1>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h2>Hi {first_name},</h2>
+                
+                <p>We encountered an issue processing your payment for the {plan_name.title()} plan.</p>
+                
+                <div style="background-color: #FEF2F2; border: 1px solid #EF4444; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #DC2626; margin-top: 0;">What happened?</h3>
+                    <p>Payment attempt #{attempt_count} was unsuccessful. This can happen for various reasons:</p>
+                    <ul>
+                        <li>Insufficient funds</li>
+                        <li>Card expired or declined</li>
+                        <li>Bank security restrictions</li>
+                        <li>Incorrect billing information</li>
+                    </ul>
+                </div>
+                
+                <h3>What can you do?</h3>
+                <ul>
+                    <li>Check your card details and try again</li>
+                    <li>Contact your bank to authorize the payment</li>
+                    <li>Update your payment method</li>
+                    <li>Contact our support team for assistance</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/subscription/billing" 
+                       style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        Update Payment Method
+                    </a>
+                </div>
+                
+                {"<p><strong>Important:</strong> If we can't process your payment after 4 attempts, your subscription will be cancelled automatically.</p>" if attempt_count >= 3 else ""}
+                
+                <p>Don't worry - your data is safe and we're here to help resolve this quickly.</p>
+                
+                <p>Best regards,<br>The Paint Quote Pro Team</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg = Message(
+            subject=subject,
+            recipients=[email],
+            html=html_body
+        )
+        
+        mail.send(msg)
+        logger.info(f"Payment failed email sent to {email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send payment failed email: {e}")
+        raise
+
+
+def send_subscription_cancelled_email(email: str, first_name: str, company_name: str, cancellation_reason: str):
+    """Send subscription cancellation confirmation email"""
+    try:
+        mail = Mail(current_app)
+        
+        subject = "Subscription Cancelled - We'll Miss You"
+        
+        reason_text = {
+            'payment_failed': 'due to failed payment attempts',
+            'user_cancelled': 'as requested',
+            'expired': 'due to expiration'
+        }.get(cancellation_reason, 'as requested')
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #F59E0B; color: white; padding: 20px; text-align: center;">
+                <h1>Subscription Cancelled</h1>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h2>Hi {first_name},</h2>
+                
+                <p>Your Paint Quote Pro subscription has been cancelled {reason_text}.</p>
+                
+                <div style="background-color: #FEF3C7; border: 1px solid #F59E0B; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #D97706; margin-top: 0;">What this means:</h3>
+                    <ul>
+                        <li>Your data is preserved for 90 days</li>
+                        <li>You can reactivate anytime during this period</li>
+                        <li>All projects and quotes remain accessible (read-only)</li>
+                        <li>You won't be charged further</li>
+                    </ul>
+                </div>
+                
+                <h3>Miss us already?</h3>
+                <p>You can reactivate your subscription at any time and pick up exactly where you left off.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/subscription" 
+                       style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        Reactivate Subscription
+                    </a>
+                </div>
+                
+                <p>We'd love to hear your feedback on how we can improve. Feel free to reach out to our team.</p>
+                
+                <p>Thank you for being part of the Paint Quote Pro community!</p>
+                
+                <p>Best regards,<br>The Paint Quote Pro Team</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg = Message(
+            subject=subject,
+            recipients=[email],
+            html=html_body
+        )
+        
+        mail.send(msg)
+        logger.info(f"Subscription cancelled email sent to {email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send subscription cancelled email: {e}")
+        raise
+
+
 def send_quote_email(client_email: str, quote, project, company):
     """Send quote to client"""
     try:

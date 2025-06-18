@@ -37,9 +37,17 @@ import UserProfile from './components/settings/UserProfile';
 import PaintBrandSettings from './components/settings/PaintBrandSettings';
 
 // Subscription Components
+import Subscription from './pages/Subscription';
 import PricingPlans from './components/subscription/PricingPlans';
 import SubscriptionStatus from './components/subscription/SubscriptionStatus';
 import BillingInfo from './components/subscription/BillingInfo';
+
+// Payment and Subscription Status Pages
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancelled from './pages/PaymentCancelled';
+import PaymentFailed from './pages/PaymentFailed';
+import SubscriptionExpired from './pages/SubscriptionExpired';
+import TrialExpired from './pages/TrialExpired';
 
 // Admin Components
 import AdminLayout from './components/admin/AdminLayout';
@@ -55,6 +63,7 @@ import Support from './components/admin/Support';
 import Reports from './components/admin/Reports';
 import ActivityLogs from './components/admin/ActivityLogs';
 import SystemSettings from './components/admin/SystemSettings';
+import AdminProfile from './components/admin/AdminProfile';
 
 // Error Pages
 import NotFound from './pages/NotFound';
@@ -62,7 +71,6 @@ import NotFound from './pages/NotFound';
 // Styles
 import './App.css';
 import './styles/globals.css';
-import AdminProfile from './components/admin/AdminProfile';
 
 function App() {
   return (
@@ -143,6 +151,22 @@ function App() {
               } />
               <Route path="/forgot-password" element={<ForgotPassword />} />
 
+              <Route path="/payment/success" element={<PaymentSuccess />} />
+              <Route path="/payment/cancelled" element={<PaymentCancelled />} />
+              <Route path="/payment/failed" element={<PaymentFailed />} />
+              
+              {/* Subscription Status Routes - Protected but accessible when expired */}
+              <Route path="/subscription/expired" element={
+                <ProtectedRoute allowExpired={true}>
+                  <SubscriptionExpired />
+                </ProtectedRoute>
+              } />
+              <Route path="/trial/expired" element={
+                <ProtectedRoute allowExpired={true}>
+                  <TrialExpired />
+                </ProtectedRoute>
+              } />
+
               {/* Admin Routes - All admin routes go through AdminLayout */}
               <Route path="/admin/*" element={
                 <ProtectedRoute requireAdmin>
@@ -166,7 +190,6 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              {/* Regular User Routes - All regular routes go through normal layout */}
               <Route path="/*" element={
                 <>
                   <Header />
@@ -256,6 +279,12 @@ function App() {
 
                       {/* Protected Routes - Subscription */}
                       <Route path="/subscription" element={
+                        <ProtectedRoute>
+                          <Subscription />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="/subscription/plans" element={
                         <ProtectedRoute>
                           <PricingPlans />
                         </ProtectedRoute>

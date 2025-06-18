@@ -103,11 +103,11 @@ class Config:
             'stripe_price_id_monthly': os.environ.get('STRIPE_STARTER_MONTHLY'),
             'stripe_price_id_yearly': os.environ.get('STRIPE_STARTER_YEARLY'),
             'max_projects': 5,
-            'max_users': 2,
+            'max_users': 1,
             'max_storage_mb': 1000,  # 1GB
             'api_rate_limit': 100,   # requests per hour
             'features': [
-                'Up to 50 projects per month',
+                'Up to 5 projects per month',
                 'Basic floor plan analysis',
                 'PDF quote generation',
                 '2 team members',
@@ -122,11 +122,11 @@ class Config:
             'stripe_price_id_monthly': os.environ.get('STRIPE_PRO_MONTHLY'),
             'stripe_price_id_yearly': os.environ.get('STRIPE_PRO_YEARLY'),
             'max_projects': 25,
-            'max_users': 10,
+            'max_users': 1,
             'max_storage_mb': 5000,  # 5GB
             'api_rate_limit': 500,   # requests per hour
             'features': [
-                'Up to 200 projects per month',
+                'Up to 25 projects per month',
                 'Advanced AI floor plan analysis',
                 'Custom quote templates',
                 '10 team members',
