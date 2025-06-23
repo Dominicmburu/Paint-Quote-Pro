@@ -30,13 +30,22 @@ def generate_quote(project_id):
         if not project:
             return jsonify({'error': 'Project not found'}), 404
         
-        if project.status not in ['ready', 'completed']:
-            return jsonify({
-                'error': 'Project must be analyzed before generating quotes',
-                'current_status': project.status
-            }), 400
-        
+        # FIXED: Remove strict status check and allow manual quotes
+        # Only require analysis for auto-generated quotes, not manual ones
         data = request.get_json()
+        
+        # If line_items are provided (manual quote), allow any status
+        if not data.get('line_items'):
+            # Only enforce status check for auto-generated quotes without line items
+            if project.status not in ['ready', 'completed']:
+                return jsonify({
+                    'error': 'Project must be analyzed before generating quotes',
+                    'current_status': project.status
+                }), 400
+        else:
+            # For manual quotes with line items, update status to ready if it's draft
+            if project.status == 'draft':
+                project.status = 'ready'
         
         # Validate quote data
         required_fields = ['title', 'line_items']
@@ -290,6 +299,10 @@ def auto_generate_quote(project_id):
             'auto_generated': True
         }
         
+        # Update project status to ready if it's still draft
+        if project.status == 'draft':
+            project.status = 'ready'
+        
         db.session.commit()
         
         return jsonify({
@@ -304,6 +317,7 @@ def auto_generate_quote(project_id):
         current_app.logger.error(f'Auto-generate quote error: {e}')
         return jsonify({'error': 'Failed to auto-generate quote'}), 500
 
+# ... rest of the routes remain the same
 @quotes_bp.route('/<int:quote_id>', methods=['GET'])
 @jwt_required()
 def get_quote(quote_id):
@@ -473,7 +487,7 @@ def download_quote_pdf(quote_id):
         current_app.logger.error(f'Download quote PDF error: {e}')
         return jsonify({'error': 'Failed to download quote PDF'}), 500
 
-@quotes_bp.route('/', methods=['GET'])  # Changed from '/company' to '/'
+@quotes_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_quotes():
     """Get all quotes for the company"""

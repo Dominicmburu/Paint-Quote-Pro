@@ -42,15 +42,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-yellow-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-purple-700">
+          <h2 className="mt-6 text-center text-3xl font-bold text-slate-800">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-slate-600">
             Don't have an account?{' '}
-            <Link to="/register" className="font-medium text-green-600 hover:text-green-500">
+            <Link to="/register" className="font-medium text-teal-600 hover:text-teal-500">
               Get started free
             </Link>
           </p>
@@ -65,7 +65,7 @@ const Login = () => {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-slate-700">
                 Email address
               </label>
               <div className="mt-1 relative">
@@ -80,14 +80,14 @@ const Login = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   placeholder="Enter your email"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-slate-700">
                 Password
               </label>
               <div className="mt-1 relative">
@@ -102,7 +102,7 @@ const Login = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="pl-10 pr-10 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="pl-10 pr-10 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   placeholder="Enter your password"
                 />
                 <button
@@ -122,7 +122,7 @@ const Login = () => {
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <Link to="/forgot-password" className="font-medium text-purple-600 hover:text-purple-500">
+              <Link to="/forgot-password" className="font-medium text-teal-600 hover:text-teal-500">
                 Forgot your password?
               </Link>
             </div>
@@ -132,7 +132,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Sign in
@@ -140,11 +140,11 @@ const Login = () => {
           </div>
 
           <div className="text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-500">
               By signing in, you agree to our{' '}
-              <a href="#" className="text-purple-600 hover:text-purple-500">Terms of Service</a>
+              <a href="#" className="text-teal-600 hover:text-teal-500">Terms of Service</a>
               {' '}and{' '}
-              <a href="#" className="text-purple-600 hover:text-purple-500">Privacy Policy</a>
+              <a href="#" className="text-teal-600 hover:text-teal-500">Privacy Policy</a>
             </p>
           </div>
         </form>

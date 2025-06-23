@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { Check, X, Star } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -45,7 +44,7 @@ const Pricing = () => {
         'API access'
       ],
       popular: true,
-      color: 'border-green-500'
+      color: 'border-teal-500'
     },
     {
       name: 'Enterprise',
@@ -66,7 +65,7 @@ const Pricing = () => {
       ],
       limitations: [],
       popular: false,
-      color: 'border-purple-500'
+      color: 'border-slate-500'
     }
   ];
 
@@ -75,7 +74,7 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-yellow-50">
       {/* Header */}
-      <div className="bg-gradient-to-br from-purple-700 to-green-600 py-16 relative overflow-hidden" style={{
+      <div className="bg-gradient-to-br from-slate-800 to-slate-700 py-16 relative overflow-hidden" style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2026&q=80')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -85,30 +84,30 @@ const Pricing = () => {
           <h1 className="text-4xl font-bold text-white mb-4">
             Simple, Transparent Pricing
           </h1>
-          <p className="text-xl text-purple-100 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Choose the perfect plan for your painting business. All plans include a 14-day free trial.
           </p>
           
           {/* Billing toggle */}
           <div className="mt-8 flex items-center justify-center">
-            <span className={`mr-3 ${!isYearly ? 'text-white font-semibold' : 'text-purple-200'}`}>
+            <span className={`mr-3 ${!isYearly ? 'text-white font-semibold' : 'text-gray-400'}`}>
               Monthly
             </span>
             <button
               onClick={() => setIsYearly(!isYearly)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 ${
-                isYearly ? 'bg-white' : 'bg-purple-800'
+                isYearly ? 'bg-white' : 'bg-slate-600'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-purple-600 transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-teal-500 transition-transform ${
                   isYearly ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
             </button>
-            <span className={`ml-3 ${isYearly ? 'text-white font-semibold' : 'text-purple-200'}`}>
+            <span className={`ml-3 ${isYearly ? 'text-white font-semibold' : 'text-gray-400'}`}>
               Yearly
-              <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-400 text-purple-900">
+              <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-400 text-slate-800">
                 Save 17%
               </span>
             </span>
@@ -128,7 +127,7 @@ const Pricing = () => {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="inline-flex items-center px-4 py-2 rounded-full bg-green-500 text-white text-sm font-medium">
+                  <div className="inline-flex items-center px-4 py-2 rounded-full bg-teal-500 text-white text-sm font-medium">
                     <Star className="h-4 w-4 mr-1" />
                     Most Popular
                   </div>
@@ -136,43 +135,43 @@ const Pricing = () => {
               )}
 
               <div className="p-8">
-                <h3 className="text-2xl font-bold text-purple-700">{plan.name}</h3>
-                <p className="text-gray-600 mt-2">{plan.description}</p>
+                <h3 className="text-2xl font-bold text-slate-800">{plan.name}</h3>
+                <p className="text-slate-600 mt-2">{plan.description}</p>
 
                 <div className="mt-6">
                   <div className="flex items-baseline">
-                    <span className="text-4xl font-bold text-purple-700">
+                    <span className="text-4xl font-bold text-slate-800">
                       £{isYearly ? plan.yearlyPrice : plan.price}
                     </span>
-                    <span className="text-gray-500 ml-2">
+                    <span className="text-slate-500 ml-2">
                       /{isYearly ? 'year' : 'month'}
                     </span>
                   </div>
                   {isYearly && (
-                    <p className="text-sm text-green-600 mt-1">
+                    <p className="text-sm text-teal-600 mt-1">
                       Save £{(plan.price * 12) - plan.yearlyPrice} per year
                     </p>
                   )}
                 </div>
 
-                <Link
-                  to="/register"
+                <a
+                  href="/register"
                   className={`mt-6 w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors ${
                     plan.popular
-                      ? 'bg-green-600 hover:bg-green-700'
-                      : 'bg-purple-600 hover:bg-purple-700'
+                      ? 'bg-teal-500 hover:bg-teal-600'
+                      : 'bg-slate-700 hover:bg-slate-800'
                   }`}
                 >
                   Start Free Trial
-                </Link>
+                </a>
 
                 <div className="mt-8">
-                  <h4 className="text-sm font-medium text-gray-900 mb-4">What's included:</h4>
+                  <h4 className="text-sm font-medium text-slate-800 mb-4">What's included:</h4>
                   <ul className="space-y-3">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start">
-                        <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        <span className="ml-3 text-sm text-gray-700">{feature}</span>
+                        <Check className="h-5 w-5 text-teal-500 flex-shrink-0" />
+                        <span className="ml-3 text-sm text-slate-700">{feature}</span>
                       </li>
                     ))}
                     {plan.limitations.map((limitation, limitationIndex) => (
@@ -192,56 +191,56 @@ const Pricing = () => {
       {/* FAQ Section */}
       <div className="bg-white py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-purple-700 text-center mb-12">
+          <h2 className="text-3xl font-bold text-slate-800 text-center mb-12">
             Frequently Asked Questions
           </h2>
           
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-slate-800 mb-2">
                 Can I change plans at any time?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, 
                 and we'll prorate any billing differences.
               </p>
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-slate-800 mb-2">
                 What happens if I exceed my project limit?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 If you reach your monthly project limit, you'll be prompted to upgrade your plan. 
                 You can also wait until the next billing cycle when your limit resets.
               </p>
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-slate-800 mb-2">
                 Is there a free trial?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 Yes! All plans come with a 14-day free trial. No credit card required to start. 
                 You can explore all features during your trial period.
               </p>
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-slate-800 mb-2">
                 Do you offer refunds?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 We offer a 30-day money-back guarantee. If you're not satisfied within the first 30 days, 
                 we'll provide a full refund, no questions asked.
               </p>
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-slate-800 mb-2">
                 Can I cancel at any time?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-slate-600">
                 Yes, you can cancel your subscription at any time. Your access will continue until 
                 the end of your current billing period.
               </p>
@@ -251,25 +250,24 @@ const Pricing = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-green-600 to-purple-700 py-16">
+      <div className="bg-gradient-to-r from-teal-500 to-slate-700 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to streamline your painting business?
           </h2>
-          <p className="text-xl text-green-100 mb-8">
+          <p className="text-xl text-gray-300 mb-8">
             Join hundreds of professional painters already using Paint Quote Pro
           </p>
-          <Link
-            to="/register"
-            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-purple-700 bg-yellow-400 hover:bg-yellow-300 transition-colors"
+          <a
+            href="/register"
+            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-slate-800 bg-yellow-400 hover:bg-yellow-300 transition-colors"
           >
             Start Your Free Trial
-          </Link>
+          </a>
         </div>
       </div>
     </div>
   );
 };
-
 
 export default Pricing;

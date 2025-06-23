@@ -35,7 +35,7 @@ const ProjectCard = ({ project }) => {
             to={`/projects/${project.id}`}
             className="flex-1"
           >
-            <h3 className="text-lg font-semibold text-purple-700 hover:text-purple-800 transition-colors truncate">
+            <h3 className="text-lg font-semibold text-teal-800 hover:text-teal-900 transition-colors truncate">
               {project.name}
             </h3>
           </Link>
@@ -81,7 +81,7 @@ const ProjectCard = ({ project }) => {
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600">Quote Total:</span>
-            <span className="text-lg font-semibold text-green-600">
+            <span className="text-lg font-semibold text-teal-600">
               {formatCurrency(project.quote_data.total_amount)}
             </span>
           </div>
@@ -93,19 +93,19 @@ const ProjectCard = ({ project }) => {
         <div className="flex space-x-2">
           <Link
             to={`/projects/${project.id}`}
-            className="flex-1 text-center px-3 py-2 border border-purple-300 text-purple-700 hover:bg-purple-50 rounded-md text-sm font-medium transition-colors"
+            className="flex-1 text-center px-3 py-2 border border-teal-300 text-teal-800 hover:bg-teal-50 rounded-md text-sm font-medium transition-colors"
           >
             View Details
           </Link>
           
-          {project.status === 'ready' && (
+          {/* {project.status === 'ready' && (
             <Link
               to={`/projects/${project.id}/quote`}
               className="flex-1 text-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition-colors"
             >
               Create Quote
             </Link>
-          )}
+          )} */}
         </div>
       </div>
     </div>

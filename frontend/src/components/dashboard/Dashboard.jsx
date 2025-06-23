@@ -93,7 +93,7 @@ const Dashboard = () => {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-purple-700">
+              <h1 className="text-3xl font-bold text-slate-800">
                 Welcome back, {user?.first_name}!
               </h1>
               <p className="text-gray-600 mt-1">
@@ -111,7 +111,7 @@ const Dashboard = () => {
               <button
                 onClick={handleCreateProject}
                 disabled={!canCreateProject()}
-                className="inline-flex items-center px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
+                className="inline-flex items-center px-6 py-2 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 New Project

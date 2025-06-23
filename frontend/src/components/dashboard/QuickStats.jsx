@@ -6,7 +6,7 @@ const QuickStats = ({ stats, subscription }) => {
     {
       title: 'Total Projects',
       value: stats.total_projects || 0,
-      icon: <FileText className="h-6 w-6 text-purple-600" />,
+      icon: <FileText className="h-6 w-6 text-yellow-400" />,
       color: 'bg-purple-50 border-purple-200',
       change: '+12%',
       changeType: 'increase'
