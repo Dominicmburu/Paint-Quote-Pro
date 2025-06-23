@@ -40,8 +40,8 @@ def get_current_subscription():
                 billing_cycle='monthly',
                 status='trial',
                 current_period_start=datetime.utcnow(),
-                current_period_end=datetime.utcnow() + timedelta(days=0),
-                trial_end=datetime.utcnow() + timedelta(days=0)
+                current_period_end=datetime.utcnow() + timedelta(days=7),
+                trial_end=datetime.utcnow() + timedelta(days=7)
             )
             db.session.add(subscription)
             db.session.commit()
