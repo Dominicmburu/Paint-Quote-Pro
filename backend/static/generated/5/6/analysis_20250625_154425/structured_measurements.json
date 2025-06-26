@@ -1,0 +1,436 @@
+{
+    "rooms": [
+        {
+            "id": 4801,
+            "name": "1",
+            "walls": [
+                {
+                    "id": 3560,
+                    "name": "Main Wall Area",
+                    "length": 4.326661530556787,
+                    "height": 2.4,
+                    "area": 10.66,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 1.0816653826391966,
+                "length": 1.0816653826391966,
+                "area": 1.17,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 4594,
+            "name": "2",
+            "walls": [
+                {
+                    "id": 3033,
+                    "name": "Main Wall Area",
+                    "length": 6.729041536504289,
+                    "height": 2.4,
+                    "area": 16.51,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 1.6822603841260722,
+                "length": 1.6822603841260722,
+                "area": 2.83,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 2795,
+            "name": "3",
+            "walls": [
+                {
+                    "id": 817,
+                    "name": "Main Wall Area",
+                    "length": 13.326664999166145,
+                    "height": 2.4,
+                    "area": 32.35,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 3.331666249791536,
+                "length": 3.331666249791536,
+                "area": 11.1,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 8289,
+            "name": "4",
+            "walls": [
+                {
+                    "id": 3040,
+                    "name": "Main Wall Area",
+                    "length": 31.05865418848666,
+                    "height": 2.4,
+                    "area": 103.78,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 7.764663547121665,
+                "length": 7.764663547121665,
+                "area": 60.29,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 2154,
+            "name": "5",
+            "walls": [
+                {
+                    "id": 9122,
+                    "name": "Main Wall Area",
+                    "length": 29.847612969884207,
+                    "height": 2.4,
+                    "area": 71.71,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 7.461903242471052,
+                "length": 7.461903242471052,
+                "area": 55.68,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 7667,
+            "name": "8",
+            "walls": [
+                {
+                    "id": 7853,
+                    "name": "Main Wall Area",
+                    "length": 66.51195381282977,
+                    "height": 2.4,
+                    "area": 226.7,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 16.627988453207443,
+                "length": 16.627988453207443,
+                "area": 276.49,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 4402,
+            "name": "9",
+            "walls": [],
+            "ceiling": null,
+            "other_surfaces": null,
+            "additional_items": []
+        }
+    ],
+    "interior_items": {
+        "doors": [],
+        "fixed_windows": [],
+        "turn_windows": [],
+        "radiators": [],
+        "skirting_boards": [],
+        "stairs": [],
+        "other_items": []
+    },
+    "exterior_items": {
+        "doors": [
+            {
+                "id": 5000,
+                "quantity": 1,
+                "description": "Exterior Door 1",
+                "cost": 0
+            },
+            {
+                "id": 5001,
+                "quantity": 1,
+                "description": "Exterior Door 2",
+                "cost": 0
+            }
+        ],
+        "fixed_windows": [
+            {
+                "id": 6000,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 1",
+                "cost": 0
+            },
+            {
+                "id": 6001,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 2",
+                "cost": 0
+            },
+            {
+                "id": 6002,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 3",
+                "cost": 0
+            },
+            {
+                "id": 6003,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 4",
+                "cost": 0
+            },
+            {
+                "id": 6004,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 5",
+                "cost": 0
+            },
+            {
+                "id": 6005,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 6",
+                "cost": 0
+            },
+            {
+                "id": 6006,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 7",
+                "cost": 0
+            },
+            {
+                "id": 6007,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 8",
+                "cost": 0
+            },
+            {
+                "id": 6008,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 9",
+                "cost": 0
+            },
+            {
+                "id": 6009,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 10",
+                "cost": 0
+            },
+            {
+                "id": 6010,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 11",
+                "cost": 0
+            },
+            {
+                "id": 6011,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 12",
+                "cost": 0
+            },
+            {
+                "id": 6012,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 13",
+                "cost": 0
+            },
+            {
+                "id": 6013,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 14",
+                "cost": 0
+            },
+            {
+                "id": 6014,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 15",
+                "cost": 0
+            },
+            {
+                "id": 6015,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 16",
+                "cost": 0
+            },
+            {
+                "id": 6016,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 17",
+                "cost": 0
+            },
+            {
+                "id": 6017,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 18",
+                "cost": 0
+            },
+            {
+                "id": 6018,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 19",
+                "cost": 0
+            },
+            {
+                "id": 6019,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 20",
+                "cost": 0
+            },
+            {
+                "id": 6020,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 21",
+                "cost": 0
+            },
+            {
+                "id": 6021,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 22",
+                "cost": 0
+            },
+            {
+                "id": 6022,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 23",
+                "cost": 0
+            },
+            {
+                "id": 6023,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 24",
+                "cost": 0
+            },
+            {
+                "id": 6024,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 25",
+                "cost": 0
+            },
+            {
+                "id": 6025,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 26",
+                "cost": 0
+            },
+            {
+                "id": 6026,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 27",
+                "cost": 0
+            },
+            {
+                "id": 6027,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 28",
+                "cost": 0
+            }
+        ],
+        "turn_windows": [
+            {
+                "id": 7000,
+                "quantity": 1,
+                "description": "Exterior Turn Window 1",
+                "cost": 0
+            },
+            {
+                "id": 7001,
+                "quantity": 1,
+                "description": "Exterior Turn Window 2",
+                "cost": 0
+            },
+            {
+                "id": 7002,
+                "quantity": 1,
+                "description": "Exterior Turn Window 3",
+                "cost": 0
+            },
+            {
+                "id": 7003,
+                "quantity": 1,
+                "description": "Exterior Turn Window 4",
+                "cost": 0
+            },
+            {
+                "id": 7004,
+                "quantity": 1,
+                "description": "Exterior Turn Window 5",
+                "cost": 0
+            },
+            {
+                "id": 7005,
+                "quantity": 1,
+                "description": "Exterior Turn Window 6",
+                "cost": 0
+            },
+            {
+                "id": 7006,
+                "quantity": 1,
+                "description": "Exterior Turn Window 7",
+                "cost": 0
+            },
+            {
+                "id": 7007,
+                "quantity": 1,
+                "description": "Exterior Turn Window 8",
+                "cost": 0
+            },
+            {
+                "id": 7008,
+                "quantity": 1,
+                "description": "Exterior Turn Window 9",
+                "cost": 0
+            },
+            {
+                "id": 7009,
+                "quantity": 1,
+                "description": "Exterior Turn Window 10",
+                "cost": 0
+            },
+            {
+                "id": 7010,
+                "quantity": 1,
+                "description": "Exterior Turn Window 11",
+                "cost": 0
+            },
+            {
+                "id": 7011,
+                "quantity": 1,
+                "description": "Exterior Turn Window 12",
+                "cost": 0
+            }
+        ],
+        "dormer_windows": [],
+        "fascia_boards": [],
+        "rain_pipe": [],
+        "other_items": []
+    },
+    "notes": "Generated from AI analysis"
+}

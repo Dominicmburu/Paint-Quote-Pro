@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 from flask_mail import Mail
@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sqlalchemy import text
+from werkzeug.exceptions import NotFound
 
 # Import configuration
 from config import get_config
@@ -27,7 +28,7 @@ from routes.subscriptions import subscriptions_bp
 from routes.admin import admin_bp
 
 def create_app(config_name=None):
-    """Application factory pattern with enhanced JWT and CORS configuration"""
+    """Application factory pattern with enhanced JWT, CORS, and static file configuration"""
     
     # Initialize Sentry for error tracking in production
     if os.environ.get('SENTRY_DSN') and os.environ.get('FLASK_ENV') == 'production':
@@ -122,6 +123,226 @@ def create_app(config_name=None):
     # Create upload directories
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs(app.config['RESULTS_FOLDER'], exist_ok=True)
+    
+    # ==================== STATIC FILE SERVING ====================
+    
+    @app.route('/static/uploads/<path:filename>')
+    def serve_uploads(filename):
+        """Serve uploaded files publicly with proper CORS headers"""
+        try:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            if not os.path.exists(file_path):
+                app.logger.error(f"File not found: {file_path}")
+                return jsonify({'error': 'File not found'}), 404
+            
+            response = send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+            
+            # Add CORS headers for image serving
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Cache-Control'] = 'public, max-age=3600'  # Cache for 1 hour
+            
+            return response
+        except Exception as e:
+            app.logger.error(f"Error serving upload file {filename}: {e}")
+            return jsonify({'error': 'Failed to serve file'}), 500
+    
+    @app.route('/static/generated/<path:filename>')
+    def serve_generated_files(filename):
+        """Serve generated files (quotes, analyses) with proper CORS headers"""
+        try:
+            file_path = os.path.join(app.config['RESULTS_FOLDER'], filename)
+            if not os.path.exists(file_path):
+                app.logger.error(f"Generated file not found: {file_path}")
+                return jsonify({'error': 'File not found'}), 404
+            
+            response = send_from_directory(app.config['RESULTS_FOLDER'], filename)
+            
+            # Add CORS headers
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Cache-Control'] = 'public, max-age=1800'  # Cache for 30 minutes
+            
+            return response
+        except Exception as e:
+            app.logger.error(f"Error serving generated file {filename}: {e}")
+            return jsonify({'error': 'Failed to serve file'}), 500
+    
+    @app.route('/api/projects/<int:project_id>/files/<path:filename>')
+    @jwt_required()
+    def serve_project_file(project_id, filename):
+        """Serve project-specific files with authentication and authorization"""
+        try:
+            current_user_id = get_jwt_identity()
+            user = User.query.get(current_user_id)
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            # Get the project and verify ownership
+            project = Project.query.filter_by(
+                id=project_id,
+                company_id=user.company_id
+            ).first()
+            
+            if not project:
+                return jsonify({'error': 'Project not found or access denied'}), 404
+            
+            # Try to find the file in different possible locations
+            possible_paths = []
+            
+            # Check in uploaded images
+            if project.uploaded_images:
+                for image_path in project.uploaded_images:
+                    if os.path.basename(image_path) == filename:
+                        possible_paths.append(image_path)
+            
+            # Check in generated files
+            if project.generated_files:
+                for gen_file_path in project.generated_files:
+                    if os.path.basename(gen_file_path) == filename:
+                        possible_paths.append(gen_file_path)
+            
+            # Check quote PDF
+            if project.quote_pdf_path and os.path.basename(project.quote_pdf_path) == filename:
+                possible_paths.append(project.quote_pdf_path)
+            
+            # Also check in company/project specific upload directory
+            company_project_dir = os.path.join(
+                app.config['UPLOAD_FOLDER'], 
+                str(user.company_id), 
+                str(project_id)
+            )
+            company_project_file = os.path.join(company_project_dir, filename)
+            if os.path.exists(company_project_file):
+                possible_paths.append(company_project_file)
+            
+            # Find the first existing file
+            file_path = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    file_path = path
+                    break
+            
+            if not file_path:
+                app.logger.error(f"File {filename} not found for project {project_id}")
+                app.logger.debug(f"Checked paths: {possible_paths}")
+                return jsonify({'error': 'File not found'}), 404
+            
+            # Determine the directory and filename for send_from_directory
+            directory = os.path.dirname(file_path)
+            actual_filename = os.path.basename(file_path)
+            
+            response = send_from_directory(directory, actual_filename)
+            
+            # Add appropriate headers
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Cache-Control'] = 'private, max-age=3600'  # Private cache for 1 hour
+            
+            return response
+            
+        except Exception as e:
+            app.logger.error(f"Error serving project file {filename} for project {project_id}: {e}")
+            return jsonify({'error': 'Failed to serve file'}), 500
+    
+    @app.route('/api/files/public/<path:filename>')
+    def serve_public_file(filename):
+        """Serve public files without authentication"""
+        try:
+            # Serve from a public directory within uploads
+            public_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'public')
+            os.makedirs(public_dir, exist_ok=True)
+            
+            file_path = os.path.join(public_dir, filename)
+            if not os.path.exists(file_path):
+                return jsonify({'error': 'File not found'}), 404
+            
+            response = send_from_directory(public_dir, filename)
+            
+            # Add CORS headers for public files
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+            response.headers['Cache-Control'] = 'public, max-age=86400'  # Cache for 24 hours
+            
+            return response
+        except Exception as e:
+            app.logger.error(f"Error serving public file {filename}: {e}")
+            return jsonify({'error': 'Failed to serve file'}), 500
+    
+    @app.route('/api/images/<path:full_path>')
+    @jwt_required()
+    def serve_project_image_by_path(full_path):
+        """Serve images using the full stored path (for backward compatibility)"""
+        try:
+            current_user_id = get_jwt_identity()
+            user = User.query.get(current_user_id)
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            # Reconstruct the full file path
+            # The full_path should be something like "company_id/project_id/filename"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], full_path)
+            
+            if not os.path.exists(file_path):
+                app.logger.error(f"Image file not found: {file_path}")
+                return jsonify({'error': 'Image not found'}), 404
+            
+            # Security check: ensure the path contains the user's company_id
+            if str(user.company_id) not in full_path:
+                app.logger.warning(f"User {user.id} attempted to access file outside their company: {full_path}")
+                return jsonify({'error': 'Access denied'}), 403
+            
+            directory = os.path.dirname(file_path)
+            filename = os.path.basename(file_path)
+            
+            response = send_from_directory(directory, filename)
+            
+            # Add appropriate headers for images
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Cache-Control'] = 'private, max-age=3600'
+            
+            return response
+            
+        except Exception as e:
+            app.logger.error(f"Error serving image {full_path}: {e}")
+            return jsonify({'error': 'Failed to serve image'}), 500
+    
+    @app.route('/api/test-image')
+    def test_image_serving():
+        """Test endpoint to verify image serving is working"""
+        try:
+            # Create a simple test image if it doesn't exist
+            test_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'test')
+            os.makedirs(test_dir, exist_ok=True)
+            
+            test_file_path = os.path.join(test_dir, 'test.txt')
+            
+            if not os.path.exists(test_file_path):
+                with open(test_file_path, 'w') as f:
+                    f.write('This is a test file for image serving functionality.')
+            
+            return jsonify({
+                'message': 'Image serving test endpoint',
+                'upload_folder': app.config['UPLOAD_FOLDER'],
+                'results_folder': app.config['RESULTS_FOLDER'],
+                'test_file_url': '/static/uploads/test/test.txt',
+                'test_file_exists': os.path.exists(test_file_path),
+                'timestamp': datetime.utcnow().isoformat()
+            })
+            
+        except Exception as e:
+            app.logger.error(f"Error in test image serving: {e}")
+            return jsonify({'error': str(e)}), 500
+    
+    # ==================== END STATIC FILE SERVING ====================
     
     # ENHANCED JWT Error Handlers
     @jwt.expired_token_loader
@@ -278,6 +499,10 @@ def create_app(config_name=None):
         
         # Check CORS configuration
         health_status['cors_origins'] = app.config.get('CORS_ORIGINS', [])
+        
+        # Check static file directories
+        health_status['upload_folder_exists'] = os.path.exists(app.config.get('UPLOAD_FOLDER', ''))
+        health_status['results_folder_exists'] = os.path.exists(app.config.get('RESULTS_FOLDER', ''))
         
         return jsonify(health_status), status_code
     
@@ -573,6 +798,8 @@ if __name__ == '__main__':
     print("  ✅ Quote generation")
     print("  ✅ PDF exports")
     print("  ✅ Payment processing")
+    print("  ✅ Static file serving")
+    print("  ✅ Image upload/display")
     
     print("\n🌐 API Endpoints:")
     print("  📊 Health check: http://localhost:5000/api/health")
@@ -580,11 +807,18 @@ if __name__ == '__main__':
     print("  🧪 Test auth: http://localhost:5000/api/test-auth")
     print("  🔍 Debug token: http://localhost:5000/api/debug-token")
     print("  🌍 Test CORS: http://localhost:5000/api/test-cors")
+    print("  🖼️  Test images: http://localhost:5000/api/test-image")
     print("  🔐 Authentication: http://localhost:5000/api/auth")
     print("  🏗️  Projects: http://localhost:5000/api/projects")
     print("  📋 Quotes: http://localhost:5000/api/quotes")
     print("  💳 Subscriptions: http://localhost:5000/api/subscriptions")
     print("  🔧 Admin panel: http://localhost:5000/api/admin")
+    
+    print("\n🖼️  Static File URLs:")
+    print("  📁 Uploads: http://localhost:5000/static/uploads/filename")
+    print("  📄 Generated: http://localhost:5000/static/generated/filename")
+    print("  🏗️  Project files: http://localhost:5000/api/projects/{id}/files/filename")
+    print("  🌍 Public files: http://localhost:5000/api/files/public/filename")
     
     # Check critical environment variables
     critical_vars = ['JWT_SECRET_KEY', 'SECRET_KEY']
@@ -610,6 +844,10 @@ if __name__ == '__main__':
     
     print(f"\n🌐 CORS Configuration:")
     print(f"   Allowed Origins: {app.config.get('CORS_ORIGINS', [])}")
+    
+    print(f"\n📁 File Storage:")
+    print(f"   Upload Folder: {app.config.get('UPLOAD_FOLDER', 'Not set')}")
+    print(f"   Results Folder: {app.config.get('RESULTS_FOLDER', 'Not set')}")
     
     print("\n🚀 Starting Flask development server...")
     print("   Press Ctrl+C to stop the server")

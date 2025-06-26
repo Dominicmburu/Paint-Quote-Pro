@@ -1,0 +1,414 @@
+{
+    "surface_areas": {
+        "rooms": {
+            "Room 1": {
+                "floor_area_m2": 1.17,
+                "ceiling_area_m2": 1.17,
+                "wall_area_m2": 10.66,
+                "perimeter_m": 4.44,
+                "room_type": "general",
+                "room_polygon": [
+                    [
+                        642,
+                        945
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        710,
+                        988
+                    ],
+                    [
+                        710,
+                        945
+                    ]
+                ],
+                "special_considerations": []
+            },
+            "Room 2": {
+                "floor_area_m2": 2.83,
+                "ceiling_area_m2": 2.83,
+                "wall_area_m2": 16.51,
+                "perimeter_m": 6.88,
+                "room_type": "general",
+                "room_polygon": [
+                    [
+                        642,
+                        841
+                    ],
+                    [
+                        642,
+                        945
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        841
+                    ]
+                ],
+                "special_considerations": []
+            },
+            "Room 3": {
+                "floor_area_m2": 11.1,
+                "ceiling_area_m2": 11.1,
+                "wall_area_m2": 32.35,
+                "perimeter_m": 13.48,
+                "room_type": "general",
+                "room_polygon": [
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        839,
+                        845
+                    ],
+                    [
+                        839,
+                        988
+                    ],
+                    [
+                        1033,
+                        988
+                    ]
+                ],
+                "special_considerations": []
+            },
+            "Room 4": {
+                "floor_area_m2": 60.29,
+                "ceiling_area_m2": 60.29,
+                "wall_area_m2": 103.78,
+                "perimeter_m": 43.24,
+                "room_type": "general",
+                "room_polygon": [
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        988
+                    ],
+                    [
+                        839,
+                        988
+                    ],
+                    [
+                        839,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        506
+                    ]
+                ],
+                "special_considerations": []
+            },
+            "Room 5": {
+                "floor_area_m2": 55.68,
+                "ceiling_area_m2": 55.68,
+                "wall_area_m2": 71.71,
+                "perimeter_m": 29.88,
+                "room_type": "general",
+                "room_polygon": [
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        846,
+                        150
+                    ],
+                    [
+                        775,
+                        150
+                    ],
+                    [
+                        754,
+                        150
+                    ],
+                    [
+                        754,
+                        150
+                    ]
+                ],
+                "special_considerations": []
+            },
+            "Room 8": {
+                "floor_area_m2": 276.49,
+                "ceiling_area_m2": 276.49,
+                "wall_area_m2": 226.7,
+                "perimeter_m": 94.46,
+                "room_type": "general",
+                "room_polygon": [
+                    [
+                        50,
+                        150
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        1033,
+                        1385
+                    ],
+                    [
+                        1033,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        50,
+                        150
+                    ]
+                ],
+                "special_considerations": []
+            },
+            "Room 9": {
+                "floor_area_m2": 0.0,
+                "ceiling_area_m2": 0.0,
+                "wall_area_m2": 4.13,
+                "perimeter_m": 1.72,
+                "room_type": "general",
+                "room_polygon": [
+                    [
+                        846,
+                        150
+                    ],
+                    [
+                        889,
+                        150
+                    ],
+                    [
+                        846,
+                        150
+                    ]
+                ],
+                "special_considerations": []
+            }
+        },
+        "totals": {
+            "total_floor_area_m2": 407.56,
+            "total_ceiling_area_m2": 407.56,
+            "total_wall_area_m2": 465.84,
+            "total_rooms": 7
+        },
+        "scale_factor": 0.02,
+        "constants": {
+            "wall_height_m": 2.4,
+            "ceiling_height_m": 2.4
+        },
+        "analysis_source": "hybrid_gpt_detection"
+    },
+    "timestamp": "2025-06-25T15:26:29.161691",
+    "analysis_method": "Enhanced GPT-4 Vision + Gradio API"
+}

@@ -1,149 +1,297 @@
-import React from 'react';
-import { Users, Target, Award, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  Users, 
+  Target, 
+  Award, 
+  ArrowRight, 
+  Menu, 
+  X,
+  CheckCircle,
+  Heart,
+  Lightbulb,
+  Shield,
+  Zap,
+  Building
+} from 'lucide-react';
 
 const About = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const team = [
     {
       name: "Sarah Johnson",
       role: "CEO & Founder",
-      bio: "Former painting contractor with 15 years of experience in the industry.",
+      bio: "Former painting contractor with 15 years of experience in the industry. Sarah built Paint Quote Pro from her own frustrations with manual quoting.",
       image: "https://i.pinimg.com/736x/b7/97/a0/b797a0b5290bc94d8312d91953c9d555.jpg"
     },
     {
       name: "Mike Chen",
-      role: "CTO",
-      bio: "AI expert with background in computer vision and machine learning.",
+      role: "CTO & Co-Founder",
+      bio: "AI expert with background in computer vision and machine learning. Mike leads our technical innovation and product development.",
       image: "https://i.pinimg.com/736x/25/18/aa/2518aadb3518f6d5c4448a34c5c8ecdc.jpg"
     },
     {
       name: "Emma Rodriguez",
       role: "Head of Product",
-      bio: "UX specialist focused on creating intuitive tools for tradespeople.",
+      bio: "UX specialist focused on creating intuitive tools for tradespeople. Emma ensures Paint Quote Pro is easy to use for every painter.",
       image: "https://i.pinimg.com/736x/31/4f/66/314f664ff072c17757f786528a59a399.jpg"
     }
   ];
 
+  const values = [
+    {
+      icon: <Heart className="h-12 w-12 text-emerald-600" />,
+      title: "Customer First",
+      description: "Every feature we build is designed with our customers' success in mind. Your feedback drives our product development and shapes our roadmap."
+    },
+    {
+      icon: <Lightbulb className="h-12 w-12 text-amber-600" />,
+      title: "Innovation",
+      description: "We leverage the latest AI technology to solve real problems faced by painting professionals every day. We're always pushing boundaries."
+    },
+    {
+      icon: <Shield className="h-12 w-12 text-blue-600" />,
+      title: "Reliability",
+      description: "We're committed to delivering a product that exceeds expectations and helps our customers achieve their business goals consistently."
+    }
+  ];
+
+  const stats = [
+    { number: "500+", label: "Happy Painters" },
+    { number: "10,000+", label: "Quotes Generated" },
+    { number: "50,000+", label: "Hours Saved" },
+    { number: "95%", label: "Customer Satisfaction" }
+  ];
+
   return (
-    <div className="min-h-screen bg-yellow-50">
+    <div className="min-h-screen bg-white">
+
       {/* Hero */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-700 py-16 relative overflow-hidden" style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2126&q=80')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundBlendMode: 'overlay'
-      }}>
+      <section className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-400 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-bold text-white mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
             About Paint Quote Pro
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            We're on a mission to revolutionize how painting professionals create quotes and grow their businesses.
+          <p className="text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto leading-relaxed">
+            We're on a mission to revolutionize how painting professionals create quotes and grow their businesses. 
+            Discover the story behind the platform that's transforming the industry.
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* Story */}
-      <div className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-800 mb-6">Our Story</h2>
-            <p className="text-lg text-slate-600 leading-relaxed">
-              Paint Quote Pro was born from frustration. Our founder, Sarah, spent countless hours creating quotes 
-              for her painting business, often losing jobs to competitors who could deliver quotes faster. 
-              She knew there had to be a better way.
-            </p>
-            <p className="text-lg text-slate-600 leading-relaxed mt-6">
-              Combining her industry expertise with cutting-edge AI technology, we've created a solution that 
-              helps painting professionals work smarter, not harder. Today, hundreds of painters use Paint Quote Pro 
-              to save time and win more jobs.
-            </p>
+      {/* Stats */}
+      <section className="py-16 bg-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-amber-400 mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-gray-300 text-sm md:text-base font-medium">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Story */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-8">Our Story</h2>
+              <div className="space-y-6 text-lg text-slate-600 leading-relaxed">
+                <p>
+                  Paint Quote Pro was born from real frustration. Our founder, Sarah Johnson, was a successful painting contractor 
+                  who spent countless hours creating quotes for her business. Despite her expertise, she often lost jobs to 
+                  competitors who could deliver quotes faster.
+                </p>
+                <p>
+                  <strong className="text-slate-800">"I knew my work was excellent, but I was losing jobs because my quotes took too long,"</strong> 
+                  Sarah recalls. "There had to be a better way."
+                </p>
+                <p>
+                  Combining her deep industry expertise with cutting-edge AI technology, Sarah partnered with tech expert Mike Chen 
+                  to create a solution that helps painting professionals work smarter, not harder.
+                </p>
+                <p>
+                  Today, hundreds of painters across the UK use Paint Quote Pro to save time, create more professional quotes, 
+                  and win more jobs. We're proud to be the trusted partner helping painters grow their businesses.
+                </p>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Building className="h-10 w-10 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4">Founded in 2022</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Started by painting professionals, for painting professionals. We understand your challenges because we've lived them.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Values */}
-      <div className="bg-white py-20">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Our Values</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">Our Values</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              These principles guide everything we do and every decision we make
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <Users className="h-16 w-16 text-teal-500 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-slate-800 mb-4">Customer First</h3>
-              <p className="text-slate-600">
-                Every feature we build is designed with our customers' success in mind. 
-                Your feedback drives our product development.
-              </p>
-            </div>
+            {values.map((value, index) => (
+              <div key={index} className="text-center bg-gray-50 rounded-2xl p-8 hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-100">
+                <div className="flex justify-center mb-6">
+                  <div className="p-3 bg-white rounded-xl shadow-sm">
+                    {value.icon}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-4">{value.title}</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  {value.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <div className="text-center">
-              <Target className="h-16 w-16 text-orange-500 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-slate-800 mb-4">Innovation</h3>
-              <p className="text-slate-600">
-                We leverage the latest AI technology to solve real problems faced by 
-                painting professionals every day.
+      {/* Mission */}
+      <section className="py-20 bg-emerald-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-8">Our Mission</h2>
+            <div className="max-w-4xl mx-auto">
+              <p className="text-2xl text-slate-700 leading-relaxed mb-8 font-medium">
+                "To empower every painting professional with the tools they need to create better quotes faster, 
+                win more jobs, and build successful businesses."
               </p>
-            </div>
-
-            <div className="text-center">
-              <Award className="h-16 w-16 text-yellow-500 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-slate-800 mb-4">Excellence</h3>
-              <p className="text-slate-600">
-                We're committed to delivering a product that exceeds expectations and 
-                helps our customers achieve their business goals.
-              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Zap className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">Speed</h3>
+                  <p className="text-slate-600">Create quotes 5x faster than traditional methods</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Target className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">Accuracy</h3>
+                  <p className="text-slate-600">95% measurement accuracy with AI technology</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Award className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">Quality</h3>
+                  <p className="text-slate-600">Professional quotes that win more business</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Team */}
-      <div className="py-20">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Meet Our Team</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">Meet Our Team</h2>
             <p className="text-xl text-slate-600">
-              The people behind Paint Quote Pro
+              The passionate people behind Paint Quote Pro
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {team.map((member, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="text-center bg-gray-50 rounded-2xl p-8 hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-100">
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
+                  className="w-32 h-32 rounded-full mx-auto mb-6 object-cover border-4 border-white shadow-lg"
                 />
-                <h3 className="text-xl font-semibold text-slate-800">{member.name}</h3>
-                <p className="text-teal-600 font-medium mb-3">{member.role}</p>
-                <p className="text-slate-600">{member.bio}</p>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">{member.name}</h3>
+                <p className="text-emerald-600 font-semibold mb-4">{member.role}</p>
+                <p className="text-slate-600 leading-relaxed">{member.bio}</p>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* CTA */}
-      <div className="bg-gradient-to-r from-teal-500 to-slate-700 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Join Our Community?
-          </h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Thousands of painters trust Paint Quote Pro to grow their business
-          </p>
-          <a
-            href="/register"
-            className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-slate-800 bg-yellow-400 hover:bg-yellow-300 transition-colors"
-          >
-            Get Started Today
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </a>
+      {/* Why We're Different */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">Why We're Different</h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              We're not just another software company - we're painters who built a solution for painters
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="flex items-start">
+                <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                  <CheckCircle className="h-6 w-6 text-emerald-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">Built by Industry Experts</h3>
+                  <p className="text-slate-600 leading-relaxed">Our founders have decades of combined experience in the painting industry. We understand your challenges because we've faced them ourselves.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                  <CheckCircle className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">Customer-Driven Development</h3>
+                  <p className="text-slate-600 leading-relaxed">Every feature is requested and tested by real painting contractors. We don't build features in isolation - we build what you actually need.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                  <CheckCircle className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">Continuous Innovation</h3>
+                  <p className="text-slate-600 leading-relaxed">We're constantly improving our AI technology and adding new features. Your subscription includes all updates and new capabilities.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+              <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">What Our Customers Say</h3>
+              <div className="space-y-6">
+                <div className="bg-gray-50 rounded-xl p-6">
+                  <p className="text-slate-600 italic mb-4">"Finally, software built by people who actually understand painting. Paint Quote Pro has transformed how I run my business."</p>
+                  <p className="font-semibold text-slate-800">- David Thompson, Thompson Decorators</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-6">
+                  <p className="text-slate-600 italic mb-4">"The AI is incredibly accurate, and the quotes look so professional. I've won every job I've quoted since switching."</p>
+                  <p className="font-semibold text-slate-800">- Lisa Rodriguez, Precision Painters</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

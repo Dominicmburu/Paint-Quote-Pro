@@ -7,13 +7,13 @@ from jinja2 import Template
 import json
 
 class QuoteGenerator:
-    """Professional quote PDF generator with customizable templates"""
+    """Professional quote PDF generator with enhanced room-based formatting"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
     
     def generate_quote_pdf(self, quote, project, company, output_dir: str) -> str:
-        """Generate a professional PDF quote"""
+        """Generate a professional PDF quote with room-based organization"""
         try:
             # Ensure output directory exists
             os.makedirs(output_dir, exist_ok=True)
@@ -38,8 +38,65 @@ class QuoteGenerator:
             self.logger.error(f"❌ Quote PDF generation failed: {e}")
             raise
     
+    def _organize_line_items_by_room(self, line_items):
+        """Organize line items by room for better PDF structure"""
+        rooms = {}
+        interior_items = []
+        exterior_items = []
+        general_items = []
+        
+        for item in line_items:
+            description = item.get('description', '')
+            
+            # Check if item belongs to a specific room
+            if ' - ' in description:
+                parts = description.split(' - ')
+                if len(parts) >= 2:
+                    room_name = parts[0].strip()
+                    work_description = ' - '.join(parts[1:]).strip()
+                    
+                    if room_name not in rooms:
+                        rooms[room_name] = {
+                            'walls': [],
+                            'ceiling': [],
+                            'other': []
+                        }
+                    
+                    # Categorize work type
+                    work_lower = work_description.lower()
+                    if any(keyword in work_lower for keyword in ['wall', 'sanding', 'priming', 'painting']):
+                        if 'ceiling' not in work_lower:
+                            rooms[room_name]['walls'].append(item)
+                        else:
+                            rooms[room_name]['ceiling'].append(item)
+                    else:
+                        rooms[room_name]['other'].append(item)
+                    continue
+            
+            # Categorize non-room specific items
+            desc_lower = description.lower()
+            if any(keyword in desc_lower for keyword in ['window', 'door', 'radiator', 'skirting']):
+                if any(keyword in desc_lower for keyword in ['exterior', 'outside', 'external']):
+                    exterior_items.append(item)
+                else:
+                    interior_items.append(item)
+            elif any(keyword in desc_lower for keyword in ['cleanup', 'preparation', 'setup', 'materials']):
+                general_items.append(item)
+            else:
+                general_items.append(item)
+        
+        return {
+            'rooms': rooms,
+            'interior_items': interior_items,
+            'exterior_items': exterior_items,
+            'general_items': general_items
+        }
+    
     def _generate_html_content(self, quote, project, company) -> str:
-        """Generate HTML content for the quote"""
+        """Generate HTML content for the quote with room-based organization"""
+        
+        # Organize line items by room
+        organized_items = self._organize_line_items_by_room(quote.line_items)
         
         template_str = """
         <!DOCTYPE html>
@@ -90,7 +147,6 @@ class QuoteGenerator:
                         {% if project.client_phone %}<p><strong>Phone:</strong> {{ project.client_phone }}</p>{% endif %}
                         {% if project.client_address %}<p><strong>Address:</strong> {{ project.client_address }}</p>{% endif %}
                         <p><strong>Property Type:</strong> {{ project.property_type|title }}</p>
-                        <p><strong>Project Type:</strong> {{ project.project_type|title }}</p>
                     </div>
                 </section>
                 
@@ -102,9 +158,127 @@ class QuoteGenerator:
                 </section>
                 {% endif %}
                 
-                <!-- Line Items -->
-                <section class="items-section">
-                    <h2>Quote Details</h2>
+                <!-- Room-by-Room Breakdown -->
+                {% if organized_items.rooms %}
+                <section class="rooms-section">
+                    <h2>Room-by-Room Breakdown</h2>
+                    
+                    {% for room_name, room_items in organized_items.rooms.items() %}
+                    <div class="room-section">
+                        <h3 class="room-title">{{ room_name }}</h3>
+                        
+                        <!-- Wall Work -->
+                        {% if room_items.walls %}
+                        <div class="work-category">
+                            <h4 class="category-title">Wall Work</h4>
+                            <table class="room-items-table">
+                                <thead>
+                                    <tr>
+                                        <th class="desc-col">Description</th>
+                                        <th class="qty-col">Area (m²)</th>
+                                        <th class="price-col">Rate</th>
+                                        <th class="total-col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in room_items.walls %}
+                                    <tr>
+                                        <td class="desc-col">{{ item.description.split(' - ', 1)[1] if ' - ' in item.description else item.description }}</td>
+                                        <td class="qty-col">{{ "%.2f"|format(item.quantity) }}</td>
+                                        <td class="price-col">£{{ "%.2f"|format(item.unit_price) }}/m²</td>
+                                        <td class="total-col">£{{ "%.2f"|format(item.total) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="subtotal-row">
+                                        <td colspan="3"><strong>Wall Work Subtotal:</strong></td>
+                                        <td class="total-col"><strong>£{{ "%.2f"|format(room_items.walls|sum(attribute='total')) }}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Ceiling Work -->
+                        {% if room_items.ceiling %}
+                        <div class="work-category">
+                            <h4 class="category-title">Ceiling Work</h4>
+                            <table class="room-items-table">
+                                <thead>
+                                    <tr>
+                                        <th class="desc-col">Description</th>
+                                        <th class="qty-col">Area (m²)</th>
+                                        <th class="price-col">Rate</th>
+                                        <th class="total-col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in room_items.ceiling %}
+                                    <tr>
+                                        <td class="desc-col">{{ item.description.split(' - ', 1)[1] if ' - ' in item.description else item.description }}</td>
+                                        <td class="qty-col">{{ "%.2f"|format(item.quantity) }}</td>
+                                        <td class="price-col">£{{ "%.2f"|format(item.unit_price) }}/m²</td>
+                                        <td class="total-col">£{{ "%.2f"|format(item.total) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="subtotal-row">
+                                        <td colspan="3"><strong>Ceiling Work Subtotal:</strong></td>
+                                        <td class="total-col"><strong>£{{ "%.2f"|format(room_items.ceiling|sum(attribute='total')) }}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Other Surfaces -->
+                        {% if room_items.other %}
+                        <div class="work-category">
+                            <h4 class="category-title">Other Surfaces</h4>
+                            <table class="room-items-table">
+                                <thead>
+                                    <tr>
+                                        <th class="desc-col">Description</th>
+                                        <th class="qty-col">Quantity</th>
+                                        <th class="price-col">Rate</th>
+                                        <th class="total-col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in room_items.other %}
+                                    <tr>
+                                        <td class="desc-col">{{ item.description.split(' - ', 1)[1] if ' - ' in item.description else item.description }}</td>
+                                        <td class="qty-col">{{ "%.2f"|format(item.quantity) }} {{ item.unit or '' }}</td>
+                                        <td class="price-col">£{{ "%.2f"|format(item.unit_price) }}</td>
+                                        <td class="total-col">£{{ "%.2f"|format(item.total) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="subtotal-row">
+                                        <td colspan="3"><strong>Other Surfaces Subtotal:</strong></td>
+                                        <td class="total-col"><strong>£{{ "%.2f"|format(room_items.other|sum(attribute='total')) }}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Room Total -->
+                        <div class="room-total">
+                            <p><strong>{{ room_name }} Total: £{{ "%.2f"|format((room_items.walls|sum(attribute='total')) + (room_items.ceiling|sum(attribute='total')) + (room_items.other|sum(attribute='total'))) }}</strong></p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </section>
+                {% endif %}
+                
+                <!-- Interior Items -->
+                {% if organized_items.interior_items %}
+                <section class="interior-section">
+                    <h2>Interior Items</h2>
                     <table class="items-table">
                         <thead>
                             <tr>
@@ -116,18 +290,95 @@ class QuoteGenerator:
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in quote.line_items %}
+                            {% for item in organized_items.interior_items %}
                             <tr>
                                 <td class="desc-col">{{ item.description }}</td>
-                                <td class="qty-col">{{ "%.2f"|format(item.quantity) }}</td>
-                                <td class="unit-col">{{ item.unit or '' }}</td>
+                                <td class="qty-col">{{ "%.0f"|format(item.quantity) }}</td>
+                                <td class="unit-col">{{ item.unit or 'piece' }}</td>
                                 <td class="price-col">£{{ "%.2f"|format(item.unit_price) }}</td>
                                 <td class="total-col">£{{ "%.2f"|format(item.total) }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
+                        <tfoot>
+                            <tr class="subtotal-row">
+                                <td colspan="4"><strong>Interior Items Subtotal:</strong></td>
+                                <td class="total-col"><strong>£{{ "%.2f"|format(organized_items.interior_items|sum(attribute='total')) }}</strong></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </section>
+                {% endif %}
+                
+                <!-- Exterior Items -->
+                {% if organized_items.exterior_items %}
+                <section class="exterior-section">
+                    <h2>Exterior Items</h2>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th class="desc-col">Description</th>
+                                <th class="qty-col">Quantity</th>
+                                <th class="unit-col">Unit</th>
+                                <th class="price-col">Unit Price</th>
+                                <th class="total-col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in organized_items.exterior_items %}
+                            <tr>
+                                <td class="desc-col">{{ item.description }}</td>
+                                <td class="qty-col">{{ "%.0f"|format(item.quantity) }}</td>
+                                <td class="unit-col">{{ item.unit or 'piece' }}</td>
+                                <td class="price-col">£{{ "%.2f"|format(item.unit_price) }}</td>
+                                <td class="total-col">£{{ "%.2f"|format(item.total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="subtotal-row">
+                                <td colspan="4"><strong>Exterior Items Subtotal:</strong></td>
+                                <td class="total-col"><strong>£{{ "%.2f"|format(organized_items.exterior_items|sum(attribute='total')) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </section>
+                {% endif %}
+                
+                <!-- General Items -->
+                {% if organized_items.general_items %}
+                <section class="general-section">
+                    <h2>Additional Services</h2>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th class="desc-col">Description</th>
+                                <th class="qty-col">Quantity</th>
+                                <th class="unit-col">Unit</th>
+                                <th class="price-col">Unit Price</th>
+                                <th class="total-col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in organized_items.general_items %}
+                            <tr>
+                                <td class="desc-col">{{ item.description }}</td>
+                                <td class="qty-col">{{ "%.2f"|format(item.quantity) }}</td>
+                                <td class="unit-col">{{ item.unit or 'job' }}</td>
+                                <td class="price-col">£{{ "%.2f"|format(item.unit_price) }}</td>
+                                <td class="total-col">£{{ "%.2f"|format(item.total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="subtotal-row">
+                                <td colspan="4"><strong>Additional Services Subtotal:</strong></td>
+                                <td class="total-col"><strong>£{{ "%.2f"|format(organized_items.general_items|sum(attribute='total')) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </section>
+                {% endif %}
                 
                 <!-- Totals -->
                 <section class="totals-section">
@@ -137,7 +388,7 @@ class QuoteGenerator:
                             <span class="totals-value">£{{ "%.2f"|format(quote.subtotal) }}</span>
                         </div>
                         <div class="totals-row">
-                            <span class="totals-label">VAT ({{ "%.0f"|format(company.vat_rate * 100) }}%):</span>
+                            <span class="totals-label">VAT ({{ "%.0f"|format((company.vat_rate or 0.20) * 100) }}%):</span>
                             <span class="totals-value">£{{ "%.2f"|format(quote.vat_amount) }}</span>
                         </div>
                         <div class="totals-row total-row">
@@ -181,6 +432,8 @@ class QuoteGenerator:
                         <p><strong>Coverage:</strong> All surfaces will receive appropriate primer and finish coats</p>
                         <p><strong>Preparation:</strong> All surfaces will be properly cleaned, filled, and prepared</p>
                         <p><strong>Quality:</strong> All work carried out to professional standards</p>
+                        <p><strong>Interior Work:</strong> Moisture-resistant paints in bathrooms and kitchens</p>
+                        <p><strong>Exterior Work:</strong> Weather-resistant coatings for maximum durability</p>
                     </div>
                 </section>
                 
@@ -198,6 +451,8 @@ class QuoteGenerator:
                             <li>All materials and labor included unless otherwise specified</li>
                             <li>Customer to provide access and remove/cover furniture</li>
                             <li>Any variations to be agreed in writing</li>
+                            <li>Work carried out during normal business hours (8am-6pm)</li>
+                            <li>All waste materials will be disposed of responsibly</li>
                         </ul>
                         {% endif %}
                     </div>
@@ -208,7 +463,7 @@ class QuoteGenerator:
                     {% if company.quote_footer_text %}
                     <p class="footer-text">{{ company.quote_footer_text }}</p>
                     {% else %}
-                    <p class="footer-text">Thank you for considering our services. We look forward to working with you!</p>
+                    <p class="footer-text">Thank you for considering our services. We look forward to transforming your space!</p>
                     {% endif %}
                     
                     <div class="footer-contact">
@@ -230,11 +485,12 @@ class QuoteGenerator:
             quote=quote,
             project=project,
             company=company,
+            organized_items=organized_items,
             datetime=datetime
         )
     
     def _get_pdf_styles(self) -> str:
-        """Get CSS styles for the PDF"""
+        """Get enhanced CSS styles for the PDF with room-based formatting"""
         return """
         @page {
             size: A4;
@@ -346,37 +602,107 @@ class QuoteGenerator:
             border-left: 4px solid #F59E0B;
         }
         
-        /* Items Table */
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
+        /* Room-by-Room Styles */
+        .room-section {
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 20px;
             margin-bottom: 20px;
+            page-break-inside: avoid;
         }
         
-        .items-table th {
+        .room-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1E293B;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #7C3AED;
+        }
+        
+        .work-category {
+            margin-bottom: 15px;
+        }
+        
+        .category-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 8px;
+            padding: 5px 10px;
+            background-color: #E2E8F0;
+            border-radius: 4px;
+        }
+        
+        .room-total {
+            background-color: #EEF2FF;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: right;
+            margin-top: 15px;
+            border-left: 4px solid #7C3AED;
+        }
+        
+        /* Table Styles */
+        .items-table, .room-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .items-table th, .room-items-table th {
             background-color: #7C3AED;
             color: white;
-            padding: 10px 8px;
+            padding: 8px 6px;
             text-align: left;
             font-weight: bold;
             font-size: 10px;
         }
         
-        .items-table td {
-            padding: 8px;
+        .items-table td, .room-items-table td {
+            padding: 6px;
             border-bottom: 1px solid #E5E7EB;
             font-size: 10px;
         }
         
-        .items-table tbody tr:nth-child(even) {
+        .items-table tbody tr:nth-child(even), 
+        .room-items-table tbody tr:nth-child(even) {
             background-color: #F9FAFB;
         }
         
+        .subtotal-row {
+            background-color: #F1F5F9 !important;
+            border-top: 2px solid #94A3B8;
+        }
+        
         .desc-col { width: 45%; }
-        .qty-col { width: 12%; text-align: center; }
+        .qty-col { width: 15%; text-align: center; }
         .unit-col { width: 10%; text-align: center; }
         .price-col { width: 15%; text-align: right; }
-        .total-col { width: 18%; text-align: right; font-weight: bold; }
+        .total-col { width: 15%; text-align: right; font-weight: bold; }
+        
+        /* Section-specific backgrounds */
+        .interior-section {
+            background-color: #FFF7ED;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #FB923C;
+        }
+        
+        .exterior-section {
+            background-color: #F0F9FF;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0EA5E9;
+        }
+        
+        .general-section {
+            background-color: #F0FDF4;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #22C55E;
+        }
         
         /* Totals Section */
         .totals-section {
@@ -507,5 +833,11 @@ class QuoteGenerator:
                 -webkit-print-color-adjust: exact;
                 color-adjust: exact;
             }
+            
+            .room-section {
+                page-break-inside: avoid;
+            }
         }
         """
+    
+    

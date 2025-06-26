@@ -1,0 +1,13 @@
+{
+    "interior_work": {
+        "rooms": {},
+        "common_areas": [],
+        "estimated_items": {}
+    },
+    "exterior_work": {
+        "walls": [],
+        "doors_windows": [],
+        "trim_features": [],
+        "estimated_items": {}
+    }
+}

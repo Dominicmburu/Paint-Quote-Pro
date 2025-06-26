@@ -1,0 +1,18 @@
+{
+    "interior_work": {
+        "rooms": {},
+        "common_areas": [],
+        "estimated_items": {}
+    },
+    "exterior_work": {
+        "walls": [],
+        "doors_windows": [],
+        "trim_features": [],
+        "estimated_items": {
+            "exterior_doors": 2,
+            "exterior_windows": 40,
+            "fascia_boards_meters": 80.75246126279991,
+            "soffit_area_m2": 40.376230631399956
+        }
+    }
+}

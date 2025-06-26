@@ -1,0 +1,19 @@
+{
+    "surface_areas": {
+        "rooms": {},
+        "totals": {
+            "total_floor_area_m2": 0,
+            "total_ceiling_area_m2": 0,
+            "total_wall_area_m2": 0,
+            "total_rooms": 0
+        },
+        "scale_factor": 0.02,
+        "constants": {
+            "wall_height_m": 2.4,
+            "ceiling_height_m": 2.4
+        },
+        "analysis_source": "hybrid_gpt_detection"
+    },
+    "timestamp": "2025-06-25T15:05:38.891657",
+    "analysis_method": "Enhanced GPT-4 Vision + Gradio API"
+}

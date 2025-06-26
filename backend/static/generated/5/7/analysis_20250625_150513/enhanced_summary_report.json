@@ -1,0 +1,39 @@
+{
+    "analysis_summary": {
+        "timestamp": "2025-06-25T15:05:38.888335",
+        "analysis_method": "Enhanced GPT-4 Vision + Gradio API",
+        "rooms_detected": 0,
+        "walls_detected": 0,
+        "doors_detected": 0,
+        "windows_detected": 0,
+        "gpt_rooms_identified": 0
+    },
+    "surface_area_summary": {
+        "total_floor_area_m2": 0,
+        "total_ceiling_area_m2": 0,
+        "total_wall_area_m2": 0,
+        "total_rooms": 0
+    },
+    "room_breakdown": {},
+    "work_classification": {
+        "interior_rooms": 0,
+        "exterior_features": 0,
+        "estimated_interior_items": {},
+        "estimated_exterior_items": {}
+    },
+    "gpt_insights": {
+        "room_details_found": 0,
+        "interior_features_identified": 0,
+        "exterior_features_identified": 0,
+        "analysis_notes": ""
+    },
+    "technical_details": {
+        "scale_factor": 0.02,
+        "wall_height_m": 2.4,
+        "ceiling_height_m": 2.4,
+        "analysis_source": "hybrid_gpt_detection"
+    },
+    "recommendations": [
+        "Small project - suitable for single day completion"
+    ]
+}

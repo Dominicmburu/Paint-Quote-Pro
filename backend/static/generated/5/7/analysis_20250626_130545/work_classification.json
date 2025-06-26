@@ -1,0 +1,708 @@
+{
+    "interior_work": {
+        "rooms": {
+            "- **Woonkamer ( Living Room": {
+                "type": "living room",
+                "surface_data": {
+                    "floor_area_m2": 1.17,
+                    "ceiling_area_m2": 1.17,
+                    "wall_area_m2": 10.66,
+                    "perimeter_m": 4.44,
+                    "room_type": "living room",
+                    "room_polygon": [
+                        [
+                            642,
+                            945
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            710,
+                            988
+                        ],
+                        [
+                            710,
+                            945
+                        ]
+                    ],
+                    "special_considerations": [
+                        "High-quality finish required for main living areas",
+                        "Consider primer for color changes",
+                        "Minimal disruption scheduling important"
+                    ]
+                },
+                "features": [],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "High-quality finish for main living areas"
+                    ]
+                }
+            },
+            "- Type: Living Room": {
+                "type": "living room",
+                "surface_data": {
+                    "floor_area_m2": 2.83,
+                    "ceiling_area_m2": 2.83,
+                    "wall_area_m2": 16.51,
+                    "perimeter_m": 6.88,
+                    "room_type": "living room",
+                    "room_polygon": [
+                        [
+                            642,
+                            841
+                        ],
+                        [
+                            642,
+                            945
+                        ],
+                        [
+                            710,
+                            945
+                        ],
+                        [
+                            710,
+                            841
+                        ]
+                    ],
+                    "special_considerations": [
+                        "High-quality finish required for main living areas",
+                        "Consider primer for color changes",
+                        "Minimal disruption scheduling important"
+                    ]
+                },
+                "features": [],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "High-quality finish for main living areas"
+                    ]
+                }
+            },
+            "Kitchen": {
+                "type": "kitchen",
+                "surface_data": {
+                    "floor_area_m2": 0.0,
+                    "ceiling_area_m2": 0.0,
+                    "wall_area_m2": 2.89,
+                    "perimeter_m": 1.72,
+                    "room_type": "kitchen",
+                    "room_polygon": [
+                        [
+                            846,
+                            150
+                        ],
+                        [
+                            889,
+                            150
+                        ],
+                        [
+                            846,
+                            150
+                        ]
+                    ],
+                    "special_considerations": [
+                        "Moisture-resistant paint required",
+                        "May have tiled areas reducing paintable surface",
+                        "Extra ventilation needed during painting"
+                    ]
+                },
+                "features": [
+                    "- interior: walls, ceilings, doors, and trim.",
+                    "- exterior: exterior walls and doors.",
+                    "- high ceilings or large windows may require special equipment."
+                ],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "Moisture-resistant paint required"
+                    ]
+                }
+            },
+            "- **Keuken ( Kitchen": {
+                "type": "kitchen",
+                "surface_data": {
+                    "floor_area_m2": 0.0,
+                    "ceiling_area_m2": 0.0,
+                    "wall_area_m2": 2.89,
+                    "perimeter_m": 1.72,
+                    "room_type": "kitchen",
+                    "room_polygon": [
+                        [
+                            846,
+                            150
+                        ],
+                        [
+                            889,
+                            150
+                        ],
+                        [
+                            846,
+                            150
+                        ]
+                    ],
+                    "special_considerations": [
+                        "Moisture-resistant paint required",
+                        "May have tiled areas reducing paintable surface",
+                        "Extra ventilation needed during painting"
+                    ]
+                },
+                "features": [],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "Moisture-resistant paint required"
+                    ]
+                }
+            },
+            "Living Room": {
+                "type": "living room",
+                "surface_data": {
+                    "floor_area_m2": 1.17,
+                    "ceiling_area_m2": 1.17,
+                    "wall_area_m2": 10.66,
+                    "perimeter_m": 4.44,
+                    "room_type": "living room",
+                    "room_polygon": [
+                        [
+                            642,
+                            945
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            710,
+                            988
+                        ],
+                        [
+                            710,
+                            945
+                        ]
+                    ],
+                    "special_considerations": [
+                        "High-quality finish required for main living areas",
+                        "Consider primer for color changes",
+                        "Minimal disruption scheduling important"
+                    ]
+                },
+                "features": [
+                    "- large windows in the living room.",
+                    "- **balconies, patios, or outdoor spaces:**"
+                ],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "High-quality finish for main living areas"
+                    ]
+                }
+            },
+            "- Type: Kitchen": {
+                "type": "kitchen",
+                "surface_data": {
+                    "floor_area_m2": 0.0,
+                    "ceiling_area_m2": 0.0,
+                    "wall_area_m2": 2.89,
+                    "perimeter_m": 1.72,
+                    "room_type": "kitchen",
+                    "room_polygon": [
+                        [
+                            846,
+                            150
+                        ],
+                        [
+                            889,
+                            150
+                        ],
+                        [
+                            846,
+                            150
+                        ]
+                    ],
+                    "special_considerations": [
+                        "Moisture-resistant paint required",
+                        "May have tiled areas reducing paintable surface",
+                        "Extra ventilation needed during painting"
+                    ]
+                },
+                "features": [
+                    "- special features: built-in appliances, island counter"
+                ],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "Moisture-resistant paint required"
+                    ]
+                }
+            },
+            "- **Eetkamer ( Dining Room": {
+                "type": "dining room",
+                "surface_data": null,
+                "features": [],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "High-quality finish for main living areas"
+                    ]
+                }
+            },
+            "- Type: Dining Room": {
+                "type": "dining room",
+                "surface_data": {
+                    "floor_area_m2": 276.49,
+                    "ceiling_area_m2": 276.49,
+                    "wall_area_m2": 226.7,
+                    "perimeter_m": 94.46,
+                    "room_type": "dining room",
+                    "room_polygon": [
+                        [
+                            50,
+                            150
+                        ],
+                        [
+                            50,
+                            1385
+                        ],
+                        [
+                            50,
+                            1385
+                        ],
+                        [
+                            50,
+                            1385
+                        ],
+                        [
+                            50,
+                            1385
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            1033,
+                            1385
+                        ],
+                        [
+                            1033,
+                            988
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            642,
+                            506
+                        ],
+                        [
+                            642,
+                            506
+                        ],
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            50,
+                            150
+                        ]
+                    ],
+                    "special_considerations": [
+                        "High-quality finish required for main living areas",
+                        "Consider primer for color changes",
+                        "Minimal disruption scheduling important"
+                    ]
+                },
+                "features": [],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "High-quality finish for main living areas"
+                    ]
+                }
+            },
+            "Dining Room": {
+                "type": "dining room",
+                "surface_data": {
+                    "floor_area_m2": 276.49,
+                    "ceiling_area_m2": 276.49,
+                    "wall_area_m2": 226.7,
+                    "perimeter_m": 94.46,
+                    "room_type": "dining room",
+                    "room_polygon": [
+                        [
+                            50,
+                            150
+                        ],
+                        [
+                            50,
+                            1385
+                        ],
+                        [
+                            50,
+                            1385
+                        ],
+                        [
+                            50,
+                            1385
+                        ],
+                        [
+                            50,
+                            1385
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            1033,
+                            1385
+                        ],
+                        [
+                            1033,
+                            988
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            642,
+                            988
+                        ],
+                        [
+                            642,
+                            506
+                        ],
+                        [
+                            642,
+                            506
+                        ],
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            473,
+                            150
+                        ],
+                        [
+                            50,
+                            150
+                        ]
+                    ],
+                    "special_considerations": [
+                        "High-quality finish required for main living areas",
+                        "Consider primer for color changes",
+                        "Minimal disruption scheduling important"
+                    ]
+                },
+                "features": [
+                    "- exterior doors at the entrance and dining room."
+                ],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "High-quality finish for main living areas"
+                    ]
+                }
+            },
+            "- Kitchen": {
+                "type": "kitchen",
+                "surface_data": {
+                    "floor_area_m2": 0.0,
+                    "ceiling_area_m2": 0.0,
+                    "wall_area_m2": 2.89,
+                    "perimeter_m": 1.72,
+                    "room_type": "kitchen",
+                    "room_polygon": [
+                        [
+                            846,
+                            150
+                        ],
+                        [
+                            889,
+                            150
+                        ],
+                        [
+                            846,
+                            150
+                        ]
+                    ],
+                    "special_considerations": [
+                        "Moisture-resistant paint required",
+                        "May have tiled areas reducing paintable surface",
+                        "Extra ventilation needed during painting"
+                    ]
+                },
+                "features": [
+                    "- kitchen area may need careful work around built-in features."
+                ],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "Moisture-resistant paint required"
+                    ]
+                }
+            },
+            "- Living Room": {
+                "type": "living room",
+                "surface_data": {
+                    "floor_area_m2": 55.68,
+                    "ceiling_area_m2": 55.68,
+                    "wall_area_m2": 71.71,
+                    "perimeter_m": 29.88,
+                    "room_type": "living room",
+                    "room_polygon": [
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            642,
+                            150
+                        ],
+                        [
+                            642,
+                            506
+                        ],
+                        [
+                            1033,
+                            506
+                        ],
+                        [
+                            1033,
+                            506
+                        ],
+                        [
+                            1033,
+                            150
+                        ],
+                        [
+                            1033,
+                            150
+                        ],
+                        [
+                            1033,
+                            150
+                        ],
+                        [
+                            846,
+                            150
+                        ],
+                        [
+                            775,
+                            150
+                        ],
+                        [
+                            754,
+                            150
+                        ],
+                        [
+                            754,
+                            150
+                        ]
+                    ],
+                    "special_considerations": [
+                        "High-quality finish required for main living areas",
+                        "Consider primer for color changes",
+                        "Minimal disruption scheduling important"
+                    ]
+                },
+                "features": [],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "High-quality finish for main living areas"
+                    ]
+                }
+            },
+            "- Dining Room": {
+                "type": "dining room",
+                "surface_data": null,
+                "features": [
+                    "- doors and windows as noted."
+                ],
+                "estimated_work": {
+                    "wall_painting": true,
+                    "ceiling_painting": true,
+                    "special_requirements": [
+                        "High-quality finish for main living areas"
+                    ]
+                }
+            }
+        },
+        "common_areas": [],
+        "estimated_items": {
+            "interior_doors": 11,
+            "interior_windows": 24,
+            "radiators": 11,
+            "skirting_boards_meters": 138.4739240382617
+        }
+    },
+    "exterior_work": {
+        "walls": [
+            {
+                "description": "- **exterior walls:**",
+                "estimated_area": 15.0
+            },
+            {
+                "description": "- not specified, but exterior walls likely load-bearing.",
+                "estimated_area": 15.0
+            },
+            {
+                "description": "- exterior walls if included in the scope.",
+                "estimated_area": 15.0
+            },
+            {
+                "description": "- exterior: exterior walls and doors.",
+                "estimated_area": 15.0
+            }
+        ],
+        "doors_windows": [
+            {
+                "description": "- **exterior doors and windows:**",
+                "type": "door"
+            },
+            {
+                "description": "- exterior doors at the entrance and dining room.",
+                "type": "door"
+            }
+        ],
+        "trim_features": [
+            {
+                "description": "- **interior trim, moldings, baseboards:**",
+                "estimated_length": 10.0
+            },
+            {
+                "description": "- **exterior trim or architectural features:**",
+                "estimated_length": 10.0
+            },
+            {
+                "description": "- interior: walls, ceilings, doors, and trim.",
+                "estimated_length": 10.0
+            }
+        ],
+        "estimated_items": {
+            "exterior_doors": 2,
+            "exterior_windows": 39,
+            "fascia_boards_meters": 79.64521328993978,
+            "soffit_area_m2": 39.82260664496989
+        }
+    }
+}

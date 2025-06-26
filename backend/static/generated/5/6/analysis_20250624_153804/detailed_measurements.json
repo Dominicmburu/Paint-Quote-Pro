@@ -1,0 +1,1693 @@
+{
+    "measurements": {
+        "wall_lengths": {
+            "wall_1": 0.26,
+            "wall_2": 0.28,
+            "wall_3": 3.38,
+            "wall_4": 2.24,
+            "wall_5": 0.42,
+            "wall_6": 2.88,
+            "wall_7": 0.86,
+            "wall_8": 7.12,
+            "wall_9": 7.12,
+            "wall_10": 24.7,
+            "wall_11": 3.96,
+            "wall_12": 7.82,
+            "wall_13": 6.7,
+            "wall_14": 1.06,
+            "wall_15": 2.82,
+            "wall_16": 3.1,
+            "wall_17": 1.36,
+            "wall_18": 3.88,
+            "wall_19": 2.08,
+            "wall_20": 2.08,
+            "wall_21": 2.86,
+            "wall_22": 2.86,
+            "wall_23": 1.36,
+            "wall_24": 0.86,
+            "wall_25": 0.86,
+            "wall_26": 2.58,
+            "wall_27": 3.88,
+            "wall_28": 1.36,
+            "wall_29": 7.94,
+            "wall_30": 19.66,
+            "wall_31": 1.42,
+            "wall_32": 8.46
+        },
+        "effective_wall_lengths": {
+            "wall_1": 0.26,
+            "wall_2": 0.28,
+            "wall_3": 3.38,
+            "wall_4": 2.24,
+            "wall_5": 0.42,
+            "wall_6": 2.88,
+            "wall_7": 0.86,
+            "wall_8": 3.8,
+            "wall_9": 1.5199999999999996,
+            "wall_10": 24.7,
+            "wall_11": 3.96,
+            "wall_12": 7.82,
+            "wall_13": 4.6,
+            "wall_14": 1.06,
+            "wall_15": 2.82,
+            "wall_16": 3.1,
+            "wall_17": 1.36,
+            "wall_18": 1.94,
+            "wall_19": 2.08,
+            "wall_20": 0.6000000000000001,
+            "wall_21": 2.86,
+            "wall_22": 2.26,
+            "wall_23": 1.36,
+            "wall_24": 0.86,
+            "wall_25": 0.86,
+            "wall_26": 2.58,
+            "wall_27": 3.88,
+            "wall_28": 1.36,
+            "wall_29": 3.08,
+            "wall_30": 8.92,
+            "wall_31": 1.42,
+            "wall_32": 5.82
+        },
+        "openings_by_wall": {
+            "30": 537.0,
+            "29": 243.0,
+            "8": 166.0,
+            "32": 132.0,
+            "22": 30.0,
+            "13": 105.0,
+            "9": 280.0,
+            "18": 97.0,
+            "20": 74.0
+        },
+        "total_walls": 32,
+        "total_doors": 14,
+        "total_windows": 0,
+        "total_rooms": 9
+    },
+    "surface_areas": {
+        "rooms": {
+            "Room 1": {
+                "floor_area_m2": 1.17,
+                "ceiling_area_m2": 1.17,
+                "wall_area_m2": 10.66,
+                "perimeter_m": 4.44,
+                "room_polygon": [
+                    [
+                        642,
+                        945
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        710,
+                        988
+                    ],
+                    [
+                        710,
+                        945
+                    ]
+                ]
+            },
+            "Room 2": {
+                "floor_area_m2": 2.83,
+                "ceiling_area_m2": 2.83,
+                "wall_area_m2": 16.51,
+                "perimeter_m": 6.88,
+                "room_polygon": [
+                    [
+                        642,
+                        841
+                    ],
+                    [
+                        642,
+                        945
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        841
+                    ]
+                ]
+            },
+            "Room 3": {
+                "floor_area_m2": 11.1,
+                "ceiling_area_m2": 11.1,
+                "wall_area_m2": 32.35,
+                "perimeter_m": 13.48,
+                "room_polygon": [
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        839,
+                        845
+                    ],
+                    [
+                        839,
+                        988
+                    ],
+                    [
+                        1033,
+                        988
+                    ]
+                ]
+            },
+            "Room 4": {
+                "floor_area_m2": 60.29,
+                "ceiling_area_m2": 60.29,
+                "wall_area_m2": 103.78,
+                "perimeter_m": 43.24,
+                "room_polygon": [
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        988
+                    ],
+                    [
+                        839,
+                        988
+                    ],
+                    [
+                        839,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        506
+                    ]
+                ]
+            },
+            "Room 5": {
+                "floor_area_m2": 55.68,
+                "ceiling_area_m2": 55.68,
+                "wall_area_m2": 71.71,
+                "perimeter_m": 29.88,
+                "room_polygon": [
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        846,
+                        150
+                    ],
+                    [
+                        775,
+                        150
+                    ],
+                    [
+                        754,
+                        150
+                    ],
+                    [
+                        754,
+                        150
+                    ]
+                ]
+            },
+            "Room 8": {
+                "floor_area_m2": 276.49,
+                "ceiling_area_m2": 276.49,
+                "wall_area_m2": 226.7,
+                "perimeter_m": 94.46,
+                "room_polygon": [
+                    [
+                        50,
+                        150
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        1033,
+                        1385
+                    ],
+                    [
+                        1033,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        50,
+                        150
+                    ]
+                ]
+            },
+            "Room 9": {
+                "floor_area_m2": 0.0,
+                "ceiling_area_m2": 0.0,
+                "wall_area_m2": 4.13,
+                "perimeter_m": 1.72,
+                "room_polygon": [
+                    [
+                        846,
+                        150
+                    ],
+                    [
+                        889,
+                        150
+                    ],
+                    [
+                        846,
+                        150
+                    ]
+                ]
+            }
+        },
+        "totals": {
+            "total_floor_area_m2": 407.56,
+            "total_ceiling_area_m2": 407.56,
+            "total_wall_area_m2": 465.84,
+            "total_rooms": 7
+        },
+        "scale_factor": 0.02,
+        "constants": {
+            "wall_height_m": 2.4,
+            "ceiling_height_m": 2.4
+        }
+    },
+    "rooms": [
+        {
+            "id": "room-1-1750779522889",
+            "name": "Room 1",
+            "walls": [
+                {
+                    "id": "wall-1-0-1750779522889",
+                    "length": 4.44,
+                    "height": 2.4,
+                    "area": 10.66,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "ceilings": [
+                {
+                    "id": "ceiling-1-1750779522889",
+                    "width": 1.08,
+                    "length": 1.08,
+                    "area": 1.17,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "doors": [
+                {
+                    "id": "door-1-0-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 1",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-1-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 2",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-2-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 3",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-3-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 4",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-4-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 5",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-5-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 6",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-6-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 7",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-7-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 8",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-8-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 9",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-9-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 10",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-10-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 11",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-11-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 12",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-12-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 13",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-1-13-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 14",
+                    "prepType": "easyPrep"
+                }
+            ],
+            "windows": []
+        },
+        {
+            "id": "room-2-1750779522889",
+            "name": "Room 2",
+            "walls": [
+                {
+                    "id": "wall-2-0-1750779522889",
+                    "length": 3.44,
+                    "height": 2.4,
+                    "area": 8.26,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-2-1-1750779522889",
+                    "length": 3.44,
+                    "height": 2.4,
+                    "area": 8.26,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "ceilings": [
+                {
+                    "id": "ceiling-2-1750779522889",
+                    "width": 1.68,
+                    "length": 1.68,
+                    "area": 2.83,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "doors": [
+                {
+                    "id": "door-2-0-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 1",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-1-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 2",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-2-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 3",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-3-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 4",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-4-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 5",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-5-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 6",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-6-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 7",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-7-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 8",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-8-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 9",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-9-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 10",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-10-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 11",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-11-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 12",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-12-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 13",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-2-13-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 14",
+                    "prepType": "easyPrep"
+                }
+            ],
+            "windows": []
+        },
+        {
+            "id": "room-3-1750779522889",
+            "name": "Room 3",
+            "walls": [
+                {
+                    "id": "wall-3-0-1750779522889",
+                    "length": 3.37,
+                    "height": 2.4,
+                    "area": 8.09,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-3-1-1750779522889",
+                    "length": 3.37,
+                    "height": 2.4,
+                    "area": 8.09,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-3-2-1750779522889",
+                    "length": 3.37,
+                    "height": 2.4,
+                    "area": 8.09,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-3-3-1750779522889",
+                    "length": 3.37,
+                    "height": 2.4,
+                    "area": 8.09,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "ceilings": [
+                {
+                    "id": "ceiling-3-1750779522889",
+                    "width": 3.33,
+                    "length": 3.33,
+                    "area": 11.1,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "doors": [
+                {
+                    "id": "door-3-0-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 1",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-1-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 2",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-2-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 3",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-3-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 4",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-4-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 5",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-5-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 6",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-6-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 7",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-7-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 8",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-8-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 9",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-9-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 10",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-10-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 11",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-11-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 12",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-12-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 13",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-3-13-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 14",
+                    "prepType": "easyPrep"
+                }
+            ],
+            "windows": []
+        },
+        {
+            "id": "room-4-1750779522889",
+            "name": "Room 4",
+            "walls": [
+                {
+                    "id": "wall-4-0-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-1-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-2-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-3-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-4-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-5-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-6-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-7-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-8-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-9-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-10-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-11-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-12-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-4-13-1750779522889",
+                    "length": 3.09,
+                    "height": 2.4,
+                    "area": 7.41,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "ceilings": [
+                {
+                    "id": "ceiling-4-1750779522889",
+                    "width": 7.76,
+                    "length": 7.77,
+                    "area": 60.29,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "doors": [
+                {
+                    "id": "door-4-0-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 1",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-1-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 2",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-2-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 3",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-3-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 4",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-4-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 5",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-5-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 6",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-6-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 7",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-7-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 8",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-8-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 9",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-9-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 10",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-10-1750779522889",
+                    "quantity": 1,
+                    "description": "Door 11",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-11-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 12",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-12-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 13",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-4-13-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 14",
+                    "prepType": "easyPrep"
+                }
+            ],
+            "windows": []
+        },
+        {
+            "id": "room-5-1750779522890",
+            "name": "Room 5",
+            "walls": [
+                {
+                    "id": "wall-5-0-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-5-1-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-5-2-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-5-3-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-5-4-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-5-5-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-5-6-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-5-7-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-5-8-1750779522890",
+                    "length": 3.32,
+                    "height": 2.4,
+                    "area": 7.97,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "ceilings": [
+                {
+                    "id": "ceiling-5-1750779522890",
+                    "width": 7.46,
+                    "length": 7.46,
+                    "area": 55.68,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "doors": [
+                {
+                    "id": "door-5-0-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 1",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-1-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 2",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-2-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 3",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-3-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 4",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-4-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 5",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-5-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 6",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-6-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 7",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-7-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 8",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-8-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 9",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-9-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 10",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-10-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 11",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-11-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 12",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-12-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 13",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-5-13-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 14",
+                    "prepType": "easyPrep"
+                }
+            ],
+            "windows": []
+        },
+        {
+            "id": "room-6-1750779522890",
+            "name": "Room 8",
+            "walls": [
+                {
+                    "id": "wall-6-0-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-1-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-2-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-3-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-4-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-5-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-6-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-7-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-8-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-9-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-10-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-11-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-12-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-13-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-14-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-15-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-16-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-17-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-18-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-19-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-20-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-21-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-22-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-23-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-24-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-25-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-26-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-27-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-28-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-29-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                },
+                {
+                    "id": "wall-6-30-1750779522890",
+                    "length": 3.05,
+                    "height": 2.4,
+                    "area": 7.31,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "ceilings": [
+                {
+                    "id": "ceiling-6-1750779522890",
+                    "width": 16.63,
+                    "length": 16.63,
+                    "area": 276.49,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "doors": [
+                {
+                    "id": "door-6-0-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 1",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-1-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 2",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-2-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 3",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-3-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 4",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-4-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 5",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-5-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 6",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-6-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 7",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-7-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 8",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-8-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 9",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-9-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 10",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-10-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 11",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-11-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 12",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-12-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 13",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-6-13-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 14",
+                    "prepType": "easyPrep"
+                }
+            ],
+            "windows": []
+        },
+        {
+            "id": "room-7-1750779522890",
+            "name": "Room 9",
+            "walls": [
+                {
+                    "id": "wall-7-0-1750779522890",
+                    "length": 1.72,
+                    "height": 2.4,
+                    "area": 4.13,
+                    "prepType": "sanding",
+                    "coating": "oneCoat"
+                }
+            ],
+            "ceilings": [],
+            "doors": [
+                {
+                    "id": "door-7-0-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 1",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-1-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 2",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-2-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 3",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-3-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 4",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-4-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 5",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-5-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 6",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-6-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 7",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-7-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 8",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-8-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 9",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-9-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 10",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-10-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 11",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-11-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 12",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-12-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 13",
+                    "prepType": "easyPrep"
+                },
+                {
+                    "id": "door-7-13-1750779522890",
+                    "quantity": 1,
+                    "description": "Door 14",
+                    "prepType": "easyPrep"
+                }
+            ],
+            "windows": []
+        }
+    ],
+    "timestamp": "2025-06-24T15:38:42.890417"
+}

@@ -2,6 +2,8 @@ import os
 from datetime import timedelta
 import logging
 from urllib.parse import urlparse
+from werkzeug.utils import secure_filename
+import uuid
 
 def get_fallback_database_uri():
     """Fallback database URI for development"""
@@ -30,7 +32,7 @@ def get_database_uri():
         return get_fallback_database_uri()
 
 class Config:
-    """Base configuration class with enhanced database handling"""
+    """Base configuration class with enhanced database and static file handling"""
     
     # Basic Flask configuration
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
@@ -56,16 +58,46 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     JWT_ALGORITHM = 'HS256'
+    JWT_DECODE_LEEWAY = 10  # Allow 10 seconds of clock skew
+    
+    # ENHANCED FILE UPLOAD AND STATIC CONFIGURATION
+    BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    
+    # File storage paths with environment variable support
+    UPLOAD_FOLDER = os.path.abspath(os.environ.get('UPLOAD_FOLDER') or os.path.join(BASE_DIR, 'static', 'uploads'))
+    RESULTS_FOLDER = os.path.abspath(os.environ.get('RESULTS_FOLDER') or os.path.join(BASE_DIR, 'static', 'generated'))
+    PUBLIC_FOLDER = os.path.join(UPLOAD_FOLDER, 'public')
+    TEMP_FOLDER = os.path.join(BASE_DIR, 'temp')
     
     # File upload configuration
-    UPLOAD_FOLDER = os.path.abspath(os.environ.get('UPLOAD_FOLDER') or 'static/uploads')
-    RESULTS_FOLDER = os.path.abspath(os.environ.get('RESULTS_FOLDER') or 'static/generated')
     MAX_CONTENT_LENGTH = 32 * 1024 * 1024  # 32MB max file size
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'pdf'}
+    ALLOWED_MIME_TYPES = {
+        'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 
+        'image/bmp', 'image/tiff', 'application/pdf'
+    }
+    
+    # Static file serving configuration
+    STATIC_FOLDER = 'static'
+    STATIC_URL_PATH = '/static'
+    SEND_FILE_MAX_AGE_DEFAULT = 3600  # 1 hour cache for static files
+    
+    # Cache control settings for different file types
+    CACHE_CONTROL = {
+        'images': 'public, max-age=3600',      # 1 hour for images
+        'generated': 'private, max-age=1800',  # 30 minutes for generated files
+        'public': 'public, max-age=86400',     # 24 hours for public assets
+        'temp': 'no-cache, no-store'           # No cache for temp files
+    }
+    
+    # File organization settings
+    ORGANIZE_BY_COMPANY = True  # Organize uploads by company_id/project_id
+    MAX_FILES_PER_PROJECT = 20
+    MAX_FILE_SIZE_MB = 32
     
     # OpenAI Configuration
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-    OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-4-vision-preview')
+    OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-4o')
     OPENAI_MAX_TOKENS = int(os.environ.get('OPENAI_MAX_TOKENS', 4000))
     OPENAI_TEMPERATURE = float(os.environ.get('OPENAI_TEMPERATURE', 0.3))
     
@@ -161,10 +193,15 @@ class Config:
         }
     }
     
-    # CORS Configuration
-    CORS_ORIGINS = [origin.strip() for origin in os.environ.get('CORS_ORIGINS', 'http://localhost:5173').split(',')]
-    CORS_ALLOW_HEADERS = ['Content-Type', 'Authorization']
+    # ENHANCED CORS Configuration for static files
+    CORS_ORIGINS = [origin.strip() for origin in os.environ.get('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5173').split(',')]
+    CORS_ALLOW_HEADERS = [
+        'Content-Type', 'Authorization', 'X-Requested-With', 
+        'Accept', 'Origin', 'Cache-Control', 'X-File-Name'
+    ]
     CORS_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    CORS_EXPOSE_HEADERS = ['Authorization', 'Content-Range', 'X-Content-Range']
+    CORS_SUPPORTS_CREDENTIALS = True
     
     # Security Configuration
     WTF_CSRF_ENABLED = True
@@ -181,6 +218,10 @@ class Config:
     RATELIMIT_STORAGE_URL = os.environ.get('REDIS_URL', 'memory://')
     RATELIMIT_DEFAULT = '100 per hour'
     RATELIMIT_HEADERS_ENABLED = True
+    
+    # File-specific rate limits
+    RATELIMIT_UPLOAD = '10 per minute'
+    RATELIMIT_DOWNLOAD = '100 per minute'
     
     # Logging Configuration
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
@@ -204,11 +245,43 @@ class Config:
     # Task Queue Configuration (for background jobs)
     CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
     CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+    
+    @classmethod
+    def init_app(cls, app):
+        """Initialize application with configuration"""
+        # Create necessary directories
+        directories = [
+            cls.UPLOAD_FOLDER,
+            cls.RESULTS_FOLDER,
+            cls.PUBLIC_FOLDER,
+            cls.TEMP_FOLDER
+        ]
+        
+        for directory in directories:
+            try:
+                os.makedirs(directory, exist_ok=True)
+                app.logger.info(f"Created directory: {directory}")
+            except Exception as e:
+                app.logger.error(f"Failed to create directory {directory}: {e}")
+        
+        # Set up file permissions (Unix/Linux only)
+        try:
+            import stat
+            for directory in directories:
+                if os.path.exists(directory):
+                    os.chmod(directory, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+        except Exception:
+            pass  # Ignore on Windows or if permissions can't be set
 
 class DevelopmentConfig(Config):
-    """Development configuration"""
+    """Development configuration with enhanced debugging"""
     DEBUG = True
     TESTING = False
+    
+    # Development file paths
+    UPLOAD_FOLDER = os.path.join(Config.BASE_DIR, 'dev_uploads')
+    RESULTS_FOLDER = os.path.join(Config.BASE_DIR, 'dev_results')
+    PUBLIC_FOLDER = os.path.join(UPLOAD_FOLDER, 'public')
     
     # Enhanced logging for development
     SQLALCHEMY_ENGINE_OPTIONS = {
@@ -223,6 +296,18 @@ class DevelopmentConfig(Config):
     # Development-specific settings
     MAIL_SUPPRESS_SEND = True  # Don't actually send emails in development
     EXPLAIN_TEMPLATE_LOADING = True
+    
+    # Development CORS - allow all origins
+    CORS_ORIGINS = ['*']
+    
+    # Shorter cache times for development
+    CACHE_CONTROL = {
+        'images': 'no-cache',
+        'generated': 'no-cache',
+        'public': 'no-cache',
+        'temp': 'no-cache'
+    }
+    SEND_FILE_MAX_AGE_DEFAULT = 1  # 1 second cache in development
 
 class ProductionConfig(Config):
     """Production configuration with enhanced security"""
@@ -249,6 +334,19 @@ class ProductionConfig(Config):
     
     # Force HTTPS
     PREFERRED_URL_SCHEME = 'https'
+    
+    # Production file paths - use environment variables or absolute paths
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or '/app/static/uploads'
+    RESULTS_FOLDER = os.environ.get('RESULTS_FOLDER') or '/app/static/generated'
+    
+    # Longer cache times for production
+    SEND_FILE_MAX_AGE_DEFAULT = 86400  # 24 hours
+    
+    # Stricter CORS for production
+    CORS_ORIGINS = [
+        os.environ.get('FRONTEND_URL', 'https://yourdomain.com'),
+        'https://www.yourdomain.com'
+    ]
 
 class TestingConfig(Config):
     """Testing configuration"""
@@ -257,6 +355,11 @@ class TestingConfig(Config):
     
     # Use in-memory database for testing
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    
+    # Test file paths
+    UPLOAD_FOLDER = os.path.join(Config.BASE_DIR, 'test_uploads')
+    RESULTS_FOLDER = os.path.join(Config.BASE_DIR, 'test_results')
+    PUBLIC_FOLDER = os.path.join(UPLOAD_FOLDER, 'public')
     
     # Disable CSRF for testing
     WTF_CSRF_ENABLED = False
@@ -272,11 +375,19 @@ class TestingConfig(Config):
     
     # Use simple cache for testing
     CACHE_TYPE = 'simple'
+    
+    # No cache for testing
+    SEND_FILE_MAX_AGE_DEFAULT = 0
 
 class DockerConfig(ProductionConfig):
     """Docker-specific configuration"""
     
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'postgresql://paintquote_user:paintquote_password@db:5432/paint_quote_pro_db'
+    
+    # Docker file paths
+    UPLOAD_FOLDER = '/app/static/uploads'
+    RESULTS_FOLDER = '/app/static/generated'
+    PUBLIC_FOLDER = '/app/static/uploads/public'
 
 # Configuration dictionary
 config = {
@@ -291,3 +402,132 @@ def get_config(config_name=None):
     """Get configuration class by name"""
     config_name = config_name or os.environ.get('FLASK_ENV', 'development')
     return config.get(config_name, config['default'])
+
+# ==================== FILE UTILITY FUNCTIONS ====================
+
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    if not filename:
+        return False
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in Config.ALLOWED_EXTENSIONS
+
+def secure_filename_with_timestamp(filename):
+    """Create a secure filename with timestamp"""
+    if not filename:
+        return None
+    
+    # Get file extension
+    name, ext = os.path.splitext(secure_filename(filename))
+    
+    # Create timestamp
+    from datetime import datetime
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    # Create unique ID
+    unique_id = str(uuid.uuid4())[:8]
+    
+    # Combine parts
+    return f"{timestamp}_{unique_id}_{name}{ext}"
+
+def get_upload_path(filename, company_id=None, project_id=None, config_class=None):
+    """Generate upload file path"""
+    if not config_class:
+        config_class = Config
+    
+    base_path = config_class.UPLOAD_FOLDER
+    
+    if config_class.ORGANIZE_BY_COMPANY and company_id:
+        if project_id:
+            return os.path.join(base_path, str(company_id), str(project_id), filename)
+        else:
+            return os.path.join(base_path, str(company_id), filename)
+    else:
+        return os.path.join(base_path, filename)
+
+def get_upload_url(filename, company_id=None, project_id=None):
+    """Generate upload file URL"""
+    if Config.ORGANIZE_BY_COMPANY and company_id:
+        if project_id:
+            return f"/static/uploads/{company_id}/{project_id}/{filename}"
+        else:
+            return f"/static/uploads/{company_id}/{filename}"
+    else:
+        return f"/static/uploads/{filename}"
+
+def get_project_file_url(project_id, filename):
+    """Generate authenticated project file URL"""
+    return f"/api/projects/{project_id}/files/{filename}"
+
+def get_public_file_url(filename):
+    """Generate public file URL"""
+    return f"/api/files/public/{filename}"
+
+def get_results_path(filename, company_id=None, project_id=None, config_class=None):
+    """Generate results file path"""
+    if not config_class:
+        config_class = Config
+    
+    base_path = config_class.RESULTS_FOLDER
+    
+    if config_class.ORGANIZE_BY_COMPANY and company_id:
+        if project_id:
+            return os.path.join(base_path, str(company_id), str(project_id), filename)
+        else:
+            return os.path.join(base_path, str(company_id), filename)
+    else:
+        return os.path.join(base_path, filename)
+
+def cleanup_temp_files(max_age_hours=24):
+    """Clean up temporary files older than max_age_hours"""
+    import time
+    
+    temp_folder = Config.TEMP_FOLDER
+    if not os.path.exists(temp_folder):
+        return
+    
+    current_time = time.time()
+    max_age_seconds = max_age_hours * 3600
+    
+    for filename in os.listdir(temp_folder):
+        file_path = os.path.join(temp_folder, filename)
+        if os.path.isfile(file_path):
+            file_age = current_time - os.path.getmtime(file_path)
+            if file_age > max_age_seconds:
+                try:
+                    os.remove(file_path)
+                    logging.info(f"Cleaned up temp file: {filename}")
+                except Exception as e:
+                    logging.error(f"Failed to clean up temp file {filename}: {e}")
+
+def validate_file_type(file):
+    """Validate file type based on content, not just extension"""
+    if not hasattr(file, 'content_type'):
+        return False
+    
+    # Check MIME type
+    if file.content_type not in Config.ALLOWED_MIME_TYPES:
+        return False
+    
+    # Additional validation can be added here
+    # For example, checking file headers for image files
+    
+    return True
+
+def get_file_info(file_path):
+    """Get file information including size, type, etc."""
+    if not os.path.exists(file_path):
+        return None
+    
+    stat = os.stat(file_path)
+    _, ext = os.path.splitext(file_path)
+    
+    return {
+        'size': stat.st_size,
+        'size_mb': round(stat.st_size / (1024 * 1024), 2),
+        'extension': ext.lower(),
+        'created': stat.st_ctime,
+        'modified': stat.st_mtime,
+        'is_image': ext.lower() in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff'],
+        'is_pdf': ext.lower() == '.pdf'
+    }

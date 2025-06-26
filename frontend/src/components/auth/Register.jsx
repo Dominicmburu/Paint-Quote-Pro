@@ -66,7 +66,7 @@ const Register = () => {
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-purple-700">
+          <h2 className="mt-6 text-3xl font-bold text-slate-800">
             Start your free trial
           </h2>
           <p className="mt-2 text-sm text-gray-600">
@@ -87,7 +87,7 @@ const Register = () => {
 
             {/* Personal Information */}
             <div>
-              <h3 className="text-lg font-medium text-purple-700 mb-6 pb-2 border-b border-purple-100">
+              <h3 className="text-lg font-medium text-slate-800 mb-6 pb-2 border-b border-purple-100">
                 Personal Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -243,7 +243,7 @@ const Register = () => {
 
             {/* Company Information */}
             <div>
-              <h3 className="text-lg font-medium text-purple-700 mb-6 pb-2 border-b border-purple-100">
+              <h3 className="text-lg font-medium text-slate-800 mb-6 pb-2 border-b border-purple-100">
                 Company Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -369,7 +369,7 @@ const Register = () => {
 
             {/* VAT Information */}
             <div>
-              <h3 className="text-lg font-medium text-purple-700 mb-6 pb-2 border-b border-purple-100">
+              <h3 className="text-lg font-medium text-slate-800 mb-6 pb-2 border-b border-purple-100">
                 VAT Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -424,7 +424,7 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Start Free Trial
@@ -434,9 +434,9 @@ const Register = () => {
             <div className="text-center">
               <p className="text-xs text-gray-500">
                 By creating an account, you agree to our{' '}
-                <a href="#" className="text-purple-600 hover:text-purple-500">Terms of Service</a>
+                <a href="#" className="text-green-600 hover:text-green-500">Terms of Service</a>
                 {' '}and{' '}
-                <a href="#" className="text-purple-600 hover:text-purple-500">Privacy Policy</a>
+                <a href="#" className="text-green-600 hover:text-green-500">Privacy Policy</a>
               </p>
             </div>
           </form>

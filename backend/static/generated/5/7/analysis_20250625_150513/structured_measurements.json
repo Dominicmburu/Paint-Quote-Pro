@@ -1,0 +1,22 @@
+{
+    "rooms": [],
+    "interior_items": {
+        "doors": [],
+        "fixed_windows": [],
+        "turn_windows": [],
+        "radiators": [],
+        "skirting_boards": [],
+        "stairs": [],
+        "other_items": []
+    },
+    "exterior_items": {
+        "doors": [],
+        "fixed_windows": [],
+        "turn_windows": [],
+        "dormer_windows": [],
+        "fascia_boards": [],
+        "rain_pipe": [],
+        "other_items": []
+    },
+    "notes": "Generated from AI analysis"
+}

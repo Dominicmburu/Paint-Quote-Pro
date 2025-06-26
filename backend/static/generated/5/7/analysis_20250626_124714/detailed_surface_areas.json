@@ -1,0 +1,404 @@
+{
+    "surface_areas": {
+        "rooms": {
+            "- **Woonkamer ( Living Room": {
+                "floor_area_m2": 1.17,
+                "ceiling_area_m2": 1.17,
+                "wall_area_m2": 10.66,
+                "perimeter_m": 4.44,
+                "room_type": "living room",
+                "room_polygon": [
+                    [
+                        642,
+                        945
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        710,
+                        988
+                    ],
+                    [
+                        710,
+                        945
+                    ]
+                ],
+                "special_considerations": [
+                    "High-quality finish required for main living areas",
+                    "Consider primer for color changes",
+                    "Minimal disruption scheduling important"
+                ]
+            },
+            "- Type: Living Room": {
+                "floor_area_m2": 2.83,
+                "ceiling_area_m2": 2.83,
+                "wall_area_m2": 16.51,
+                "perimeter_m": 6.88,
+                "room_type": "living room",
+                "room_polygon": [
+                    [
+                        642,
+                        841
+                    ],
+                    [
+                        642,
+                        945
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        841
+                    ]
+                ],
+                "special_considerations": [
+                    "High-quality finish required for main living areas",
+                    "Consider primer for color changes",
+                    "Minimal disruption scheduling important"
+                ]
+            },
+            "Kitchen": {
+                "floor_area_m2": 276.49,
+                "ceiling_area_m2": 276.49,
+                "wall_area_m2": 158.69,
+                "perimeter_m": 94.46,
+                "room_type": "kitchen",
+                "room_polygon": [
+                    [
+                        50,
+                        150
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        50,
+                        1385
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        1033,
+                        1385
+                    ],
+                    [
+                        1033,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        988
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        473,
+                        150
+                    ],
+                    [
+                        50,
+                        150
+                    ]
+                ],
+                "special_considerations": [
+                    "Moisture-resistant paint required",
+                    "May have tiled areas reducing paintable surface",
+                    "Extra ventilation needed during painting"
+                ]
+            },
+            "- **Keuken ( Kitchen": {
+                "floor_area_m2": 60.29,
+                "ceiling_area_m2": 60.29,
+                "wall_area_m2": 72.64,
+                "perimeter_m": 43.24,
+                "room_type": "kitchen",
+                "room_polygon": [
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        642,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        841
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        945
+                    ],
+                    [
+                        710,
+                        988
+                    ],
+                    [
+                        839,
+                        988
+                    ],
+                    [
+                        839,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        845
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        651
+                    ],
+                    [
+                        878,
+                        704
+                    ],
+                    [
+                        1033,
+                        704
+                    ],
+                    [
+                        1033,
+                        506
+                    ]
+                ],
+                "special_considerations": [
+                    "Moisture-resistant paint required",
+                    "May have tiled areas reducing paintable surface",
+                    "Extra ventilation needed during painting"
+                ]
+            },
+            "Living Room": {
+                "floor_area_m2": 55.68,
+                "ceiling_area_m2": 55.68,
+                "wall_area_m2": 71.71,
+                "perimeter_m": 29.88,
+                "room_type": "living room",
+                "room_polygon": [
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        150
+                    ],
+                    [
+                        642,
+                        506
+                    ],
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        1033,
+                        506
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        1033,
+                        150
+                    ],
+                    [
+                        846,
+                        150
+                    ],
+                    [
+                        775,
+                        150
+                    ],
+                    [
+                        754,
+                        150
+                    ],
+                    [
+                        754,
+                        150
+                    ]
+                ],
+                "special_considerations": [
+                    "High-quality finish required for main living areas",
+                    "Consider primer for color changes",
+                    "Minimal disruption scheduling important"
+                ]
+            },
+            "- ** Bathroom": {
+                "floor_area_m2": 0.0,
+                "ceiling_area_m2": 0.0,
+                "wall_area_m2": 2.89,
+                "perimeter_m": 1.72,
+                "room_type": "bathroom",
+                "room_polygon": [
+                    [
+                        846,
+                        150
+                    ],
+                    [
+                        889,
+                        150
+                    ],
+                    [
+                        846,
+                        150
+                    ]
+                ],
+                "special_considerations": [
+                    "Moisture-resistant paint required",
+                    "May have tiled areas reducing paintable surface",
+                    "Extra ventilation needed during painting"
+                ]
+            }
+        },
+        "totals": {
+            "total_floor_area_m2": 396.46,
+            "total_ceiling_area_m2": 396.46,
+            "total_wall_area_m2": 333.1,
+            "total_rooms": 6
+        },
+        "scale_factor": 0.02,
+        "constants": {
+            "wall_height_m": 2.4,
+            "ceiling_height_m": 2.4
+        },
+        "analysis_source": "hybrid_gpt_detection"
+    },
+    "timestamp": "2025-06-26T12:48:15.175457",
+    "analysis_method": "Enhanced GPT-4 Vision + Gradio API"
+}

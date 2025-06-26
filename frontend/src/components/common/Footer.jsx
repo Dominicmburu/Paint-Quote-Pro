@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <Palette className="h-8 w-8 text-yellow-400" />
+              <Palette className="h-8 w-8 text-teal-400" />
               <span className="text-2xl font-bold">Paint Quote Pro</span>
             </div>
             <p className="text-gray-300 mb-4 max-w-md">

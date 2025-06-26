@@ -1,48 +1,95 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
-  ArrowLeft,
-  Edit,
-  Plus,
-  Trash2,
-  FileText,
-  Calculator,
-  Home,
-  Building,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Download,
-  Send,
-  Save,
-  RotateCcw
+  ArrowLeft, Edit, Plus, Trash2, FileText, Calculator, Home, Building,
+  User, Mail, Phone, MapPin, Download, Send, Save, RotateCcw, Upload,
+  X, Eye, Brain, Play, RefreshCw, AlertCircle, FileImage, CheckCircle,
+  Clock, Layers, Square, Paintbrush2, Info, DollarSign
 } from 'lucide-react';
 import api from '../../services/api';
 import Loading from '../common/Loading';
+
+// Enhanced Image Component with Fallback URLs
+const ImageWithFallback = ({ urls, alt, className, fallbackIcon }) => {
+  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
+  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleError = () => {
+    if (currentUrlIndex < urls.length - 1) {
+      setCurrentUrlIndex(currentUrlIndex + 1);
+      setIsLoading(true);
+    } else {
+      setHasError(true);
+      setIsLoading(false);
+    }
+  };
+
+  const handleLoad = () => {
+    setIsLoading(false);
+    setHasError(false);
+  };
+
+  // Reset when URLs change
+  useEffect(() => {
+    setCurrentUrlIndex(0);
+    setHasError(false);
+    setIsLoading(true);
+  }, [urls]);
+
+  if (hasError) {
+    return (
+      <div className={`${className} flex items-center justify-center bg-gray-100`}>
+        <div className="text-center">
+          {fallbackIcon}
+          <p className="text-xs text-gray-500 mt-1">Image unavailable</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      {isLoading && (
+        <div className={`${className} flex items-center justify-center bg-gray-100 absolute inset-0`}>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600"></div>
+        </div>
+      )}
+      <img
+        src={urls[currentUrlIndex]}
+        alt={alt}
+        className={className}
+        onError={handleError}
+        onLoad={handleLoad}
+        style={{ display: isLoading ? 'none' : 'block' }}
+      />
+    </div>
+  );
+};
 
 const ProjectDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // State management
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Calculator state
-  const [surfaceMeasurements, setSurfaceMeasurements] = useState({
-    walls: [],
-    ceilings: [],
-    otherSurfaces: []
-  });
-
+  // Enhanced room-based measurements state
+  const [rooms, setRooms] = useState([]);
+  
+  // Enhanced interior and exterior items state
   const [interiorItems, setInteriorItems] = useState({
+    doors: [],
     fixedWindows: [],
     turnWindows: [],
-    doors: [],
     stairs: [],
     radiators: [],
     skirtingBoards: [],
@@ -50,9 +97,9 @@ const ProjectDetails = () => {
   });
 
   const [exteriorItems, setExteriorItems] = useState({
+    doors: [],
     fixedWindows: [],
     turnWindows: [],
-    doors: [],
     dormerWindows: [],
     fasciaBoards: [],
     rainPipe: [],
@@ -62,225 +109,553 @@ const ProjectDetails = () => {
   const [notes, setNotes] = useState('');
   const [totalCost, setTotalCost] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
+  const [priceBreakdown, setPriceBreakdown] = useState({
+    roomTotals: {},
+    interiorTotal: 0,
+    exteriorTotal: 0,
+    cleanupFee: 0
+  });
 
-  // Pricing configuration
+  // Enhanced pricing configuration with clear descriptions
   const pricing = {
-    wallPaint: 12.50, // per m²
-    ceilingPaint: 10.00, // per m²
-    preparation: 8.00, // per m²
-    fixedWindows: 45.00, // per window
-    turnWindows: 55.00, // per window
-    doors: 85.00, // per door
-    stairs: 25.00, // per step
-    radiators: 35.00, // per radiator
-    skirtingBoards: 12.00, // per meter
-    dormerWindows: 120.00, // per window
-    fasciaBoards: 18.00, // per meter
-    rainPipe: 15.00 // per meter
+    walls: {
+      sanding: { 
+        light: { price: 5.00, description: 'Light sanding - minor imperfections' },
+        medium: { price: 8.00, description: 'Medium sanding - moderate preparation' },
+        heavy: { price: 12.00, description: 'Heavy sanding - extensive preparation' }
+      },
+      priming: { 
+        one_coat: { price: 4.50, description: 'Single primer coat' },
+        two_coat: { price: 7.00, description: 'Double primer coat - better coverage' }
+      },
+      painting: { 
+        one_coat: { price: 6.00, description: 'Single paint coat' },
+        two_coat: { price: 9.50, description: 'Double paint coat - standard finish' },
+        three_coat: { price: 13.00, description: 'Triple paint coat - premium finish' }
+      }
+    },
+    ceiling: {
+      preparation: { 
+        light: { price: 4.00, description: 'Light ceiling prep' },
+        medium: { price: 7.00, description: 'Medium ceiling prep' },
+        heavy: { price: 11.00, description: 'Heavy ceiling prep' }
+      },
+      painting: { 
+        one_coat: { price: 5.50, description: 'Single ceiling coat' },
+        two_coat: { price: 8.50, description: 'Double ceiling coat' }
+      }
+    },
+    interior: {
+      doors: {
+        easy_prep: { price: 75.00, description: 'Easy preparation' },
+        medium_prep: { price: 85.00, description: 'Medium preparation' },
+        heavy_prep: { price: 100.00, description: 'Heavy preparation' }
+      },
+      fixedWindows: {
+        small: { price: 35.00, description: 'Small window' },
+        medium: { price: 45.00, description: 'Medium window' },
+        big: { price: 60.00, description: 'Big window' }
+      },
+      turnWindows: {
+        small: { price: 45.00, description: 'Small turn window' },
+        medium: { price: 55.00, description: 'Medium turn window' },
+        big: { price: 70.00, description: 'Big turn window' }
+      },
+      stairs: { price: 25.00, description: 'Stair painting per step' },
+      radiators: { price: 35.00, description: 'Radiator painting' },
+      skirtingBoards: { price: 12.00, description: 'Skirting board per meter' },
+      otherItems: { price: 10.00, description: 'Other interior items' }
+    },
+    exterior: {
+      doors: {
+        easy_prep: { price: 110.00, description: 'Easy preparation' },
+        medium_prep: { price: 120.00, description: 'Medium preparation' },
+        heavy_prep: { price: 140.00, description: 'Heavy preparation' }
+      },
+      fixedWindows: {
+        small: { price: 55.00, description: 'Small window' },
+        medium: { price: 65.00, description: 'Medium window' },
+        big: { price: 80.00, description: 'Big window' }
+      },
+      turnWindows: {
+        small: { price: 65.00, description: 'Small turn window' },
+        medium: { price: 75.00, description: 'Medium turn window' },
+        big: { price: 90.00, description: 'Big turn window' }
+      },
+      dormerWindows: {
+        small: { price: 110.00, description: 'Small dormer window' },
+        medium: { price: 120.00, description: 'Medium dormer window' },
+        big: { price: 140.00, description: 'Big dormer window' }
+      },
+      fasciaBoards: { price: 18.00, description: 'Fascia board per meter' },
+      rainPipe: { price: 15.00, description: 'Rain pipe per meter' },
+      otherItems: { price: 15.00, description: 'Other exterior items' }
+    },
+    additional: {
+      cleanup_fee: 150.00,
+      materials_markup: 0.15
+    }
+  };
+
+  // Get price info for display
+  const getPriceInfo = (category, type, level) => {
+    try {
+      if (category === 'walls' || category === 'ceiling') {
+        return pricing[category][type][level] || { price: 0, description: 'Unknown' };
+      } else if ((category === 'interior' || category === 'exterior') && 
+                 (type === 'doors' || type === 'fixedWindows' || type === 'turnWindows' || type === 'dormerWindows')) {
+        // For doors and windows that have sub-options
+        if (level) {
+          return pricing[category][type][level] || { price: 0, description: 'Unknown' };
+        } else {
+          // Return default option if no level specified
+          const defaultLevel = type === 'doors' ? 'medium_prep' : 'medium';
+          return pricing[category][type][defaultLevel] || { price: 0, description: 'Unknown' };
+        }
+      } else {
+        return pricing[category][type] || { price: 0, description: 'Unknown' };
+      }
+    } catch (e) {
+      return { price: 0, description: 'Unknown' };
+    }
   };
 
   useEffect(() => {
     loadProject();
   }, [id]);
 
-  useEffect(() => {
-    calculateTotalCost();
-  }, [surfaceMeasurements, interiorItems, exteriorItems]);
-
-  const loadProject = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get(`/projects/${id}`);
-      const projectData = response.data.project;
-      setProject(projectData);
-
-      // Load existing manual measurements if available
-      if (projectData.manual_measurements) {
-        const measurements = projectData.manual_measurements;
-
-        // Load surface measurements
-        if (measurements.surfaceMeasurements) {
-          setSurfaceMeasurements(measurements.surfaceMeasurements);
-        }
-
-        // Load interior items
-        if (measurements.interiorItems) {
-          setInteriorItems(measurements.interiorItems);
-        }
-
-        // Load exterior items  
-        if (measurements.exteriorItems) {
-          setExteriorItems(measurements.exteriorItems);
-        }
-
-        // Load notes
-        if (measurements.notes) {
-          setNotes(measurements.notes);
-        }
-
-        // Legacy support: Convert old room format if present
-        if (measurements.rooms && !measurements.surfaceMeasurements) {
-          const walls = [];
-          const ceilings = [];
-          measurements.rooms.forEach((room, roomIndex) => {
-            if (room.walls) {
-              room.walls.forEach((wall, wallIndex) => {
-                walls.push({
-                  id: `${roomIndex}-${wallIndex}`,
-                  length: wall.length || 0,
-                  height: wall.height || 0,
-                  area: wall.area || 0,
-                  roomName: room.name || `Room ${roomIndex + 1}`
-                });
-              });
-            }
-            if (room.ceiling) {
-              ceilings.push({
-                id: `ceiling-${roomIndex}`,
-                width: Math.sqrt(room.ceiling.area || 0),
-                length: Math.sqrt(room.ceiling.area || 0),
-                area: room.ceiling.area || 0,
-                roomName: room.name || `Room ${roomIndex + 1}`
-              });
-            }
-          });
-          setSurfaceMeasurements(prev => ({ ...prev, walls, ceilings }));
-        }
-
-        setNotes(measurements.notes || '');
-      }
-    } catch (err) {
-      setError('Failed to load project details');
-      console.error('Error loading project:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const calculateTotalCost = () => {
+  // Enhanced calculation that triggers on any change
+  const calculateTotalCost = useCallback(() => {
     let total = 0;
+    const breakdown = {
+      roomTotals: {},
+      interiorTotal: 0,
+      exteriorTotal: 0,
+      cleanupFee: 0
+    };
 
-    // Calculate surface costs
-    const totalWallArea = surfaceMeasurements.walls.reduce((sum, wall) => sum + wall.area, 0);
-    const totalCeilingArea = surfaceMeasurements.ceilings.reduce((sum, ceiling) => sum + ceiling.area, 0);
-    const totalOtherArea = surfaceMeasurements.otherSurfaces.reduce((sum, surface) => sum + surface.area, 0);
+    // Calculate room costs
+    rooms.forEach(room => {
+      let roomTotal = 0;
+      
+      (room.walls || []).forEach(wall => {
+        const wallArea = parseFloat(wall.area) || 0;
+        
+        if (wall.sanding_level && pricing.walls.sanding[wall.sanding_level]) {
+          const cost = wallArea * pricing.walls.sanding[wall.sanding_level].price;
+          roomTotal += cost;
+          total += cost;
+        }
+        
+        if (wall.priming_coats && pricing.walls.priming[wall.priming_coats]) {
+          const cost = wallArea * pricing.walls.priming[wall.priming_coats].price;
+          roomTotal += cost;
+          total += cost;
+        }
+        
+        if (wall.painting_coats && pricing.walls.painting[wall.painting_coats]) {
+          const cost = wallArea * pricing.walls.painting[wall.painting_coats].price;
+          roomTotal += cost;
+          total += cost;
+        }
+      });
 
-    total += totalWallArea * pricing.wallPaint;
-    total += totalCeilingArea * pricing.ceilingPaint;
-    total += (totalWallArea + totalCeilingArea + totalOtherArea) * pricing.preparation;
+      if (room.ceiling && (parseFloat(room.ceiling.area) || 0) > 0) {
+        const ceilingArea = parseFloat(room.ceiling.area) || 0;
+        
+        if (room.ceiling.preparation_level && pricing.ceiling.preparation[room.ceiling.preparation_level]) {
+          const cost = ceilingArea * pricing.ceiling.preparation[room.ceiling.preparation_level].price;
+          roomTotal += cost;
+          total += cost;
+        }
+        
+        if (room.ceiling.painting_coats && pricing.ceiling.painting[room.ceiling.painting_coats]) {
+          const cost = ceilingArea * pricing.ceiling.painting[room.ceiling.painting_coats].price;
+          roomTotal += cost;
+          total += cost;
+        }
+      }
+
+      if (room.otherSurfaces && (parseFloat(room.otherSurfaces.area) || 0) > 0) {
+        const otherSurfaceArea = parseFloat(room.otherSurfaces.area) || 0;
+        const cost = otherSurfaceArea * pricing.interior.otherItems.price;
+        roomTotal += cost;
+        total += cost;
+      }
+
+      breakdown.roomTotals[room.name] = roomTotal;
+    });
 
     // Calculate interior items cost
     Object.keys(interiorItems).forEach(type => {
       interiorItems[type].forEach(item => {
-        total += item.quantity * (pricing[type] || 0);
+        const option = item.option;
+        const priceInfo = getPriceInfo('interior', type, option);
+        const cost = (parseFloat(item.quantity) || 0) * priceInfo.price;
+        breakdown.interiorTotal += cost;
+        total += cost;
       });
     });
 
     // Calculate exterior items cost
     Object.keys(exteriorItems).forEach(type => {
       exteriorItems[type].forEach(item => {
-        total += item.quantity * (pricing[type] || 0);
+        const option = item.option;
+        const priceInfo = getPriceInfo('exterior', type, option);
+        const cost = (parseFloat(item.quantity) || 0) * priceInfo.price;
+        breakdown.exteriorTotal += cost;
+        total += cost;
       });
     });
 
+    // Add cleanup fee if there are any items
+    const hasItems = rooms.length > 0 || 
+                    Object.values(interiorItems).some(items => items.length > 0) ||
+                    Object.values(exteriorItems).some(items => items.length > 0);
+    
+    if (hasItems) {
+      breakdown.cleanupFee = pricing.additional.cleanup_fee;
+      total += breakdown.cleanupFee;
+    }
+
     setTotalCost(total);
-  };
+    setPriceBreakdown(breakdown);
+  }, [rooms, interiorItems, exteriorItems]);
 
-  // Surface measurement functions
-  const addWall = () => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      walls: [...prev.walls, { id: Date.now(), length: 0, height: 0, area: 0 }]
-    }));
-  };
+  // Trigger calculation whenever dependencies change
+  useEffect(() => {
+    calculateTotalCost();
+  }, [calculateTotalCost]);
 
-  const addCeiling = () => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      ceilings: [...prev.ceilings, { id: Date.now(), width: 0, length: 0, area: 0 }]
-    }));
-  };
-
-  const addOtherSurface = () => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      otherSurfaces: [...prev.otherSurfaces, { id: Date.now(), description: '', area: 0 }]
-    }));
-  };
-
-  const updateWall = (id, field, value) => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      walls: prev.walls.map(wall => {
-        if (wall.id === id) {
-          const updated = { ...wall, [field]: parseFloat(value) || 0 };
-          updated.area = updated.length * updated.height;
-          return updated;
+  const loadProject = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(`/projects/${id}`);
+            
+      const data = response.data.project;
+      console.log('Project data:', data);
+      setProject(data);
+      
+      // Load existing measurements if available
+      if (data.manual_measurements) {
+        const measurements = data.manual_measurements;
+        
+        if (measurements.rooms) {
+          setRooms(measurements.rooms);
         }
-        return wall;
-      })
-    }));
-  };
 
-  const updateCeiling = (id, field, value) => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      ceilings: prev.ceilings.map(ceiling => {
-        if (ceiling.id === id) {
-          const updated = { ...ceiling, [field]: parseFloat(value) || 0 };
-          updated.area = updated.width * updated.length;
-          return updated;
+        if (measurements.interiorItems) {
+          setInteriorItems(measurements.interiorItems);
         }
-        return ceiling;
-      })
-    }));
-  };
 
-  const updateOtherSurface = (id, field, value) => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      otherSurfaces: prev.otherSurfaces.map(surface => {
-        if (surface.id === id) {
-          return { ...surface, [field]: field === 'area' ? (parseFloat(value) || 0) : value };
+        if (measurements.exteriorItems) {
+          setExteriorItems(measurements.exteriorItems);
         }
-        return surface;
-      })
-    }));
+        
+        if (measurements.notes) {
+          setNotes(measurements.notes);
+        }
+      }
+
+      // Load AI analysis results if available with enhanced processing
+      if (data.floor_plan_analysis && data.floor_plan_analysis.structured_measurements) {
+        const structuredMeasurements = data.floor_plan_analysis.structured_measurements;
+        
+        // Only populate if current measurements are empty to avoid duplication
+        if (rooms.length === 0 && structuredMeasurements.rooms && structuredMeasurements.rooms.length > 0) {
+          setRooms(structuredMeasurements.rooms);
+        }
+        
+        if (Object.values(interiorItems).every(items => items.length === 0) && structuredMeasurements.interior_items) {
+          setInteriorItems(structuredMeasurements.interior_items);
+        }
+        
+        if (Object.values(exteriorItems).every(items => items.length === 0) && structuredMeasurements.exterior_items) {
+          setExteriorItems(structuredMeasurements.exterior_items);
+        }
+        
+        if (!notes && structuredMeasurements.notes) {
+          setNotes(structuredMeasurements.notes);
+        }
+      }
+      
+    } catch (err) {
+      setError(err.message || 'Failed to load project details');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeWall = (id) => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      walls: prev.walls.filter(wall => wall.id !== id)
-    }));
+  const handleFileUpload = async (files) => {
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    setUploadProgress(0);
+    setError('');
+    
+    try {
+      const formData = new FormData();
+      Array.from(files).forEach(file => {
+        formData.append('files', file);
+      });
+
+      const response = await api.post(`/projects/${id}/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(progress);
+        }
+      });
+
+      await loadProject();
+      setError('');
+    } catch (err) {
+      setError(err.message || 'Failed to upload files');
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
   };
 
-  const removeCeiling = (id) => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      ceilings: prev.ceilings.filter(ceiling => ceiling.id !== id)
-    }));
+  const performAIAnalysis = async () => {
+    if (!project?.uploaded_images || project.uploaded_images.length === 0) {
+      setError('Please upload floor plan images first');
+      return;
+    }
+
+    setAnalyzing(true);
+    setError('');
+
+    try {
+      const response = await api.post(`/projects/${id}/analyze`, {});
+
+      const data = response.data;
+      
+      // Update project with enhanced analysis results
+      setProject(prev => ({ 
+        ...prev, 
+        floor_plan_analysis: data.analysis,
+        status: 'ready'
+      }));
+      
+      // Process enhanced structured measurements from AI analysis
+      if (data.analysis && data.analysis.structured_measurements) {
+        const structuredMeasurements = data.analysis.structured_measurements;
+        
+        // Only populate if current measurements are empty to avoid duplication
+        if (rooms.length === 0) {
+          setRooms(structuredMeasurements.rooms || []);
+        }
+        
+        if (Object.values(interiorItems).every(items => items.length === 0)) {
+          setInteriorItems(structuredMeasurements.interior_items || {
+            doors: [], fixedWindows: [], turnWindows: [], stairs: [],
+            radiators: [], skirtingBoards: [], otherItems: []
+          });
+        }
+        
+        if (Object.values(exteriorItems).every(items => items.length === 0)) {
+          setExteriorItems(structuredMeasurements.exterior_items || {
+            doors: [], fixedWindows: [], turnWindows: [], dormerWindows: [],
+            fasciaBoards: [], rainPipe: [], otherItems: []
+          });
+        }
+        
+        if (!notes && structuredMeasurements.notes) {
+          setNotes(structuredMeasurements.notes);
+        }
+      }
+      
+      setError('');
+    } catch (err) {
+      setError(err.message || 'AI analysis failed. Please try again.');
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
-  const removeOtherSurface = (id) => {
-    setSurfaceMeasurements(prev => ({
-      ...prev,
-      otherSurfaces: prev.otherSurfaces.filter(surface => surface.id !== id)
-    }));
+  // Enhanced room management functions
+  const addRoom = () => {
+    const newRoom = {
+      id: Date.now(),
+      name: `Room ${rooms.length + 1}`,
+      walls: [],
+      ceiling: null,
+      otherSurfaces: null,
+      additionalItems: []
+    };
+    setRooms([...rooms, newRoom]);
   };
 
-  // Interior/Exterior item functions
+  const updateRoom = (roomId, field, value) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId ? { ...room, [field]: value } : room
+    ));
+  };
+
+  const removeRoom = (roomId) => {
+    setRooms(rooms.filter(room => room.id !== roomId));
+  };
+
+  // Enhanced wall management functions with automatic area calculation
+  const addWallToRoom = (roomId) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId 
+        ? { 
+            ...room, 
+            walls: [...(room.walls || []), {
+              id: Date.now(),
+              name: `Wall ${(room.walls || []).length + 1}`,
+              length: 0,
+              height: 2.4,
+              area: 0,
+              sanding_level: 'light',
+              priming_coats: 'one_coat',
+              painting_coats: 'two_coat'
+            }]
+          }
+        : room
+    ));
+  };
+
+  const updateWallInRoom = (roomId, wallId, field, value) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId 
+        ? {
+            ...room,
+            walls: (room.walls || []).map(wall => {
+              if (wall.id === wallId) {
+                const updated = { ...wall, [field]: value };
+                
+                // Auto-calculate area when length or height changes
+                if (field === 'length' || field === 'height') {
+                  const length = parseFloat(field === 'length' ? value : updated.length) || 0;
+                  const height = parseFloat(field === 'height' ? value : updated.height) || 0;
+                  updated.area = (length * height).toFixed(2);
+                }
+                
+                return updated;
+              }
+              return wall;
+            })
+          }
+        : room
+    ));
+  };
+
+  const removeWallFromRoom = (roomId, wallId) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId 
+        ? { ...room, walls: (room.walls || []).filter(wall => wall.id !== wallId) }
+        : room
+    ));
+  };
+
+  // Enhanced ceiling management functions with automatic area calculation
+  const addCeilingToRoom = (roomId) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId 
+        ? { 
+            ...room, 
+            ceiling: {
+              width: 0,
+              length: 0,
+              area: 0,
+              preparation_level: 'light',
+              painting_coats: 'one_coat'
+            }
+          }
+        : room
+    ));
+  };
+
+  const updateCeilingInRoom = (roomId, field, value) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId 
+        ? { 
+            ...room, 
+            ceiling: { 
+              ...room.ceiling, 
+              [field]: value,
+              area: field === 'width' || field === 'length' ? 
+                ((field === 'width' ? parseFloat(value) : parseFloat(room.ceiling.width)) || 0) * 
+                ((field === 'length' ? parseFloat(value) : parseFloat(room.ceiling.length)) || 0) :
+                room.ceiling.area
+            }
+          }
+        : room
+    ));
+  };
+
+  const removeCeilingFromRoom = (roomId) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId ? { ...room, ceiling: null } : room
+    ));
+  };
+
+  // Other surfaces management with automatic calculation
+  const addOtherSurfaceToRoom = (roomId) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId 
+        ? { 
+            ...room, 
+            otherSurfaces: {
+              id: Date.now(),
+              description: '',
+              area: 0
+            }
+          }
+        : room
+    ));
+  };
+
+  const updateOtherSurfaceInRoom = (roomId, field, value) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId 
+        ? { 
+            ...room, 
+            otherSurfaces: { 
+              ...room.otherSurfaces, 
+              [field]: field === 'description' ? value : (parseFloat(value) || 0)
+            }
+          }
+        : room
+    ));
+  };
+
+  const removeOtherSurfaceFromRoom = (roomId) => {
+    setRooms(rooms.map(room => 
+      room.id === roomId ? { ...room, otherSurfaces: null } : room
+    ));
+  };
+
+  // Enhanced interior items management with automatic cost calculation
   const addInteriorItem = (type) => {
+    const getDefaultOption = (itemType) => {
+      if (itemType === 'doors') return 'medium_prep';
+      if (itemType === 'fixedWindows' || itemType === 'turnWindows') return 'medium';
+      return null;
+    };
+
+    const defaultOption = getDefaultOption(type);
+    const priceInfo = getPriceInfo('interior', type, defaultOption);
+
+    const newItem = { 
+      id: Date.now(), 
+      quantity: 1, 
+      description: '', 
+      cost: priceInfo.price
+    };
+
+    if (defaultOption) {
+      newItem.option = defaultOption;
+    }
+
     setInteriorItems(prev => ({
       ...prev,
-      [type]: [...prev[type], { id: Date.now(), quantity: 1, description: '', cost: 0 }]
-    }));
-  };
-
-  const addExteriorItem = (type) => {
-    setExteriorItems(prev => ({
-      ...prev,
-      [type]: [...prev[type], { id: Date.now(), quantity: 1, description: '', cost: 0 }]
+      [type]: [...prev[type], newItem]
     }));
   };
 
@@ -289,25 +664,14 @@ const ProjectDetails = () => {
       ...prev,
       [type]: prev[type].map(item => {
         if (item.id === id) {
-          const updated = { ...item, [field]: field === 'quantity' ? (parseInt(value) || 0) : value };
-          if (field === 'quantity') {
-            updated.cost = updated.quantity * (pricing[type] || 0);
-          }
-          return updated;
-        }
-        return item;
-      })
-    }));
-  };
-
-  const updateExteriorItem = (type, id, field, value) => {
-    setExteriorItems(prev => ({
-      ...prev,
-      [type]: prev[type].map(item => {
-        if (item.id === id) {
-          const updated = { ...item, [field]: field === 'quantity' ? (parseInt(value) || 0) : value };
-          if (field === 'quantity') {
-            updated.cost = updated.quantity * (pricing[type] || 0);
+          const updated = { ...item, [field]: value };
+          if (field === 'quantity' || field === 'option') {
+            const quantity = parseFloat(field === 'quantity' ? value : updated.quantity) || 0;
+            const option = field === 'option' ? value : updated.option;
+            const priceInfo = getPriceInfo('interior', type, option);
+            updated.quantity = quantity;
+            updated.cost = quantity * priceInfo.price;
+            if (field === 'option') updated.option = option;
           }
           return updated;
         }
@@ -323,6 +687,55 @@ const ProjectDetails = () => {
     }));
   };
 
+  // Enhanced exterior items management with automatic cost calculation
+  const addExteriorItem = (type) => {
+    const getDefaultOption = (itemType) => {
+      if (itemType === 'doors') return 'medium_prep';
+      if (itemType === 'fixedWindows' || itemType === 'turnWindows' || itemType === 'dormerWindows') return 'medium';
+      return null;
+    };
+
+    const defaultOption = getDefaultOption(type);
+    const priceInfo = getPriceInfo('exterior', type, defaultOption);
+
+    const newItem = { 
+      id: Date.now(), 
+      quantity: 1, 
+      description: '', 
+      cost: priceInfo.price
+    };
+
+    if (defaultOption) {
+      newItem.option = defaultOption;
+    }
+
+    setExteriorItems(prev => ({
+      ...prev,
+      [type]: [...prev[type], newItem]
+    }));
+  };
+
+  const updateExteriorItem = (type, id, field, value) => {
+    setExteriorItems(prev => ({
+      ...prev,
+      [type]: prev[type].map(item => {
+        if (item.id === id) {
+          const updated = { ...item, [field]: value };
+          if (field === 'quantity' || field === 'option') {
+            const quantity = parseFloat(field === 'quantity' ? value : updated.quantity) || 0;
+            const option = field === 'option' ? value : updated.option;
+            const priceInfo = getPriceInfo('exterior', type, option);
+            updated.quantity = quantity;
+            updated.cost = quantity * priceInfo.price;
+            if (field === 'option') updated.option = option;
+          }
+          return updated;
+        }
+        return item;
+      })
+    }));
+  };
+
   const removeExteriorItem = (type, id) => {
     setExteriorItems(prev => ({
       ...prev,
@@ -330,160 +743,182 @@ const ProjectDetails = () => {
     }));
   };
 
-  // Save measurements to backend
   const saveMeasurements = async () => {
     try {
       setSaving(true);
-      const measurementData = {
-        surfaceMeasurements,
+      const measurementData = { 
+        rooms, 
         interiorItems,
         exteriorItems,
-        notes,
-        totalCost
+        notes, 
+        totalCost 
       };
 
-      await api.post(`/projects/${id}/manual-measurements`, measurementData);
+      const response = await api.post(`/projects/${id}/manual-measurements`, measurementData);
 
-      // Update project status if this is the first data entry
       if (project.status === 'draft') {
         setProject(prev => ({ ...prev, status: 'ready' }));
       }
 
-      // Show success message
       setError('');
-      alert('Measurements saved successfully!');
+      // Show success message
+      const successDiv = document.createElement('div');
+      successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+      successDiv.textContent = 'Measurements saved successfully!';
+      document.body.appendChild(successDiv);
+      setTimeout(() => document.body.removeChild(successDiv), 3000);
     } catch (err) {
-      console.error('Save measurements error:', err);
-      setError(err.response?.data?.error || 'Failed to save measurements');
+      setError(err.message || 'Failed to save measurements');
     } finally {
       setSaving(false);
     }
   };
 
-  // Generate quote with email
-  // Generate quote with email
   const generateQuote = async () => {
     try {
       setGenerating(true);
       setError('');
 
-      // Validate that we have measurements
-      const totalWallArea = surfaceMeasurements.walls.reduce((sum, wall) => sum + wall.area, 0);
-      const totalCeilingArea = surfaceMeasurements.ceilings.reduce((sum, ceiling) => sum + ceiling.area, 0);
+      const hasRoomMeasurements = rooms.length > 0;
       const hasInteriorItems = Object.values(interiorItems).some(items => items.length > 0);
       const hasExteriorItems = Object.values(exteriorItems).some(items => items.length > 0);
 
-      if (totalWallArea === 0 && totalCeilingArea === 0 && !hasInteriorItems && !hasExteriorItems) {
+      if (!hasRoomMeasurements && !hasInteriorItems && !hasExteriorItems) {
         setError('Please add some measurements before generating a quote');
         return;
       }
 
-      // First, save the measurements to ensure project status is updated
-      const measurementData = {
-        surfaceMeasurements,
-        interiorItems,
-        exteriorItems,
-        notes,
-        totalCost
-      };
-
-      try {
-        await api.post(`/projects/${id}/manual-measurements`, measurementData);
-      } catch (saveError) {
-        console.warn('Failed to save measurements before quote generation:', saveError);
-        // Continue with quote generation even if save fails
-      }
-
-      // Prepare line items for the quote
       const lineItems = [];
 
-      // Add surface area items
-      if (totalWallArea > 0) {
-        lineItems.push({
-          description: 'Wall Painting',
-          quantity: totalWallArea,
-          unit: 'm²',
-          unit_price: pricing.wallPaint,
-          total: totalWallArea * pricing.wallPaint
+      // Process rooms with enhanced room-based organization
+      rooms.forEach(room => {
+        (room.walls || []).forEach(wall => {
+          const wallArea = parseFloat(wall.area) || 0;
+          if (wallArea > 0) {
+            if (wall.sanding_level) {
+              const priceInfo = getPriceInfo('walls', 'sanding', wall.sanding_level);
+              lineItems.push({
+                description: `${room.name} - ${wall.name} - Sanding (${wall.sanding_level})`,
+                quantity: wallArea,
+                unit: 'm²',
+                unit_price: priceInfo.price,
+                total: wallArea * priceInfo.price
+              });
+            }
+            if (wall.priming_coats) {
+              const priceInfo = getPriceInfo('walls', 'priming', wall.priming_coats);
+              lineItems.push({
+                description: `${room.name} - ${wall.name} - Priming (${wall.priming_coats})`,
+                quantity: wallArea,
+                unit: 'm²',
+                unit_price: priceInfo.price,
+                total: wallArea * priceInfo.price
+              });
+            }
+            if (wall.painting_coats) {
+              const priceInfo = getPriceInfo('walls', 'painting', wall.painting_coats);
+              lineItems.push({
+                description: `${room.name} - ${wall.name} - Painting (${wall.painting_coats})`,
+                quantity: wallArea,
+                unit: 'm²',
+                unit_price: priceInfo.price,
+                total: wallArea * priceInfo.price
+              });
+            }
+          }
         });
 
-        lineItems.push({
-          description: 'Wall Preparation',
-          quantity: totalWallArea,
-          unit: 'm²',
-          unit_price: pricing.preparation,
-          total: totalWallArea * pricing.preparation
-        });
-      }
+        if (room.ceiling && (parseFloat(room.ceiling.area) || 0) > 0) {
+          const ceilingArea = parseFloat(room.ceiling.area) || 0;
+          if (room.ceiling.preparation_level) {
+            const priceInfo = getPriceInfo('ceiling', 'preparation', room.ceiling.preparation_level);
+            lineItems.push({
+              description: `${room.name} - Ceiling Preparation (${room.ceiling.preparation_level})`,
+              quantity: ceilingArea,
+              unit: 'm²',
+              unit_price: priceInfo.price,
+              total: ceilingArea * priceInfo.price
+            });
+          }
+          if (room.ceiling.painting_coats) {
+            const priceInfo = getPriceInfo('ceiling', 'painting', room.ceiling.painting_coats);
+            lineItems.push({
+              description: `${room.name} - Ceiling Painting (${room.ceiling.painting_coats})`,
+              quantity: ceilingArea,
+              unit: 'm²',
+              unit_price: priceInfo.price,
+              total: ceilingArea * priceInfo.price
+            });
+          }
+        }
 
-      if (totalCeilingArea > 0) {
-        lineItems.push({
-          description: 'Ceiling Painting',
-          quantity: totalCeilingArea,
-          unit: 'm²',
-          unit_price: pricing.ceilingPaint,
-          total: totalCeilingArea * pricing.ceilingPaint
-        });
-
-        lineItems.push({
-          description: 'Ceiling Preparation',
-          quantity: totalCeilingArea,
-          unit: 'm²',
-          unit_price: pricing.preparation,
-          total: totalCeilingArea * pricing.preparation
-        });
-      }
-
-      // Add other surfaces
-      surfaceMeasurements.otherSurfaces.forEach(surface => {
-        if (surface.area > 0) {
+        if (room.otherSurfaces && (parseFloat(room.otherSurfaces.area) || 0) > 0) {
+          const surfaceArea = parseFloat(room.otherSurfaces.area) || 0;
+          const priceInfo = getPriceInfo('interior', 'otherItems');
           lineItems.push({
-            description: surface.description || 'Other Surface',
-            quantity: surface.area,
+            description: `${room.name} - Other Surface (${room.otherSurfaces.description || 'Other'})`,
+            quantity: surfaceArea,
             unit: 'm²',
-            unit_price: pricing.wallPaint,
-            total: surface.area * pricing.wallPaint
+            unit_price: priceInfo.price,
+            total: surfaceArea * priceInfo.price
           });
         }
       });
 
-      // Add interior items
+      // Process interior items with proper categorization
       Object.keys(interiorItems).forEach(type => {
         interiorItems[type].forEach(item => {
-          if (item.quantity > 0) {
+          const quantity = parseFloat(item.quantity) || 0;
+          if (quantity > 0) {
+            const option = item.option;
+            const priceInfo = getPriceInfo('interior', type, option);
+            const typeName = type.replace(/([A-Z])/g, ' $1').toLowerCase();
+            const optionText = option ? ` (${option.replace('_', ' ')})` : '';
             lineItems.push({
-              description: item.description || type.replace(/([A-Z])/g, ' $1').toLowerCase(),
-              quantity: item.quantity,
+              description: `Interior - ${item.description || typeName}${optionText}`,
+              quantity: quantity,
               unit: 'piece',
-              unit_price: pricing[type] || 0,
-              total: item.quantity * (pricing[type] || 0)
+              unit_price: priceInfo.price,
+              total: quantity * priceInfo.price
             });
           }
         });
       });
 
-      // Add exterior items
+      // Process exterior items with proper categorization
       Object.keys(exteriorItems).forEach(type => {
         exteriorItems[type].forEach(item => {
-          if (item.quantity > 0) {
+          const quantity = parseFloat(item.quantity) || 0;
+          if (quantity > 0) {
+            const option = item.option;
+            const priceInfo = getPriceInfo('exterior', type, option);
+            const typeName = type.replace(/([A-Z])/g, ' $1').toLowerCase();
+            const optionText = option ? ` (${option.replace('_', ' ')})` : '';
             lineItems.push({
-              description: item.description || type.replace(/([A-Z])/g, ' $1').toLowerCase(),
-              quantity: item.quantity,
+              description: `Exterior - ${item.description || typeName}${optionText}`,
+              quantity: quantity,
               unit: 'piece',
-              unit_price: pricing[type] || 0,
-              total: item.quantity * (pricing[type] || 0)
+              unit_price: priceInfo.price,
+              total: quantity * priceInfo.price
             });
           }
         });
       });
 
-      // Ensure we have line items
       if (lineItems.length === 0) {
         setError('No line items generated. Please add some measurements.');
         return;
       }
 
-      // Prepare quote data
+      // Add cleanup fee
+      lineItems.push({
+        description: 'Cleanup and Site Preparation',
+        quantity: 1,
+        unit: 'job',
+        unit_price: pricing.additional.cleanup_fee,
+        total: pricing.additional.cleanup_fee
+      });
+
       const quoteData = {
         title: `Paint Quote - ${project.name}`,
         description: `Professional painting quote for ${project.name}. ${notes ? 'Additional notes: ' + notes : ''}`,
@@ -491,15 +926,10 @@ const ProjectDetails = () => {
         valid_days: 30
       };
 
-      console.log('Generating quote with data:', quoteData);
-
-      // Generate the quote
       const response = await api.post(`/quotes/project/${id}`, quoteData);
       const quote = response.data.quote;
 
-      console.log('Quote generated successfully:', quote);
-
-      // Send email if client email is available
+      // Try to send email if client email is available
       if (project.client_email) {
         try {
           setSendingEmail(true);
@@ -507,125 +937,38 @@ const ProjectDetails = () => {
             client_email: project.client_email
           });
 
-          alert(`Quote generated successfully and sent to ${project.client_email}!`);
+          const successDiv = document.createElement('div');
+          successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+          successDiv.textContent = `Quote generated and sent to ${project.client_email}!`;
+          document.body.appendChild(successDiv);
+          setTimeout(() => document.body.removeChild(successDiv), 3000);
         } catch (emailError) {
           console.error('Email sending error:', emailError);
-          alert(`Quote generated successfully, but failed to send email. You can download the quote from the quotes section.`);
+          const warningDiv = document.createElement('div');
+          warningDiv.className = 'fixed top-4 right-4 bg-yellow-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+          warningDiv.textContent = 'Quote generated successfully, but email sending failed.';
+          document.body.appendChild(warningDiv);
+          setTimeout(() => document.body.removeChild(warningDiv), 3000);
         } finally {
           setSendingEmail(false);
         }
       } else {
-        alert('Quote generated successfully! Note: No client email provided, so quote was not sent automatically.');
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        infoDiv.textContent = 'Quote generated successfully! No client email provided.';
+        document.body.appendChild(infoDiv);
+        setTimeout(() => document.body.removeChild(infoDiv), 3000);
       }
 
-      // Refresh project data
       await loadProject();
-
-      // Navigate to quote preview
       navigate(`/quotes/${quote.id}`);
 
     } catch (err) {
       console.error('Generate quote error:', err);
-
-      // Provide more specific error messaging
-      if (err.response?.data?.error) {
-        setError(err.response.data.error);
-      } else if (err.response?.status === 400) {
-        setError('Invalid quote data. Please check your measurements and try again.');
-      } else if (err.response?.status === 404) {
-        setError('Project not found. Please refresh the page and try again.');
-      } else {
-        setError('Failed to generate quote. Please try again.');
-      }
+      setError(err.message || 'Failed to generate quote. Please try again.');
     } finally {
       setGenerating(false);
     }
-  };
-
-  // Auto-generate quote using AI analysis
-  const autoGenerateQuote = async () => {
-    try {
-      setGenerating(true);
-      setError('');
-
-      if (!project.floor_plan_analysis) {
-        setError('AI analysis not available. Please add measurements manually or run floor plan analysis first.');
-        return;
-      }
-
-      // Use the auto-generate endpoint
-      const quoteData = {
-        title: `AI Paint Quote - ${project.name}`,
-        description: `AI-generated painting quote for ${project.name} based on floor plan analysis. ${notes ? 'Additional notes: ' + notes : ''}`,
-        valid_days: 30,
-        quote_settings: {
-          paint_prices: {
-            primer_per_m2: pricing.preparation,
-            paint_per_m2: pricing.wallPaint,
-            ceiling_paint_per_m2: pricing.ceilingPaint
-          },
-          labor_prices: {
-            prep_per_m2: pricing.preparation / 2,
-            painting_per_m2: pricing.wallPaint / 2,
-            ceiling_per_m2: pricing.ceilingPaint / 2
-          }
-        }
-      };
-
-      const response = await api.post(`/quotes/project/${id}/auto-generate`, quoteData);
-      const quote = response.data.quote;
-
-      // Send email if client email is available
-      if (project.client_email) {
-        try {
-          setSendingEmail(true);
-          await api.post(`/quotes/${quote.id}/send`, {
-            client_email: project.client_email
-          });
-
-          alert(`AI Quote generated successfully and sent to ${project.client_email}!`);
-        } catch (emailError) {
-          console.error('Email sending error:', emailError);
-          alert(`AI Quote generated successfully, but failed to send email. You can download the quote from the quotes section.`);
-        } finally {
-          setSendingEmail(false);
-        }
-      } else {
-        alert('AI Quote generated successfully! Note: No client email provided, so quote was not sent automatically.');
-      }
-
-      navigate(`/quotes/${quote.id}`);
-
-    } catch (err) {
-      console.error('Auto-generate quote error:', err);
-      setError(err.response?.data?.error || 'Failed to auto-generate quote');
-    } finally {
-      setGenerating(false);
-    }
-  };
-
-  const resetCalculator = () => {
-    setSurfaceMeasurements({ walls: [], ceilings: [], otherSurfaces: [] });
-    setInteriorItems({
-      fixedWindows: [],
-      turnWindows: [],
-      doors: [],
-      stairs: [],
-      radiators: [],
-      skirtingBoards: [],
-      otherItems: []
-    });
-    setExteriorItems({
-      fixedWindows: [],
-      turnWindows: [],
-      doors: [],
-      dormerWindows: [],
-      fasciaBoards: [],
-      rainPipe: [],
-      otherItems: []
-    });
-    setNotes('');
-    setTotalCost(0);
   };
 
   const getStatusColor = (status) => {
@@ -639,20 +982,27 @@ const ProjectDetails = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  if (loading) {
-    return <Loading message="Loading project details..." />;
-  }
+  const resetCalculator = () => {
+    setRooms([]);
+    setInteriorItems({
+      doors: [], fixedWindows: [], turnWindows: [], stairs: [], 
+      radiators: [], skirtingBoards: [], otherItems: []
+    });
+    setExteriorItems({
+      doors: [], fixedWindows: [], turnWindows: [], dormerWindows: [], 
+      fasciaBoards: [], rainPipe: [], otherItems: []
+    });
+    setNotes('');
+    setTotalCost(0);
+  };
 
-  if (error && !project) {
+  if (loading) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-600">{error}</p>
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="mt-4 text-teal-600 hover:text-teal-500"
-        >
-          Back to Dashboard
-        </button>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-600 mx-auto"></div>
+          <p className="mt-4 text-lg text-gray-600">Loading project details...</p>
+        </div>
       </div>
     );
   }
@@ -660,8 +1010,11 @@ const ProjectDetails = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6 mx-4">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-400 mr-3" />
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
         </div>
       )}
 
@@ -706,9 +1059,8 @@ const ProjectDetails = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 relative">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Calculator */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Project Information Card */}
+            {/* Project & Client Information */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                 <User className="h-6 w-6 mr-3 text-teal-800" />
@@ -722,10 +1074,6 @@ const ProjectDetails = () => {
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Description</dt>
                       <dd className="text-sm text-gray-900">{project?.description || 'No description provided'}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm font-medium text-gray-500">Project Type</dt>
-                      <dd className="text-sm text-gray-900 capitalize">{project?.project_type}</dd>
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Property Type</dt>
@@ -758,239 +1106,641 @@ const ProjectDetails = () => {
               </div>
             </div>
 
-            {/* Surface Measurements */}
+            {/* Enhanced Floor Plan Upload & AI Analysis */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <Calculator className="h-6 w-6 mr-3 text-teal-800" />
-                Surface Measurements
+                <Brain className="h-6 w-6 mr-3 text-teal-800" />
+                Enhanced Floor Plan Analysis
               </h2>
 
-              <div className="space-y-6">
-                {/* Walls */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">Walls</h3>
-                    <button
-                      onClick={addWall}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Wall
-                    </button>
-                  </div>
-
-                  {surfaceMeasurements.walls.map((wall) => (
-                    <div key={wall.id} className="border border-gray-200 rounded-lg p-4 mb-3">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Length (m)</label>
-                          <input
-                            type="number"
-                            step="0.1"
-                            value={wall.length}
-                            onChange={(e) => updateWall(wall.id, 'length', e.target.value)}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Height (m)</label>
-                          <input
-                            type="number"
-                            step="0.1"
-                            value={wall.height}
-                            onChange={(e) => updateWall(wall.id, 'height', e.target.value)}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Area (m²)</label>
-                          <input
-                            type="text"
-                            value={wall.area.toFixed(2)}
-                            readOnly
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-600"
-                          />
-                        </div>
-                        <div>
-                          <button
-                            onClick={() => removeWall(wall.id)}
-                            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Upload Floor Plans</h3>
+                
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                  <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-lg font-medium text-gray-900 mb-2">
+                    Drop your floor plan images here, or click to browse
+                  </p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Supports: PNG, JPG, PDF (max 32MB each)
+                  </p>
+                  
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*,.pdf"
+                    onChange={(e) => handleFileUpload(e.target.files)}
+                    className="hidden"
+                    id="floor-plan-upload"
+                    disabled={uploading}
+                  />
+                  
+                  <label
+                    htmlFor="floor-plan-upload"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 cursor-pointer disabled:opacity-50"
+                  >
+                    Choose Files
+                  </label>
                 </div>
 
-                {/* Ceilings */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">Ceilings</h3>
-                    <button
-                      onClick={addCeiling}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Ceiling
-                    </button>
-                  </div>
-
-                  {surfaceMeasurements.ceilings.map((ceiling) => (
-                    <div key={ceiling.id} className="border border-gray-200 rounded-lg p-4 mb-3">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Width (m)</label>
-                          <input
-                            type="number"
-                            step="0.1"
-                            value={ceiling.width}
-                            onChange={(e) => updateCeiling(ceiling.id, 'width', e.target.value)}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Length (m)</label>
-                          <input
-                            type="number"
-                            step="0.1"
-                            value={ceiling.length}
-                            onChange={(e) => updateCeiling(ceiling.id, 'length', e.target.value)}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Area (m²)</label>
-                          <input
-                            type="text"
-                            value={ceiling.area.toFixed(2)}
-                            readOnly
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-600"
-                          />
-                        </div>
-                        <div>
-                          <button
-                            onClick={() => removeCeiling(ceiling.id)}
-                            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
+                {uploading && (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
+                      <span>Uploading...</span>
+                      <span>{uploadProgress}%</span>
                     </div>
-                  ))}
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-teal-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {project?.uploaded_images && project.uploaded_images.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Uploaded Images</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {project.uploaded_images.map((imagePath, index) => {
+                      // Generate multiple possible image URLs for fallback
+                      const filename = imagePath.split('/').pop();
+                      const encodedFilename = encodeURIComponent(filename);
+                      
+                      const imageUrls = [
+                        // Primary: Authenticated project file endpoint
+                        `/api/projects/${id}/files/${encodedFilename}`,
+                        // Fallback 1: Static uploads with full path
+                        `/static/uploads/${imagePath.replace(/^.*[\\\/]uploads[\\\/]/, '')}`,
+                        // Fallback 2: Direct filename in uploads
+                        `/static/uploads/${filename}`,
+                        // Fallback 3: Company/project specific path
+                        `/static/uploads/${project.company_id || 'unknown'}/${id}/${filename}`
+                      ];
+
+                      return (
+                        <div key={index} className="relative group">
+                          <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                            <ImageWithFallback
+                              urls={imageUrls}
+                              alt={`Floor Plan ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              fallbackIcon={<FileImage className="h-8 w-8 text-gray-400" />}
+                            />
+                          </div>
+                          <div className="mt-2 flex items-center justify-between">
+                            <p className="text-sm text-gray-600 truncate">
+                              Floor Plan {index + 1}
+                            </p>
+                            <button
+                              onClick={() => window.open(imageUrls[0], '_blank')}
+                              className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
+                              title="View full size"
+                            >
+                              <Eye className="h-3 w-3 mr-1" />
+                              View
+                            </button>
+                          </div>
+                          {/* Debug info in development */}
+                          {process.env.NODE_ENV === 'development' && (
+                            <div className="mt-1 text-xs text-gray-400 font-mono truncate" title={imagePath}>
+                              Path: {filename}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="border-t pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">Enhanced AI Analysis</h3>
+                  <button
+                    onClick={performAIAnalysis}
+                    disabled={analyzing || !project?.uploaded_images?.length}
+                    className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
+                  >
+                    {analyzing ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Analyzing with Enhanced AI...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-5 w-5 mr-2" />
+                        Start Enhanced AI Analysis
+                      </>
+                    )}
+                  </button>
                 </div>
 
-                {/* Other Surfaces */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">Other Surfaces</h3>
-                    <button
-                      onClick={addOtherSurface}
-                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Area
-                    </button>
-                  </div>
-
-                  {surfaceMeasurements.otherSurfaces.map((surface) => (
-                    <div key={surface.id} className="border border-gray-200 rounded-lg p-4 mb-3">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                          <input
-                            type="text"
-                            value={surface.description}
-                            onChange={(e) => updateOtherSurface(surface.id, 'description', e.target.value)}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="e.g., Trim, Molding, etc."
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Area (m²)</label>
-                          <input
-                            type="number"
-                            step="0.1"
-                            value={surface.area}
-                            onChange={(e) => updateOtherSurface(surface.id, 'area', e.target.value)}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          />
-                        </div>
-                        <div>
-                          <button
-                            onClick={() => removeOtherSurface(surface.id)}
-                            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
+                {project?.floor_plan_analysis && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center mb-2">
+                      <CheckCircle className="w-5 h-5 bg-green-500 text-white rounded-full mr-2" />
+                      <span className="text-green-700 font-medium">Enhanced analysis completed successfully</span>
                     </div>
-                  ))}
-                </div>
+                    <p className="text-green-600 text-sm">
+                      Room measurements and interior/exterior items have been automatically identified and populated
+                    </p>
+                    {project.floor_plan_analysis.work_classification && (
+                      <div className="mt-3 text-sm text-green-600">
+                        <p>• Interior rooms detected: {Object.keys(project.floor_plan_analysis.work_classification.interior_work?.rooms || {}).length}</p>
+                        <p>• Exterior features detected: {(project.floor_plan_analysis.work_classification.exterior_work?.walls || []).length}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Interior Work */}
+            {/* Enhanced Room-Based Measurements */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                  <Layers className="h-6 w-6 mr-3 text-teal-800" />
+                  Room-Based Measurements
+                </h2>
+                <button
+                  onClick={addRoom}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Room
+                </button>
+              </div>
+
+              {rooms.map((room) => (
+                <div key={room.id} className="border border-gray-200 rounded-lg p-6 mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <input
+                      type="text"
+                      value={room.name}
+                      onChange={(e) => updateRoom(room.id, 'name', e.target.value)}
+                      className="text-xl font-semibold bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1"
+                    />
+                    <button
+                      onClick={() => removeRoom(room.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  {/* Walls Section with Enhanced Price Display */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-medium text-gray-900 flex items-center">
+                        <Square className="h-5 w-5 mr-2 text-blue-600" />
+                        Walls
+                      </h4>
+                      <button
+                        onClick={() => addWallToRoom(room.id)}
+                        className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                      >
+                        + Add Wall
+                      </button>
+                    </div>
+
+                    {(room.walls || []).map((wall) => (
+                      <div key={wall.id} className="bg-gray-50 rounded-lg p-4 mb-3">
+                        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Wall Name</label>
+                            <input
+                              type="text"
+                              value={wall.name}
+                              onChange={(e) => updateWallInRoom(room.id, wall.id, 'name', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Length (m)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              value={wall.length || ''}
+                              onChange={(e) => updateWallInRoom(room.id, wall.id, 'length', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Height (m)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              value={wall.height || ''}
+                              onChange={(e) => updateWallInRoom(room.id, wall.id, 'height', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Area (m²)</label>
+                            <input
+                              type="text"
+                              value={wall.area || '0.00'}
+                              readOnly
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-100"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Sanding
+                              <Info className="h-4 w-4 inline ml-1 text-gray-400" title="Price varies by level" />
+                            </label>
+                            <select
+                              value={wall.sanding_level}
+                              onChange={(e) => updateWallInRoom(room.id, wall.id, 'sanding_level', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            >
+                              <option value="light">Light (£{pricing.walls.sanding.light.price}/m²)</option>
+                              <option value="medium">Medium (£{pricing.walls.sanding.medium.price}/m²)</option>
+                              <option value="heavy">Heavy (£{pricing.walls.sanding.heavy.price}/m²)</option>
+                            </select>
+                          </div>
+                          <div className="flex items-end">
+                            <button
+                              onClick={() => removeWallFromRoom(room.id, wall.id)}
+                              className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                        
+                        {/* Additional wall options in a second row with enhanced pricing display */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Priming
+                              <span className="text-xs text-gray-500 ml-2">
+                                Current: £{(parseFloat(wall.area) || 0) * getPriceInfo('walls', 'priming', wall.priming_coats).price} total
+                              </span>
+                            </label>
+                            <select
+                              value={wall.priming_coats}
+                              onChange={(e) => updateWallInRoom(room.id, wall.id, 'priming_coats', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            >
+                              <option value="one_coat">One Coat (£{pricing.walls.priming.one_coat.price}/m²)</option>
+                              <option value="two_coat">Two Coats (£{pricing.walls.priming.two_coat.price}/m²)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Painting
+                              <span className="text-xs text-gray-500 ml-2">
+                                Current: £{(parseFloat(wall.area) || 0) * getPriceInfo('walls', 'painting', wall.painting_coats).price} total
+                              </span>
+                            </label>
+                            <select
+                              value={wall.painting_coats}
+                              onChange={(e) => updateWallInRoom(room.id, wall.id, 'painting_coats', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            >
+                              <option value="one_coat">One Coat (£{pricing.walls.painting.one_coat.price}/m²)</option>
+                              <option value="two_coat">Two Coats (£{pricing.walls.painting.two_coat.price}/m²)</option>
+                              <option value="three_coat">Three Coats (£{pricing.walls.painting.three_coat.price}/m²)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Real-time wall cost display */}
+                        {parseFloat(wall.area) > 0 && (
+                          <div className="mt-3 p-3 bg-blue-50 rounded-md">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="font-medium text-blue-900">Wall Cost:</span>
+                              <span className="font-bold text-blue-900">
+                                £{(
+                                  (parseFloat(wall.area) || 0) * (
+                                    getPriceInfo('walls', 'sanding', wall.sanding_level).price +
+                                    getPriceInfo('walls', 'priming', wall.priming_coats).price +
+                                    getPriceInfo('walls', 'painting', wall.painting_coats).price
+                                  )
+                                ).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Enhanced Ceiling Section */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-medium text-gray-900 flex items-center">
+                        <Building className="h-5 w-5 mr-2 text-green-600" />
+                        Ceiling
+                      </h4>
+                      {!room.ceiling ? (
+                        <button
+                          onClick={() => addCeilingToRoom(room.id)}
+                          className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                        >
+                          + Add Ceiling
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => removeCeilingFromRoom(room.id)}
+                          className="text-red-600 hover:text-red-700 text-sm font-medium"
+                        >
+                          Remove Ceiling
+                        </button>
+                      )}
+                    </div>
+
+                    {room.ceiling && (
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Width (m)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              value={room.ceiling.width || ''}
+                              onChange={(e) => updateCeilingInRoom(room.id, 'width', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Length (m)</label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              value={room.ceiling.length || ''}
+                              onChange={(e) => updateCeilingInRoom(room.id, 'length', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Area (m²)</label>
+                            <input
+                              type="text"
+                              value={(parseFloat(room.ceiling.width) * parseFloat(room.ceiling.length) || 0).toFixed(2)}
+                              readOnly
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-100"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Preparation</label>
+                            <select
+                              value={room.ceiling.preparation_level}
+                              onChange={(e) => updateCeilingInRoom(room.id, 'preparation_level', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            >
+                              <option value="light">Light (£{pricing.ceiling.preparation.light.price}/m²)</option>
+                              <option value="medium">Medium (£{pricing.ceiling.preparation.medium.price}/m²)</option>
+                              <option value="heavy">Heavy (£{pricing.ceiling.preparation.heavy.price}/m²)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Painting</label>
+                            <select
+                              value={room.ceiling.painting_coats}
+                              onChange={(e) => updateCeilingInRoom(room.id, 'painting_coats', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            >
+                              <option value="one_coat">One Coat (£{pricing.ceiling.painting.one_coat.price}/m²)</option>
+                              <option value="two_coat">Two Coats (£{pricing.ceiling.painting.two_coat.price}/m²)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Real-time ceiling cost display */}
+                        {(parseFloat(room.ceiling.width) * parseFloat(room.ceiling.length) || 0) > 0 && (
+                          <div className="mt-3 p-3 bg-green-50 rounded-md">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="font-medium text-green-900">Ceiling Cost:</span>
+                              <span className="font-bold text-green-900">
+                                £{(
+                                  (parseFloat(room.ceiling.width) * parseFloat(room.ceiling.length) || 0) * (
+                                    getPriceInfo('ceiling', 'preparation', room.ceiling.preparation_level).price +
+                                    getPriceInfo('ceiling', 'painting', room.ceiling.painting_coats).price
+                                  )
+                                ).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Enhanced Other Surfaces Section */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-medium text-gray-900 flex items-center">
+                        <Paintbrush2 className="h-5 w-5 mr-2 text-purple-600" />
+                        Other Surfaces
+                      </h4>
+                      {!room.otherSurfaces ? (
+                        <button
+                          onClick={() => addOtherSurfaceToRoom(room.id)}
+                          className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                        >
+                          + Add Other Surface
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => removeOtherSurfaceFromRoom(room.id)}
+                          className="text-red-600 hover:text-red-700 text-sm font-medium"
+                        >
+                          Remove Other Surface
+                        </button>
+                      )}
+                    </div>
+
+                    {room.otherSurfaces && (
+                      <div className="bg-purple-50 rounded-lg p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <input
+                              type="text"
+                              value={room.otherSurfaces.description}
+                              onChange={(e) => updateOtherSurfaceInRoom(room.id, 'description', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                              placeholder="e.g., Trim, Molding, etc."
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Area (m²)
+                              <span className="text-xs text-gray-500 ml-2">
+                                £{pricing.interior.otherItems.price}/m²
+                              </span>
+                            </label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              value={room.otherSurfaces.area || ''}
+                              onChange={(e) => updateOtherSurfaceInRoom(room.id, 'area', e.target.value)}
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                            />
+                          </div>
+                          <div className="flex items-end">
+                            <div className="text-sm text-purple-900">
+                              <span className="font-medium">Cost: </span>
+                              <span className="font-bold">
+                                £{((parseFloat(room.otherSurfaces.area) || 0) * pricing.interior.otherItems.price).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Room Total Display */}
+                  <div className="bg-gray-100 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-medium text-gray-900">{room.name} Total:</span>
+                      <span className="text-xl font-bold text-teal-600">
+                        £{(priceBreakdown.roomTotals[room.name] || 0).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {rooms.length === 0 && (
+                <div className="text-center py-12">
+                  <Calculator className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No rooms added yet</h3>
+                  <p className="text-gray-500 mb-6">
+                    Add rooms manually or upload floor plans for enhanced AI analysis
+                  </p>
+                  <button
+                    onClick={addRoom}
+                    className="inline-flex items-center px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-md font-medium transition-colors"
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Add First Room
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Enhanced Interior Work */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                 <Home className="h-6 w-6 mr-3 text-teal-800" />
-                Interior
+                Interior Work
               </h2>
 
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-                {['fixedWindows', 'turnWindows', 'doors', 'stairs', 'radiators', 'skirtingBoards'].map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => addInteriorItem(type)}
-                    className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-purple-100 hover:text-purple-700"
-                  >
-                    {type === 'fixedWindows' && 'Fixed Windows'}
-                    {type === 'turnWindows' && 'Turn Windows'}
-                    {type === 'doors' && 'Doors'}
-                    {type === 'stairs' && 'Stairs'}
-                    {type === 'radiators' && 'Radiator'}
-                    {type === 'skirtingBoards' && 'Skirting boards'}
-                  </button>
-                ))}
+                {['doors', 'fixedWindows', 'turnWindows', 'stairs', 'radiators', 'skirtingBoards'].map((type) => {
+                  const defaultOption = type === 'doors' ? 'medium_prep' : (type === 'fixedWindows' || type === 'turnWindows' ? 'medium' : null);
+                  const priceInfo = getPriceInfo('interior', type, defaultOption);
+                  
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => addInteriorItem(type)}
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-purple-100 hover:text-purple-700 border border-gray-300 hover:border-purple-300"
+                      title={`Add ${type.replace(/([A-Z])/g, ' $1').toLowerCase()} - £${priceInfo.price} each`}
+                    >
+                      <div className="text-center">
+                        <div className="font-medium">
+                          {type === 'doors' && 'Doors'}
+                          {type === 'fixedWindows' && 'Fixed Windows'}
+                          {type === 'turnWindows' && 'Turn Windows'}
+                          {type === 'stairs' && 'Stairs'}
+                          {type === 'radiators' && 'Radiators'}
+                          {type === 'skirtingBoards' && 'Skirting Boards'}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          £{priceInfo.price}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               {Object.keys(interiorItems).map((type) => (
                 interiorItems[type].length > 0 && (
                   <div key={type} className="mb-6">
-                    <h4 className="text-lg font-medium text-gray-900 mb-3 capitalize">
-                      {type.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                    </h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-lg font-medium text-gray-900 capitalize">
+                        {type.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                      </h4>
+                      <div className="text-sm text-gray-500">
+                        £{pricing.interior[type]?.price || 0} each • Total: £{interiorItems[type].reduce((sum, item) => sum + (item.cost || 0), 0).toFixed(2)}
+                      </div>
+                    </div>
                     {interiorItems[type].map((item) => (
                       <div key={item.id} className="border border-gray-200 rounded-lg p-4 mb-3">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                             <input
                               type="text"
                               value={item.description}
                               onChange={(e) => updateInteriorItem(type, item.id, 'description', e.target.value)}
-                              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full border border-gray-300 rounded-md px-3 py-2"
                               placeholder={`${type} description`}
                             />
                           </div>
+                          
+                          {/* Conditional option select for doors and windows */}
+                          {(type === 'doors' || type === 'fixedWindows' || type === 'turnWindows') && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {type === 'doors' ? 'Preparation' : 'Size'}
+                              </label>
+                              <select
+                                value={item.option || (type === 'doors' ? 'medium_prep' : 'medium')}
+                                onChange={(e) => updateInteriorItem(type, item.id, 'option', e.target.value)}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                              >
+                                {type === 'doors' ? (
+                                  <>
+                                    <option value="easy_prep">Easy (£{pricing.interior.doors.easy_prep.price})</option>
+                                    <option value="medium_prep">Medium (£{pricing.interior.doors.medium_prep.price})</option>
+                                    <option value="heavy_prep">Heavy (£{pricing.interior.doors.heavy_prep.price})</option>
+                                  </>
+                                ) : (
+                                  <>
+                                    <option value="small">Small (£{pricing.interior[type].small.price})</option>
+                                    <option value="medium">Medium (£{pricing.interior[type].medium.price})</option>
+                                    <option value="big">Big (£{pricing.interior[type].big.price})</option>
+                                  </>
+                                )}
+                              </select>
+                            </div>
+                          )}
+
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Quantity
+                              <span className="text-xs text-gray-500 ml-2">
+                                @ £{getPriceInfo('interior', type, item.option).price} each
+                              </span>
+                            </label>
                             <input
                               type="number"
                               min="1"
+                              step="1"
                               value={item.quantity}
                               onChange={(e) => updateInteriorItem(type, item.id, 'quantity', e.target.value)}
-                              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full border border-gray-300 rounded-md px-3 py-2"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Cost (€)</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Cost (£)</label>
                             <input
                               type="text"
-                              value={`€${(item.quantity * (pricing[type] || 0)).toFixed(2)}`}
+                              value={`£${((parseFloat(item.quantity) || 0) * getPriceInfo('interior', type, item.option).price).toFixed(2)}`}
                               readOnly
                               className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-600"
                             />
@@ -1011,64 +1761,118 @@ const ProjectDetails = () => {
               ))}
             </div>
 
-            {/* Exterior Work */}
+            {/* Enhanced Exterior Work */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                 <Building className="h-6 w-6 mr-3 text-teal-800" />
-                Outside work
+                Exterior Work
               </h2>
 
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-                {['fixedWindows', 'turnWindows', 'doors', 'dormerWindows', 'fasciaBoards', 'rainPipe'].map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => addExteriorItem(type)}
-                    className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-purple-100 hover:text-purple-700"
-                  >
-                    {type === 'fixedWindows' && 'Fixed Windows'}
-                    {type === 'turnWindows' && 'Turn Windows'}
-                    {type === 'doors' && 'Doors'}
-                    {type === 'dormerWindows' && 'Dormer windows'}
-                    {type === 'fasciaBoards' && 'fascia boards'}
-                    {type === 'rainPipe' && 'Rain pipe'}
-                  </button>
-                ))}
+                {['doors', 'fixedWindows', 'turnWindows', 'dormerWindows', 'fasciaBoards', 'rainPipe'].map((type) => {
+                  const defaultOption = type === 'doors' ? 'medium_prep' : 
+                                       (type === 'fixedWindows' || type === 'turnWindows' || type === 'dormerWindows' ? 'medium' : null);
+                  const priceInfo = getPriceInfo('exterior', type, defaultOption);
+                  
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => addExteriorItem(type)}
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-700 border border-gray-300 hover:border-blue-300"
+                      title={`Add ${type.replace(/([A-Z])/g, ' $1').toLowerCase()} - £${priceInfo.price} each`}
+                    >
+                      <div className="text-center">
+                        <div className="font-medium">
+                          {type === 'doors' && 'Doors'}
+                          {type === 'fixedWindows' && 'Fixed Windows'}
+                          {type === 'turnWindows' && 'Turn Windows'}
+                          {type === 'dormerWindows' && 'Dormer Windows'}
+                          {type === 'fasciaBoards' && 'Fascia Boards'}
+                          {type === 'rainPipe' && 'Rain Pipe'}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          £{priceInfo.price}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               {Object.keys(exteriorItems).map((type) => (
                 exteriorItems[type].length > 0 && (
                   <div key={type} className="mb-6">
-                    <h4 className="text-lg font-medium text-gray-900 mb-3 capitalize">
-                      {type.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                    </h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-lg font-medium text-gray-900 capitalize">
+                        {type.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                      </h4>
+                      <div className="text-sm text-gray-500">
+                        £{pricing.exterior[type]?.price || 0} each • Total: £{exteriorItems[type].reduce((sum, item) => sum + (item.cost || 0), 0).toFixed(2)}
+                      </div>
+                    </div>
                     {exteriorItems[type].map((item) => (
                       <div key={item.id} className="border border-gray-200 rounded-lg p-4 mb-3">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                             <input
                               type="text"
                               value={item.description}
                               onChange={(e) => updateExteriorItem(type, item.id, 'description', e.target.value)}
-                              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full border border-gray-300 rounded-md px-3 py-2"
                               placeholder={`${type} description`}
                             />
                           </div>
+                          
+                          {/* Conditional option select for doors and windows */}
+                          {(type === 'doors' || type === 'fixedWindows' || type === 'turnWindows' || type === 'dormerWindows') && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {type === 'doors' ? 'Preparation' : 'Size'}
+                              </label>
+                              <select
+                                value={item.option || (type === 'doors' ? 'medium_prep' : 'medium')}
+                                onChange={(e) => updateExteriorItem(type, item.id, 'option', e.target.value)}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                              >
+                                {type === 'doors' ? (
+                                  <>
+                                    <option value="easy_prep">Easy (£{pricing.exterior.doors.easy_prep.price})</option>
+                                    <option value="medium_prep">Medium (£{pricing.exterior.doors.medium_prep.price})</option>
+                                    <option value="heavy_prep">Heavy (£{pricing.exterior.doors.heavy_prep.price})</option>
+                                  </>
+                                ) : (
+                                  <>
+                                    <option value="small">Small (£{pricing.exterior[type].small.price})</option>
+                                    <option value="medium">Medium (£{pricing.exterior[type].medium.price})</option>
+                                    <option value="big">Big (£{pricing.exterior[type].big.price})</option>
+                                  </>
+                                )}
+                              </select>
+                            </div>
+                          )}
+
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Quantity
+                              <span className="text-xs text-gray-500 ml-2">
+                                @ £{getPriceInfo('exterior', type, item.option).price} each
+                              </span>
+                            </label>
                             <input
                               type="number"
                               min="1"
+                              step="1"
                               value={item.quantity}
                               onChange={(e) => updateExteriorItem(type, item.id, 'quantity', e.target.value)}
-                              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full border border-gray-300 rounded-md px-3 py-2"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Cost (€)</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Cost (£)</label>
                             <input
                               type="text"
-                              value={`€${(item.quantity * (pricing[type] || 0)).toFixed(2)}`}
+                              value={`£${((parseFloat(item.quantity) || 0) * getPriceInfo('exterior', type, item.option).price).toFixed(2)}`}
                               readOnly
                               className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-600"
                             />
@@ -1089,27 +1893,27 @@ const ProjectDetails = () => {
               ))}
             </div>
 
-            {/* Notes */}
+            {/* Notes Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Notes</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Notes</h2>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 rows={4}
-                placeholder="Enter your notes here"
+                placeholder="Enter project notes, special requirements, or additional details..."
               />
             </div>
           </div>
 
-          {/* Cost Summary Sidebar */}
+          {/* Enhanced Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-6">
-              {/* Total Cost Card */}
+              {/* Enhanced Total Cost Card */}
               <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
                 <div className="text-center">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Total Cost:</h3>
-                  <p className="text-4xl font-bold text-teal-800">€{totalCost.toFixed(2)}</p>
+                  <p className="text-4xl font-bold text-teal-800">£{totalCost.toFixed(2)}</p>
 
                   <button
                     onClick={() => setShowDetails(!showDetails)}
@@ -1122,54 +1926,41 @@ const ProjectDetails = () => {
                 {showDetails && (
                   <div className="mt-6 pt-6 border-t border-gray-200">
                     <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Wall surfaces:</span>
-                        <span className="font-medium">
-                          €{(surfaceMeasurements.walls.reduce((sum, wall) => sum + wall.area, 0) * pricing.wallPaint).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Ceiling surfaces:</span>
-                        <span className="font-medium">
-                          €{(surfaceMeasurements.ceilings.reduce((sum, ceiling) => sum + ceiling.area, 0) * pricing.ceilingPaint).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Preparation work:</span>
-                        <span className="font-medium">
-                          €{(
-                            (surfaceMeasurements.walls.reduce((sum, wall) => sum + wall.area, 0) +
-                              surfaceMeasurements.ceilings.reduce((sum, ceiling) => sum + ceiling.area, 0) +
-                              surfaceMeasurements.otherSurfaces.reduce((sum, surface) => sum + surface.area, 0)) * pricing.preparation
-                          ).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Interior items:</span>
-                        <span className="font-medium">
-                          €{Object.keys(interiorItems).reduce((total, type) => {
-                            return total + interiorItems[type].reduce((sum, item) => {
-                              return sum + (item.quantity * (pricing[type] || 0));
-                            }, 0);
-                          }, 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Exterior items:</span>
-                        <span className="font-medium">
-                          €{Object.keys(exteriorItems).reduce((total, type) => {
-                            return total + exteriorItems[type].reduce((sum, item) => {
-                              return sum + (item.quantity * (pricing[type] || 0));
-                            }, 0);
-                          }, 0).toFixed(2)}
-                        </span>
-                      </div>
+                      {Object.entries(priceBreakdown.roomTotals).map(([roomName, total]) => (
+                        total > 0 && (
+                          <div key={roomName} className="flex justify-between">
+                            <span className="text-gray-600">{roomName}:</span>
+                            <span className="font-medium">£{total.toFixed(2)}</span>
+                          </div>
+                        )
+                      ))}
+                      
+                      {priceBreakdown.interiorTotal > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Interior items:</span>
+                          <span className="font-medium">£{priceBreakdown.interiorTotal.toFixed(2)}</span>
+                        </div>
+                      )}
+                      
+                      {priceBreakdown.exteriorTotal > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Exterior items:</span>
+                          <span className="font-medium">£{priceBreakdown.exteriorTotal.toFixed(2)}</span>
+                        </div>
+                      )}
+                      
+                      {priceBreakdown.cleanupFee > 0 && (
+                        <div className="flex justify-between pt-2 border-t">
+                          <span className="text-gray-600">Cleanup fee:</span>
+                          <span className="font-medium">£{priceBreakdown.cleanupFee.toFixed(2)}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Action Buttons */}
+              {/* Enhanced Action Buttons */}
               <div className="space-y-4">
                 <button
                   onClick={generateQuote}
@@ -1179,7 +1970,7 @@ const ProjectDetails = () => {
                   {generating ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Generating Quote...
+                      Generating Enhanced Quote...
                     </>
                   ) : sendingEmail ? (
                     <>
@@ -1221,7 +2012,7 @@ const ProjectDetails = () => {
                 </button>
               </div>
 
-              {/* Project Info */}
+              {/* Enhanced Project Status Card */}
               <div className="mt-6 bg-purple-50 rounded-lg p-4">
                 <h4 className="font-bold text-teal-900 mb-2">Project Status</h4>
                 <div className="space-y-2 text-sm text-teal-800">
@@ -1232,6 +2023,18 @@ const ProjectDetails = () => {
                   <div className="flex justify-between">
                     <span>Created:</span>
                     <span>{project?.created_at ? new Date(project.created_at).toLocaleDateString() : 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Rooms:</span>
+                    <span>{rooms.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Interior Items:</span>
+                    <span>{Object.values(interiorItems).reduce((sum, items) => sum + items.length, 0)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Exterior Items:</span>
+                    <span>{Object.values(exteriorItems).reduce((sum, items) => sum + items.length, 0)}</span>
                   </div>
                   {project?.client_email && (
                     <div className="flex items-center text-xs mt-3">
@@ -1247,6 +2050,43 @@ const ProjectDetails = () => {
                   )}
                 </div>
               </div>
+
+              {/* Enhanced AI Analysis Results */}
+              {project?.floor_plan_analysis && (
+                <div className="mt-6 bg-blue-50 rounded-lg p-4">
+                  <h4 className="font-bold text-blue-900 mb-2">AI Analysis Results</h4>
+                  <div className="space-y-2 text-sm text-blue-800">
+                    {project.floor_plan_analysis.surface_areas && (
+                      <>
+                        <div className="flex justify-between">
+                          <span>Total Floor Area:</span>
+                          <span>{project.floor_plan_analysis.surface_areas.totals?.total_floor_area_m2?.toFixed(2) || 0} m²</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Total Wall Area:</span>
+                          <span>{project.floor_plan_analysis.surface_areas.totals?.total_wall_area_m2?.toFixed(2) || 0} m²</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>AI Detected Rooms:</span>
+                          <span>{project.floor_plan_analysis.surface_areas.totals?.total_rooms || 0}</span>
+                        </div>
+                      </>
+                    )}
+                    {project.floor_plan_analysis.work_classification && (
+                      <>
+                        <div className="flex justify-between">
+                          <span>Interior Features:</span>
+                          <span>{Object.keys(project.floor_plan_analysis.work_classification.interior_work?.rooms || {}).length}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Exterior Features:</span>
+                          <span>{(project.floor_plan_analysis.work_classification.exterior_work?.walls || []).length}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1256,10 +2096,3 @@ const ProjectDetails = () => {
 };
 
 export default ProjectDetails;
-
-
-
-
-
-
-

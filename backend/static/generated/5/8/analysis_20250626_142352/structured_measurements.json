@@ -1,0 +1,775 @@
+{
+    "rooms": [
+        {
+            "id": 1249,
+            "name": "- **Woonkamer ( Living Room",
+            "walls": [
+                {
+                    "id": 7794,
+                    "name": "Main Wall Area",
+                    "length": 4.326661530556787,
+                    "height": 2.4,
+                    "area": 10.66,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 1.0816653826391966,
+                "length": 1.0816653826391966,
+                "area": 1.17,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 7533,
+            "name": "- Type: Living Room",
+            "walls": [
+                {
+                    "id": 6101,
+                    "name": "Main Wall Area",
+                    "length": 6.729041536504289,
+                    "height": 2.4,
+                    "area": 16.51,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 1.6822603841260722,
+                "length": 1.6822603841260722,
+                "area": 2.83,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 7392,
+            "name": "Kitchen",
+            "walls": [],
+            "ceiling": null,
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 7263,
+            "name": "- **Keuken ( Kitchen",
+            "walls": [
+                {
+                    "id": 3521,
+                    "name": "Main Wall Area",
+                    "length": 31.05865418848666,
+                    "height": 2.4,
+                    "area": 72.64,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 7.764663547121665,
+                "length": 7.764663547121665,
+                "area": 60.29,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 1256,
+            "name": "Living Room",
+            "walls": [
+                {
+                    "id": 1594,
+                    "name": "Main Wall Area",
+                    "length": 29.847612969884207,
+                    "height": 2.4,
+                    "area": 71.71,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 7.461903242471052,
+                "length": 7.461903242471052,
+                "area": 55.68,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        },
+        {
+            "id": 7207,
+            "name": "- Type: Dining Room",
+            "walls": [
+                {
+                    "id": 284,
+                    "name": "Main Wall Area",
+                    "length": 66.51195381282977,
+                    "height": 2.4,
+                    "area": 226.7,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "width": 16.627988453207443,
+                "length": 16.627988453207443,
+                "area": 276.49,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null,
+            "additional_items": []
+        }
+    ],
+    "interior_items": {
+        "doors": [
+            {
+                "id": 1000,
+                "quantity": 1,
+                "description": "Interior Door 1",
+                "cost": 0
+            },
+            {
+                "id": 1001,
+                "quantity": 1,
+                "description": "Interior Door 2",
+                "cost": 0
+            },
+            {
+                "id": 1002,
+                "quantity": 1,
+                "description": "Interior Door 3",
+                "cost": 0
+            },
+            {
+                "id": 1003,
+                "quantity": 1,
+                "description": "Interior Door 4",
+                "cost": 0
+            },
+            {
+                "id": 1004,
+                "quantity": 1,
+                "description": "Interior Door 5",
+                "cost": 0
+            },
+            {
+                "id": 1005,
+                "quantity": 1,
+                "description": "Interior Door 6",
+                "cost": 0
+            },
+            {
+                "id": 1006,
+                "quantity": 1,
+                "description": "Interior Door 7",
+                "cost": 0
+            },
+            {
+                "id": 1007,
+                "quantity": 1,
+                "description": "Interior Door 8",
+                "cost": 0
+            },
+            {
+                "id": 1008,
+                "quantity": 1,
+                "description": "Interior Door 9",
+                "cost": 0
+            },
+            {
+                "id": 1009,
+                "quantity": 1,
+                "description": "Interior Door 10",
+                "cost": 0
+            },
+            {
+                "id": 1010,
+                "quantity": 1,
+                "description": "Interior Door 11",
+                "cost": 0
+            },
+            {
+                "id": 1011,
+                "quantity": 1,
+                "description": "Interior Door 12",
+                "cost": 0
+            },
+            {
+                "id": 1012,
+                "quantity": 1,
+                "description": "Interior Door 13",
+                "cost": 0
+            },
+            {
+                "id": 1013,
+                "quantity": 1,
+                "description": "Interior Door 14",
+                "cost": 0
+            },
+            {
+                "id": 1014,
+                "quantity": 1,
+                "description": "Interior Door 15",
+                "cost": 0
+            }
+        ],
+        "fixed_windows": [
+            {
+                "id": 2000,
+                "quantity": 1,
+                "description": "Fixed Window 1",
+                "cost": 0
+            },
+            {
+                "id": 2001,
+                "quantity": 1,
+                "description": "Fixed Window 2",
+                "cost": 0
+            },
+            {
+                "id": 2002,
+                "quantity": 1,
+                "description": "Fixed Window 3",
+                "cost": 0
+            },
+            {
+                "id": 2003,
+                "quantity": 1,
+                "description": "Fixed Window 4",
+                "cost": 0
+            },
+            {
+                "id": 2004,
+                "quantity": 1,
+                "description": "Fixed Window 5",
+                "cost": 0
+            },
+            {
+                "id": 2005,
+                "quantity": 1,
+                "description": "Fixed Window 6",
+                "cost": 0
+            },
+            {
+                "id": 2006,
+                "quantity": 1,
+                "description": "Fixed Window 7",
+                "cost": 0
+            },
+            {
+                "id": 2007,
+                "quantity": 1,
+                "description": "Fixed Window 8",
+                "cost": 0
+            },
+            {
+                "id": 2008,
+                "quantity": 1,
+                "description": "Fixed Window 9",
+                "cost": 0
+            },
+            {
+                "id": 2009,
+                "quantity": 1,
+                "description": "Fixed Window 10",
+                "cost": 0
+            },
+            {
+                "id": 2010,
+                "quantity": 1,
+                "description": "Fixed Window 11",
+                "cost": 0
+            },
+            {
+                "id": 2011,
+                "quantity": 1,
+                "description": "Fixed Window 12",
+                "cost": 0
+            },
+            {
+                "id": 2012,
+                "quantity": 1,
+                "description": "Fixed Window 13",
+                "cost": 0
+            },
+            {
+                "id": 2013,
+                "quantity": 1,
+                "description": "Fixed Window 14",
+                "cost": 0
+            },
+            {
+                "id": 2014,
+                "quantity": 1,
+                "description": "Fixed Window 15",
+                "cost": 0
+            },
+            {
+                "id": 2015,
+                "quantity": 1,
+                "description": "Fixed Window 16",
+                "cost": 0
+            },
+            {
+                "id": 2016,
+                "quantity": 1,
+                "description": "Fixed Window 17",
+                "cost": 0
+            },
+            {
+                "id": 2017,
+                "quantity": 1,
+                "description": "Fixed Window 18",
+                "cost": 0
+            },
+            {
+                "id": 2018,
+                "quantity": 1,
+                "description": "Fixed Window 19",
+                "cost": 0
+            }
+        ],
+        "turn_windows": [
+            {
+                "id": 3000,
+                "quantity": 1,
+                "description": "Turn Window 1",
+                "cost": 0
+            },
+            {
+                "id": 3001,
+                "quantity": 1,
+                "description": "Turn Window 2",
+                "cost": 0
+            },
+            {
+                "id": 3002,
+                "quantity": 1,
+                "description": "Turn Window 3",
+                "cost": 0
+            },
+            {
+                "id": 3003,
+                "quantity": 1,
+                "description": "Turn Window 4",
+                "cost": 0
+            },
+            {
+                "id": 3004,
+                "quantity": 1,
+                "description": "Turn Window 5",
+                "cost": 0
+            },
+            {
+                "id": 3005,
+                "quantity": 1,
+                "description": "Turn Window 6",
+                "cost": 0
+            },
+            {
+                "id": 3006,
+                "quantity": 1,
+                "description": "Turn Window 7",
+                "cost": 0
+            },
+            {
+                "id": 3007,
+                "quantity": 1,
+                "description": "Turn Window 8",
+                "cost": 0
+            },
+            {
+                "id": 3008,
+                "quantity": 1,
+                "description": "Turn Window 9",
+                "cost": 0
+            },
+            {
+                "id": 3009,
+                "quantity": 1,
+                "description": "Turn Window 10",
+                "cost": 0
+            },
+            {
+                "id": 3010,
+                "quantity": 1,
+                "description": "Turn Window 11",
+                "cost": 0
+            },
+            {
+                "id": 3011,
+                "quantity": 1,
+                "description": "Turn Window 12",
+                "cost": 0
+            },
+            {
+                "id": 3012,
+                "quantity": 1,
+                "description": "Turn Window 13",
+                "cost": 0
+            }
+        ],
+        "radiators": [
+            {
+                "id": 4000,
+                "quantity": 1,
+                "description": "Radiator 1",
+                "cost": 0
+            },
+            {
+                "id": 4001,
+                "quantity": 1,
+                "description": "Radiator 2",
+                "cost": 0
+            },
+            {
+                "id": 4002,
+                "quantity": 1,
+                "description": "Radiator 3",
+                "cost": 0
+            },
+            {
+                "id": 4003,
+                "quantity": 1,
+                "description": "Radiator 4",
+                "cost": 0
+            },
+            {
+                "id": 4004,
+                "quantity": 1,
+                "description": "Radiator 5",
+                "cost": 0
+            },
+            {
+                "id": 4005,
+                "quantity": 1,
+                "description": "Radiator 6",
+                "cost": 0
+            },
+            {
+                "id": 4006,
+                "quantity": 1,
+                "description": "Radiator 7",
+                "cost": 0
+            },
+            {
+                "id": 4007,
+                "quantity": 1,
+                "description": "Radiator 8",
+                "cost": 0
+            },
+            {
+                "id": 4008,
+                "quantity": 1,
+                "description": "Radiator 9",
+                "cost": 0
+            },
+            {
+                "id": 4009,
+                "quantity": 1,
+                "description": "Radiator 10",
+                "cost": 0
+            },
+            {
+                "id": 4010,
+                "quantity": 1,
+                "description": "Radiator 11",
+                "cost": 0
+            },
+            {
+                "id": 4011,
+                "quantity": 1,
+                "description": "Radiator 12",
+                "cost": 0
+            },
+            {
+                "id": 4012,
+                "quantity": 1,
+                "description": "Radiator 13",
+                "cost": 0
+            },
+            {
+                "id": 4013,
+                "quantity": 1,
+                "description": "Radiator 14",
+                "cost": 0
+            },
+            {
+                "id": 4014,
+                "quantity": 1,
+                "description": "Radiator 15",
+                "cost": 0
+            }
+        ],
+        "skirting_boards": [],
+        "stairs": [],
+        "other_items": []
+    },
+    "exterior_items": {
+        "doors": [
+            {
+                "id": 5000,
+                "quantity": 1,
+                "description": "Exterior Door 1",
+                "cost": 0
+            },
+            {
+                "id": 5001,
+                "quantity": 1,
+                "description": "Exterior Door 2",
+                "cost": 0
+            }
+        ],
+        "fixed_windows": [
+            {
+                "id": 6000,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 1",
+                "cost": 0
+            },
+            {
+                "id": 6001,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 2",
+                "cost": 0
+            },
+            {
+                "id": 6002,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 3",
+                "cost": 0
+            },
+            {
+                "id": 6003,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 4",
+                "cost": 0
+            },
+            {
+                "id": 6004,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 5",
+                "cost": 0
+            },
+            {
+                "id": 6005,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 6",
+                "cost": 0
+            },
+            {
+                "id": 6006,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 7",
+                "cost": 0
+            },
+            {
+                "id": 6007,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 8",
+                "cost": 0
+            },
+            {
+                "id": 6008,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 9",
+                "cost": 0
+            },
+            {
+                "id": 6009,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 10",
+                "cost": 0
+            },
+            {
+                "id": 6010,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 11",
+                "cost": 0
+            },
+            {
+                "id": 6011,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 12",
+                "cost": 0
+            },
+            {
+                "id": 6012,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 13",
+                "cost": 0
+            },
+            {
+                "id": 6013,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 14",
+                "cost": 0
+            },
+            {
+                "id": 6014,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 15",
+                "cost": 0
+            },
+            {
+                "id": 6015,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 16",
+                "cost": 0
+            },
+            {
+                "id": 6016,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 17",
+                "cost": 0
+            },
+            {
+                "id": 6017,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 18",
+                "cost": 0
+            },
+            {
+                "id": 6018,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 19",
+                "cost": 0
+            },
+            {
+                "id": 6019,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 20",
+                "cost": 0
+            },
+            {
+                "id": 6020,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 21",
+                "cost": 0
+            },
+            {
+                "id": 6021,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 22",
+                "cost": 0
+            },
+            {
+                "id": 6022,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 23",
+                "cost": 0
+            },
+            {
+                "id": 6023,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 24",
+                "cost": 0
+            },
+            {
+                "id": 6024,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 25",
+                "cost": 0
+            },
+            {
+                "id": 6025,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 26",
+                "cost": 0
+            },
+            {
+                "id": 6026,
+                "quantity": 1,
+                "description": "Exterior Fixed Window 27",
+                "cost": 0
+            }
+        ],
+        "turn_windows": [
+            {
+                "id": 7000,
+                "quantity": 1,
+                "description": "Exterior Turn Window 1",
+                "cost": 0
+            },
+            {
+                "id": 7001,
+                "quantity": 1,
+                "description": "Exterior Turn Window 2",
+                "cost": 0
+            },
+            {
+                "id": 7002,
+                "quantity": 1,
+                "description": "Exterior Turn Window 3",
+                "cost": 0
+            },
+            {
+                "id": 7003,
+                "quantity": 1,
+                "description": "Exterior Turn Window 4",
+                "cost": 0
+            },
+            {
+                "id": 7004,
+                "quantity": 1,
+                "description": "Exterior Turn Window 5",
+                "cost": 0
+            },
+            {
+                "id": 7005,
+                "quantity": 1,
+                "description": "Exterior Turn Window 6",
+                "cost": 0
+            },
+            {
+                "id": 7006,
+                "quantity": 1,
+                "description": "Exterior Turn Window 7",
+                "cost": 0
+            },
+            {
+                "id": 7007,
+                "quantity": 1,
+                "description": "Exterior Turn Window 8",
+                "cost": 0
+            },
+            {
+                "id": 7008,
+                "quantity": 1,
+                "description": "Exterior Turn Window 9",
+                "cost": 0
+            },
+            {
+                "id": 7009,
+                "quantity": 1,
+                "description": "Exterior Turn Window 10",
+                "cost": 0
+            },
+            {
+                "id": 7010,
+                "quantity": 1,
+                "description": "Exterior Turn Window 11",
+                "cost": 0
+            }
+        ],
+        "dormer_windows": [],
+        "fascia_boards": [],
+        "rain_pipe": [],
+        "other_items": []
+    },
+    "notes": "Generated from AI analysis"
+}

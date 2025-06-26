@@ -17,7 +17,7 @@ quotes_bp = Blueprint('quotes', __name__)
 @jwt_required()
 @require_active_subscription
 def generate_quote(project_id):
-    """Generate a quote for a project"""
+    """Generate a quote for a project with enhanced room-based organization"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -30,8 +30,7 @@ def generate_quote(project_id):
         if not project:
             return jsonify({'error': 'Project not found'}), 404
         
-        # FIXED: Remove strict status check and allow manual quotes
-        # Only require analysis for auto-generated quotes, not manual ones
+        # Enhanced validation - allow manual quotes without strict status check
         data = request.get_json()
         
         # If line_items are provided (manual quote), allow any status
@@ -39,7 +38,7 @@ def generate_quote(project_id):
             # Only enforce status check for auto-generated quotes without line items
             if project.status not in ['ready', 'completed']:
                 return jsonify({
-                    'error': 'Project must be analyzed before generating quotes',
+                    'error': 'Project must be analyzed or have measurements before generating quotes',
                     'current_status': project.status
                 }), 400
         else:
@@ -57,24 +56,39 @@ def generate_quote(project_id):
         if not isinstance(line_items, list) or not line_items:
             return jsonify({'error': 'line_items must be a non-empty list'}), 400
         
-        # Calculate totals
+        # Enhanced line item processing with better organization
+        processed_line_items = []
         subtotal = 0.0
+        
         for item in line_items:
             if not all(key in item for key in ['description', 'quantity', 'unit_price']):
                 return jsonify({'error': 'Each line item must have description, quantity, and unit_price'}), 400
             
-            quantity = float(item['quantity'])
-            unit_price = float(item['unit_price'])
-            item_total = quantity * unit_price
-            item['total'] = round(item_total, 2)
-            subtotal += item_total
+            try:
+                quantity = float(item['quantity'])
+                unit_price = float(item['unit_price'])
+                item_total = quantity * unit_price
+                
+                processed_item = {
+                    'description': str(item['description']).strip(),
+                    'quantity': quantity,
+                    'unit': item.get('unit', 'piece'),
+                    'unit_price': unit_price,
+                    'total': round(item_total, 2)
+                }
+                
+                processed_line_items.append(processed_item)
+                subtotal += item_total
+                
+            except (ValueError, TypeError) as e:
+                return jsonify({'error': f'Invalid numeric values in line item: {str(e)}'}), 400
         
         # Calculate VAT
-        vat_rate = user.company.vat_rate if user.company else 0.20
+        vat_rate = user.company.vat_rate if user.company and hasattr(user.company, 'vat_rate') else 0.20
         vat_amount = subtotal * vat_rate
         total_amount = subtotal + vat_amount
         
-        # Create quote
+        # Create quote with enhanced data
         quote = Quote(
             quote_number=Quote.generate_quote_number(),
             title=data['title'],
@@ -82,7 +96,7 @@ def generate_quote(project_id):
             subtotal=round(subtotal, 2),
             vat_amount=round(vat_amount, 2),
             total_amount=round(total_amount, 2),
-            line_items=line_items,
+            line_items=processed_line_items,
             project_id=project_id,
             valid_until=datetime.utcnow() + timedelta(days=data.get('valid_days', 30))
         )
@@ -90,7 +104,7 @@ def generate_quote(project_id):
         db.session.add(quote)
         db.session.flush()  # Get quote ID
         
-        # Generate PDF
+        # Generate enhanced PDF with room-based organization
         quote_generator = QuoteGenerator()
         pdf_path = quote_generator.generate_quote_pdf(
             quote=quote,
@@ -106,21 +120,31 @@ def generate_quote(project_id):
         quote.pdf_path = pdf_path
         project.quote_pdf_path = pdf_path
         
-        # Update project quote data
+        # Update project quote data with enhanced information
         project.quote_data = {
             'quote_id': quote.id,
             'subtotal': quote.subtotal,
             'vat_amount': quote.vat_amount,
             'total_amount': quote.total_amount,
-            'generated_at': datetime.utcnow().isoformat()
+            'line_items_count': len(processed_line_items),
+            'generated_at': datetime.utcnow().isoformat(),
+            'room_based': any(' - ' in item['description'] for item in processed_line_items),
+            'interior_items_count': len([item for item in processed_line_items if 'Interior' in item['description']]),
+            'exterior_items_count': len([item for item in processed_line_items if 'Exterior' in item['description']])
         }
         
         db.session.commit()
         
         return jsonify({
-            'message': 'Quote generated successfully',
+            'message': 'Enhanced quote generated successfully',
             'quote': quote.to_dict(include_project=True),
-            'pdf_path': pdf_path
+            'pdf_path': pdf_path,
+            'organization_info': {
+                'total_line_items': len(processed_line_items),
+                'room_based_items': len([item for item in processed_line_items if ' - ' in item['description']]),
+                'interior_items': len([item for item in processed_line_items if 'Interior' in item['description']]),
+                'exterior_items': len([item for item in processed_line_items if 'Exterior' in item['description']])
+            }
         }), 201
         
     except ValueError as e:
@@ -134,7 +158,7 @@ def generate_quote(project_id):
 @jwt_required()
 @require_active_subscription
 def auto_generate_quote(project_id):
-    """Auto-generate a quote based on project analysis"""
+    """Auto-generate a quote based on enhanced project analysis"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -147,118 +171,295 @@ def auto_generate_quote(project_id):
         if not project:
             return jsonify({'error': 'Project not found'}), 404
         
-        if not project.floor_plan_analysis:
+        # Check for enhanced analysis data
+        has_ai_analysis = bool(project.floor_plan_analysis and 
+                              project.floor_plan_analysis.get('structured_measurements'))
+        has_manual_measurements = bool(project.manual_measurements)
+        
+        if not has_ai_analysis and not has_manual_measurements:
             return jsonify({
-                'error': 'Project must have floor plan analysis to auto-generate quote'
+                'error': 'Project must have AI analysis or manual measurements to auto-generate quote'
             }), 400
         
         data = request.get_json()
         quote_settings = data.get('quote_settings', {})
         
-        # Generate line items from analysis
         line_items = []
-        analysis = project.floor_plan_analysis
         
-        # Get surface areas from analysis
-        surface_areas = analysis.get('surface_areas', {})
-        rooms = surface_areas.get('rooms', {})
-        totals = surface_areas.get('totals', {})
+        # Enhanced pricing (configurable)
+        pricing = {
+            'walls': {
+                'sanding': quote_settings.get('wall_sanding_prices', {
+                    'light': 5.00, 'medium': 8.00, 'heavy': 12.00
+                }),
+                'priming': quote_settings.get('wall_priming_prices', {
+                    'one_coat': 4.50, 'two_coat': 7.00
+                }),
+                'painting': quote_settings.get('wall_painting_prices', {
+                    'one_coat': 6.00, 'two_coat': 9.50, 'three_coat': 13.00
+                })
+            },
+            'ceiling': {
+                'preparation': quote_settings.get('ceiling_prep_prices', {
+                    'light': 4.00, 'medium': 7.00, 'heavy': 11.00
+                }),
+                'painting': quote_settings.get('ceiling_paint_prices', {
+                    'one_coat': 5.50, 'two_coat': 8.50
+                })
+            },
+            'interior': quote_settings.get('interior_prices', {
+                'doors': 85.00, 'fixedWindows': 45.00, 'turnWindows': 55.00,
+                'stairs': 25.00, 'radiators': 35.00, 'skirtingBoards': 12.00,
+                'otherItems': 10.00
+            }),
+            'exterior': quote_settings.get('exterior_prices', {
+                'doors': 120.00, 'fixedWindows': 65.00, 'turnWindows': 75.00,
+                'dormerWindows': 120.00, 'fasciaBoards': 18.00, 'rainPipe': 15.00,
+                'otherItems': 15.00
+            }),
+            'additional': quote_settings.get('additional_fees', {
+                'cleanup_fee': 150.00, 'materials_markup': 0.15
+            })
+        }
         
-        # Paint pricing (configurable)
-        paint_prices = quote_settings.get('paint_prices', {
-            'primer_per_m2': 3.50,
-            'paint_per_m2': 4.20,
-            'ceiling_paint_per_m2': 3.80
-        })
-        
-        # Labor pricing (configurable)
-        labor_prices = quote_settings.get('labor_prices', {
-            'prep_per_m2': 2.00,
-            'painting_per_m2': 3.50,
-            'ceiling_per_m2': 3.20
-        })
-        
-        # Generate line items for each room
-        for room_name, room_data in rooms.items():
-            floor_area = room_data.get('floor_area_m2', 0)
-            wall_area = room_data.get('wall_area_m2', 0)
-            ceiling_area = room_data.get('ceiling_area_m2', 0)
+        # Process manual measurements if available (preferred)
+        if has_manual_measurements:
+            manual_data = project.manual_measurements
             
-            if wall_area > 0:
-                # Wall preparation
-                line_items.append({
-                    'description': f'{room_name} - Wall Preparation',
-                    'quantity': wall_area,
-                    'unit': 'm²',
-                    'unit_price': labor_prices['prep_per_m2'],
-                    'total': round(wall_area * labor_prices['prep_per_m2'], 2)
-                })
+            # Process rooms
+            rooms = manual_data.get('rooms', [])
+            for room in rooms:
+                room_name = room.get('name', 'Unknown Room')
                 
-                # Wall primer
-                line_items.append({
-                    'description': f'{room_name} - Wall Primer',
-                    'quantity': wall_area,
-                    'unit': 'm²',
-                    'unit_price': paint_prices['primer_per_m2'],
-                    'total': round(wall_area * paint_prices['primer_per_m2'], 2)
-                })
+                # Process walls
+                walls = room.get('walls', [])
+                for wall in walls:
+                    wall_area = wall.get('area', 0)
+                    wall_name = wall.get('name', 'Wall')
+                    
+                    if wall_area > 0:
+                        # Sanding
+                        sanding_level = wall.get('sanding_level', 'light')
+                        if sanding_level in pricing['walls']['sanding']:
+                            line_items.append({
+                                'description': f'{room_name} - {wall_name} - Sanding ({sanding_level})',
+                                'quantity': wall_area,
+                                'unit': 'm²',
+                                'unit_price': pricing['walls']['sanding'][sanding_level],
+                                'total': wall_area * pricing['walls']['sanding'][sanding_level]
+                            })
+                        
+                        # Priming
+                        priming_coats = wall.get('priming_coats', 'one_coat')
+                        if priming_coats in pricing['walls']['priming']:
+                            line_items.append({
+                                'description': f'{room_name} - {wall_name} - Priming ({priming_coats})',
+                                'quantity': wall_area,
+                                'unit': 'm²',
+                                'unit_price': pricing['walls']['priming'][priming_coats],
+                                'total': wall_area * pricing['walls']['priming'][priming_coats]
+                            })
+                        
+                        # Painting
+                        painting_coats = wall.get('painting_coats', 'two_coat')
+                        if painting_coats in pricing['walls']['painting']:
+                            line_items.append({
+                                'description': f'{room_name} - {wall_name} - Painting ({painting_coats})',
+                                'quantity': wall_area,
+                                'unit': 'm²',
+                                'unit_price': pricing['walls']['painting'][painting_coats],
+                                'total': wall_area * pricing['walls']['painting'][painting_coats]
+                            })
                 
-                # Wall paint
-                line_items.append({
-                    'description': f'{room_name} - Wall Paint (2 coats)',
-                    'quantity': wall_area,
-                    'unit': 'm²',
-                    'unit_price': paint_prices['paint_per_m2'],
-                    'total': round(wall_area * paint_prices['paint_per_m2'], 2)
-                })
+                # Process ceiling
+                ceiling = room.get('ceiling')
+                if ceiling and ceiling.get('area', 0) > 0:
+                    ceiling_area = ceiling['area']
+                    
+                    # Ceiling preparation
+                    prep_level = ceiling.get('preparation_level', 'light')
+                    if prep_level in pricing['ceiling']['preparation']:
+                        line_items.append({
+                            'description': f'{room_name} - Ceiling Preparation ({prep_level})',
+                            'quantity': ceiling_area,
+                            'unit': 'm²',
+                            'unit_price': pricing['ceiling']['preparation'][prep_level],
+                            'total': ceiling_area * pricing['ceiling']['preparation'][prep_level]
+                        })
+                    
+                    # Ceiling painting
+                    painting_coats = ceiling.get('painting_coats', 'one_coat')
+                    if painting_coats in pricing['ceiling']['painting']:
+                        line_items.append({
+                            'description': f'{room_name} - Ceiling Painting ({painting_coats})',
+                            'quantity': ceiling_area,
+                            'unit': 'm²',
+                            'unit_price': pricing['ceiling']['painting'][painting_coats],
+                            'total': ceiling_area * pricing['ceiling']['painting'][painting_coats]
+                        })
                 
-                # Wall painting labor
-                line_items.append({
-                    'description': f'{room_name} - Wall Painting Labor',
-                    'quantity': wall_area,
-                    'unit': 'm²',
-                    'unit_price': labor_prices['painting_per_m2'],
-                    'total': round(wall_area * labor_prices['painting_per_m2'], 2)
-                })
+                # Process other surfaces
+                other_surfaces = room.get('otherSurfaces')
+                if other_surfaces and other_surfaces.get('area', 0) > 0:
+                    surface_area = other_surfaces['area']
+                    surface_desc = other_surfaces.get('description', 'Other Surface')
+                    line_items.append({
+                        'description': f'{room_name} - {surface_desc}',
+                        'quantity': surface_area,
+                        'unit': 'm²',
+                        'unit_price': pricing['interior']['otherItems'],
+                        'total': surface_area * pricing['interior']['otherItems']
+                    })
             
-            if ceiling_area > 0:
-                # Ceiling paint
-                line_items.append({
-                    'description': f'{room_name} - Ceiling Paint',
-                    'quantity': ceiling_area,
-                    'unit': 'm²',
-                    'unit_price': paint_prices['ceiling_paint_per_m2'],
-                    'total': round(ceiling_area * paint_prices['ceiling_paint_per_m2'], 2)
-                })
-                
-                # Ceiling painting labor
-                line_items.append({
-                    'description': f'{room_name} - Ceiling Painting Labor',
-                    'quantity': ceiling_area,
-                    'unit': 'm²',
-                    'unit_price': labor_prices['ceiling_per_m2'],
-                    'total': round(ceiling_area * labor_prices['ceiling_per_m2'], 2)
-                })
+            # Process interior items
+            interior_items = manual_data.get('interiorItems', {})
+            for item_type, items in interior_items.items():
+                if item_type in pricing['interior']:
+                    for item in items:
+                        quantity = item.get('quantity', 0)
+                        description = item.get('description', item_type.replace('_', ' ').title())
+                        if quantity > 0:
+                            line_items.append({
+                                'description': f'Interior - {description}',
+                                'quantity': quantity,
+                                'unit': 'piece',
+                                'unit_price': pricing['interior'][item_type],
+                                'total': quantity * pricing['interior'][item_type]
+                            })
+            
+            # Process exterior items
+            exterior_items = manual_data.get('exteriorItems', {})
+            for item_type, items in exterior_items.items():
+                if item_type in pricing['exterior']:
+                    for item in items:
+                        quantity = item.get('quantity', 0)
+                        description = item.get('description', item_type.replace('_', ' ').title())
+                        if quantity > 0:
+                            line_items.append({
+                                'description': f'Exterior - {description}',
+                                'quantity': quantity,
+                                'unit': 'piece',
+                                'unit_price': pricing['exterior'][item_type],
+                                'total': quantity * pricing['exterior'][item_type]
+                            })
         
-        # Add general items
-        if totals.get('total_floor_area_m2', 0) > 0:
+        # Fallback to AI analysis if no manual measurements
+        elif has_ai_analysis:
+            analysis = project.floor_plan_analysis
+            surface_areas = analysis.get('surface_areas', {})
+            rooms_data = surface_areas.get('rooms', {})
+            
+            # Process AI-detected rooms
+            for room_name, room_data in rooms_data.items():
+                floor_area = room_data.get('floor_area_m2', 0)
+                wall_area = room_data.get('wall_area_m2', 0)
+                ceiling_area = room_data.get('ceiling_area_m2', 0)
+                
+                if wall_area > 0:
+                    # Basic wall work for AI-detected rooms
+                    line_items.extend([
+                        {
+                            'description': f'{room_name} - Wall Preparation',
+                            'quantity': wall_area,
+                            'unit': 'm²',
+                            'unit_price': pricing['walls']['sanding']['light'],
+                            'total': wall_area * pricing['walls']['sanding']['light']
+                        },
+                        {
+                            'description': f'{room_name} - Wall Priming',
+                            'quantity': wall_area,
+                            'unit': 'm²',
+                            'unit_price': pricing['walls']['priming']['one_coat'],
+                            'total': wall_area * pricing['walls']['priming']['one_coat']
+                        },
+                        {
+                            'description': f'{room_name} - Wall Painting (2 coats)',
+                            'quantity': wall_area,
+                            'unit': 'm²',
+                            'unit_price': pricing['walls']['painting']['two_coat'],
+                            'total': wall_area * pricing['walls']['painting']['two_coat']
+                        }
+                    ])
+                
+                if ceiling_area > 0:
+                    line_items.extend([
+                        {
+                            'description': f'{room_name} - Ceiling Preparation',
+                            'quantity': ceiling_area,
+                            'unit': 'm²',
+                            'unit_price': pricing['ceiling']['preparation']['light'],
+                            'total': ceiling_area * pricing['ceiling']['preparation']['light']
+                        },
+                        {
+                            'description': f'{room_name} - Ceiling Painting',
+                            'quantity': ceiling_area,
+                            'unit': 'm²',
+                            'unit_price': pricing['ceiling']['painting']['one_coat'],
+                            'total': ceiling_area * pricing['ceiling']['painting']['one_coat']
+                        }
+                    ])
+            
+            # Add estimated items from AI analysis
+            if 'structured_measurements' in analysis:
+                structured = analysis['structured_measurements']
+                
+                # Add interior items
+                interior_items = structured.get('interior_items', {})
+                for item_type, items in interior_items.items():
+                    if item_type in pricing['interior']:
+                        for item in items:
+                            quantity = item.get('quantity', 0)
+                            description = item.get('description', item_type.replace('_', ' ').title())
+                            if quantity > 0:
+                                line_items.append({
+                                    'description': f'Interior - {description}',
+                                    'quantity': quantity,
+                                    'unit': 'piece',
+                                    'unit_price': pricing['interior'][item_type],
+                                    'total': quantity * pricing['interior'][item_type]
+                                })
+                
+                # Add exterior items
+                exterior_items = structured.get('exterior_items', {})
+                for item_type, items in exterior_items.items():
+                    if item_type in pricing['exterior']:
+                        for item in items:
+                            quantity = item.get('quantity', 0)
+                            description = item.get('description', item_type.replace('_', ' ').title())
+                            if quantity > 0:
+                                line_items.append({
+                                    'description': f'Exterior - {description}',
+                                    'quantity': quantity,
+                                    'unit': 'piece',
+                                    'unit_price': pricing['exterior'][item_type],
+                                    'total': quantity * pricing['exterior'][item_type]
+                                })
+        
+        # Add general items if there are work items
+        if line_items:
             line_items.append({
-                'description': 'Floor Protection & Cleanup',
+                'description': 'Cleanup and Site Preparation',
                 'quantity': 1,
                 'unit': 'job',
-                'unit_price': quote_settings.get('cleanup_fee', 150.00),
-                'total': quote_settings.get('cleanup_fee', 150.00)
+                'unit_price': pricing['additional']['cleanup_fee'],
+                'total': pricing['additional']['cleanup_fee']
             })
+        
+        if not line_items:
+            return jsonify({'error': 'No work items found to generate quote from'}), 400
         
         # Calculate totals
         subtotal = sum(item['total'] for item in line_items)
-        vat_rate = user.company.vat_rate if user.company else 0.20
+        vat_rate = user.company.vat_rate if user.company and hasattr(user.company, 'vat_rate') else 0.20
         vat_amount = subtotal * vat_rate
         total_amount = subtotal + vat_amount
         
         # Create quote
-        quote_title = data.get('title', f"Paint Quote - {project.name}")
-        quote_description = data.get('description', f"Comprehensive painting quote for {project.name} based on AI floor plan analysis.")
+        quote_title = data.get('title', f"Auto-Generated Paint Quote - {project.name}")
+        quote_description = data.get('description', 
+            f"Comprehensive painting quote for {project.name} based on " +
+            ("manual measurements and " if has_manual_measurements else "") +
+            ("AI floor plan analysis." if has_ai_analysis else "project analysis."))
         
         quote = Quote(
             quote_number=Quote.generate_quote_number(),
@@ -275,7 +476,7 @@ def auto_generate_quote(project_id):
         db.session.add(quote)
         db.session.flush()
         
-        # Generate PDF
+        # Generate enhanced PDF
         quote_generator = QuoteGenerator()
         pdf_path = quote_generator.generate_quote_pdf(
             quote=quote,
@@ -295,8 +496,11 @@ def auto_generate_quote(project_id):
             'subtotal': quote.subtotal,
             'vat_amount': quote.vat_amount,
             'total_amount': quote.total_amount,
+            'line_items_count': len(line_items),
             'generated_at': datetime.utcnow().isoformat(),
-            'auto_generated': True
+            'auto_generated': True,
+            'data_source': 'manual_measurements' if has_manual_measurements else 'ai_analysis',
+            'room_based': True
         }
         
         # Update project status to ready if it's still draft
@@ -306,9 +510,15 @@ def auto_generate_quote(project_id):
         db.session.commit()
         
         return jsonify({
-            'message': 'Quote auto-generated successfully',
+            'message': 'Enhanced quote auto-generated successfully',
             'quote': quote.to_dict(include_project=True),
-            'line_items_count': len(line_items),
+            'generation_info': {
+                'line_items_count': len(line_items),
+                'data_source': 'manual_measurements' if has_manual_measurements else 'ai_analysis',
+                'room_based_items': len([item for item in line_items if ' - ' in item['description']]),
+                'interior_items': len([item for item in line_items if 'Interior' in item['description']]),
+                'exterior_items': len([item for item in line_items if 'Exterior' in item['description']])
+            },
             'pdf_path': pdf_path
         }), 201
         
@@ -317,11 +527,11 @@ def auto_generate_quote(project_id):
         current_app.logger.error(f'Auto-generate quote error: {e}')
         return jsonify({'error': 'Failed to auto-generate quote'}), 500
 
-# ... rest of the routes remain the same
+# Enhanced existing routes with better error handling and validation
 @quotes_bp.route('/<int:quote_id>', methods=['GET'])
 @jwt_required()
 def get_quote(quote_id):
-    """Get a specific quote"""
+    """Get a specific quote with enhanced details"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -334,9 +544,24 @@ def get_quote(quote_id):
         if not quote:
             return jsonify({'error': 'Quote not found'}), 404
         
-        # Return quote with project data included
+        # Return quote with enhanced project data
+        quote_data = quote.to_dict(include_project=True)
+        
+        # Add organization information for the frontend
+        line_items = quote_data.get('line_items', [])
+        quote_data['organization_info'] = {
+            'total_line_items': len(line_items),
+            'room_based_items': len([item for item in line_items if ' - ' in item.get('description', '')]),
+            'interior_items': len([item for item in line_items if 'Interior' in item.get('description', '')]),
+            'exterior_items': len([item for item in line_items if 'Exterior' in item.get('description', '')]),
+            'general_items': len([item for item in line_items if 
+                               ' - ' not in item.get('description', '') and 
+                               'Interior' not in item.get('description', '') and 
+                               'Exterior' not in item.get('description', '')])
+        }
+        
         return jsonify({
-            'quote': quote.to_dict(include_project=True)
+            'quote': quote_data
         })
         
     except Exception as e:
@@ -346,7 +571,7 @@ def get_quote(quote_id):
 @quotes_bp.route('/<int:quote_id>', methods=['PUT'])
 @jwt_required()
 def update_quote(quote_id):
-    """Update a quote"""
+    """Update a quote with enhanced validation"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -364,34 +589,60 @@ def update_quote(quote_id):
         
         data = request.get_json()
         
-        # Update quote fields
+        # Update quote fields with enhanced validation
         if 'title' in data:
-            quote.title = data['title']
+            quote.title = str(data['title']).strip()
+        
         if 'description' in data:
-            quote.description = data['description']
+            quote.description = str(data['description']).strip()
+        
         if 'line_items' in data:
             line_items = data['line_items']
             
-            # Recalculate totals
-            subtotal = 0.0
-            for item in line_items:
-                quantity = float(item['quantity'])
-                unit_price = float(item['unit_price'])
-                item_total = quantity * unit_price
-                item['total'] = round(item_total, 2)
-                subtotal += item_total
+            if not isinstance(line_items, list):
+                return jsonify({'error': 'line_items must be a list'}), 400
             
-            vat_rate = user.company.vat_rate if user.company else 0.20
+            # Recalculate totals with enhanced validation
+            subtotal = 0.0
+            processed_items = []
+            
+            for item in line_items:
+                try:
+                    if not all(key in item for key in ['description', 'quantity', 'unit_price']):
+                        return jsonify({'error': 'Each line item must have description, quantity, and unit_price'}), 400
+                    
+                    quantity = float(item['quantity'])
+                    unit_price = float(item['unit_price'])
+                    item_total = quantity * unit_price
+                    
+                    processed_item = {
+                        'description': str(item['description']).strip(),
+                        'quantity': quantity,
+                        'unit': item.get('unit', 'piece'),
+                        'unit_price': unit_price,
+                        'total': round(item_total, 2)
+                    }
+                    
+                    processed_items.append(processed_item)
+                    subtotal += item_total
+                    
+                except (ValueError, TypeError) as e:
+                    return jsonify({'error': f'Invalid numeric values in line item: {str(e)}'}), 400
+            
+            vat_rate = user.company.vat_rate if user.company and hasattr(user.company, 'vat_rate') else 0.20
             vat_amount = subtotal * vat_rate
             total_amount = subtotal + vat_amount
             
-            quote.line_items = line_items
+            quote.line_items = processed_items
             quote.subtotal = round(subtotal, 2)
             quote.vat_amount = round(vat_amount, 2)
             quote.total_amount = round(total_amount, 2)
         
         if 'valid_until' in data:
-            quote.valid_until = datetime.fromisoformat(data['valid_until'])
+            try:
+                quote.valid_until = datetime.fromisoformat(data['valid_until'].replace('Z', '+00:00'))
+            except ValueError:
+                return jsonify({'error': 'Invalid valid_until date format'}), 400
         
         quote.updated_at = datetime.utcnow()
         db.session.commit()
@@ -409,7 +660,7 @@ def update_quote(quote_id):
 @quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
 @jwt_required()
 def send_quote(quote_id):
-    """Send quote to client"""
+    """Send quote to client with enhanced email handling"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -428,6 +679,12 @@ def send_quote(quote_id):
         if not client_email:
             return jsonify({'error': 'Client email is required'}), 400
         
+        # Validate email format
+        import re
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, client_email):
+            return jsonify({'error': 'Invalid email format'}), 400
+        
         # Update quote status
         quote.status = 'sent'
         quote.sent_at = datetime.utcnow()
@@ -442,13 +699,23 @@ def send_quote(quote_id):
                 project=quote.project,
                 company=user.company
             )
+            
+            return jsonify({
+                'message': f'Quote sent successfully to {client_email}',
+                'quote': quote.to_dict(include_project=True)
+            })
+            
         except Exception as e:
             current_app.logger.warning(f'Failed to send quote email: {e}')
-        
-        return jsonify({
-            'message': 'Quote sent successfully',
-            'quote': quote.to_dict(include_project=True)
-        })
+            # Revert status change if email fails
+            quote.status = 'draft'
+            quote.sent_at = None
+            db.session.commit()
+            
+            return jsonify({
+                'error': 'Failed to send email',
+                'details': 'Quote status not changed due to email delivery failure'
+            }), 500
         
     except Exception as e:
         db.session.rollback()
@@ -458,7 +725,7 @@ def send_quote(quote_id):
 @quotes_bp.route('/<int:quote_id>/download', methods=['GET'])
 @jwt_required()
 def download_quote_pdf(quote_id):
-    """Download quote PDF"""
+    """Download enhanced quote PDF"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -472,7 +739,24 @@ def download_quote_pdf(quote_id):
             return jsonify({'error': 'Quote not found'}), 404
         
         if not quote.pdf_path or not os.path.exists(quote.pdf_path):
-            return jsonify({'error': 'Quote PDF not found'}), 404
+            # Try to regenerate PDF if missing
+            try:
+                quote_generator = QuoteGenerator()
+                pdf_path = quote_generator.generate_quote_pdf(
+                    quote=quote,
+                    project=quote.project,
+                    company=user.company,
+                    output_dir=os.path.join(
+                        current_app.config['RESULTS_FOLDER'],
+                        str(user.company_id),
+                        str(quote.project_id)
+                    )
+                )
+                quote.pdf_path = pdf_path
+                db.session.commit()
+            except Exception as e:
+                current_app.logger.error(f'Failed to regenerate PDF: {e}')
+                return jsonify({'error': 'Quote PDF not available and could not be regenerated'}), 404
         
         filename = f"quote_{quote.quote_number}.pdf"
         
@@ -490,7 +774,7 @@ def download_quote_pdf(quote_id):
 @quotes_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_quotes():
-    """Get all quotes for the company"""
+    """Get all quotes for the company with enhanced filtering"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -500,10 +784,13 @@ def get_quotes():
         per_page = min(request.args.get('per_page', 20, type=int), 100)
         status_filter = request.args.get('status')
         search_term = request.args.get('search')
+        date_from = request.args.get('date_from')
+        date_to = request.args.get('date_to')
         
         # Build query
         query = Quote.query.join(Project).filter(Project.company_id == user.company_id)
         
+        # Apply filters
         if status_filter:
             query = query.filter(Quote.status == status_filter)
         
@@ -518,6 +805,20 @@ def get_quotes():
                 )
             )
         
+        if date_from:
+            try:
+                from_date = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+                query = query.filter(Quote.created_at >= from_date)
+            except ValueError:
+                return jsonify({'error': 'Invalid date_from format'}), 400
+        
+        if date_to:
+            try:
+                to_date = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+                query = query.filter(Quote.created_at <= to_date)
+            except ValueError:
+                return jsonify({'error': 'Invalid date_to format'}), 400
+        
         # Order by most recent
         query = query.order_by(Quote.created_at.desc())
         
@@ -528,7 +829,17 @@ def get_quotes():
         
         quotes_data = []
         for quote in quotes_paginated.items:
-            quotes_data.append(quote.to_dict(include_project=True))
+            quote_dict = quote.to_dict(include_project=True)
+            
+            # Add organization info for each quote
+            line_items = quote_dict.get('line_items', [])
+            quote_dict['organization_info'] = {
+                'room_based_items': len([item for item in line_items if ' - ' in item.get('description', '')]),
+                'interior_items': len([item for item in line_items if 'Interior' in item.get('description', '')]),
+                'exterior_items': len([item for item in line_items if 'Exterior' in item.get('description', '')])
+            }
+            
+            quotes_data.append(quote_dict)
         
         return jsonify({
             'quotes': quotes_data,
@@ -539,6 +850,12 @@ def get_quotes():
                 'total': quotes_paginated.total,
                 'has_next': quotes_paginated.has_next,
                 'has_prev': quotes_paginated.has_prev
+            },
+            'filters_applied': {
+                'status': status_filter,
+                'search': search_term,
+                'date_from': date_from,
+                'date_to': date_to
             }
         })
         
@@ -549,66 +866,79 @@ def get_quotes():
 @quotes_bp.route('/pricing-templates', methods=['GET'])
 @jwt_required()
 def get_pricing_templates():
-    """Get pricing templates for quote generation"""
+    """Get enhanced pricing templates for quote generation"""
     try:
-        # These could be stored in database or config
+        # Enhanced templates with more detailed pricing structures
         templates = {
-            'basic': {
+            'basic_interior': {
                 'name': 'Basic Interior',
-                'paint_prices': {
-                    'primer_per_m2': 3.50,
-                    'paint_per_m2': 4.20,
-                    'ceiling_paint_per_m2': 3.80
+                'description': 'Standard interior painting with basic preparation',
+                'wall_sanding_prices': {'light': 5.00, 'medium': 8.00, 'heavy': 12.00},
+                'wall_priming_prices': {'one_coat': 4.50, 'two_coat': 7.00},
+                'wall_painting_prices': {'one_coat': 6.00, 'two_coat': 9.50, 'three_coat': 13.00},
+                'ceiling_prep_prices': {'light': 4.00, 'medium': 7.00, 'heavy': 11.00},
+                'ceiling_paint_prices': {'one_coat': 5.50, 'two_coat': 8.50},
+                'interior_prices': {
+                    'doors': 85.00, 'fixedWindows': 45.00, 'turnWindows': 55.00,
+                    'stairs': 25.00, 'radiators': 35.00, 'skirtingBoards': 12.00,
+                    'otherItems': 10.00
                 },
-                'labor_prices': {
-                    'prep_per_m2': 2.00,
-                    'painting_per_m2': 3.50,
-                    'ceiling_per_m2': 3.20
-                },
-                'additional_fees': {
-                    'cleanup_fee': 150.00,
-                    'materials_markup': 0.15
-                }
+                'additional_fees': {'cleanup_fee': 150.00, 'materials_markup': 0.15}
             },
-            'premium': {
+            'premium_interior': {
                 'name': 'Premium Interior',
-                'paint_prices': {
-                    'primer_per_m2': 4.50,
-                    'paint_per_m2': 6.20,
-                    'ceiling_paint_per_m2': 5.80
+                'description': 'High-end interior painting with extensive preparation',
+                'wall_sanding_prices': {'light': 7.00, 'medium': 12.00, 'heavy': 18.00},
+                'wall_priming_prices': {'one_coat': 6.50, 'two_coat': 10.00},
+                'wall_painting_prices': {'one_coat': 8.50, 'two_coat': 14.00, 'three_coat': 20.00},
+                'ceiling_prep_prices': {'light': 6.00, 'medium': 10.00, 'heavy': 16.00},
+                'ceiling_paint_prices': {'one_coat': 8.00, 'two_coat': 12.50},
+                'interior_prices': {
+                    'doors': 125.00, 'fixedWindows': 65.00, 'turnWindows': 85.00,
+                    'stairs': 40.00, 'radiators': 55.00, 'skirtingBoards': 18.00,
+                    'otherItems': 15.00
                 },
-                'labor_prices': {
-                    'prep_per_m2': 3.00,
-                    'painting_per_m2': 5.50,
-                    'ceiling_per_m2': 5.20
-                },
-                'additional_fees': {
-                    'cleanup_fee': 200.00,
-                    'materials_markup': 0.20
-                }
+                'additional_fees': {'cleanup_fee': 250.00, 'materials_markup': 0.20}
             },
-            'exterior': {
-                'name': 'Exterior Painting',
-                'paint_prices': {
-                    'primer_per_m2': 5.50,
-                    'paint_per_m2': 7.20,
-                    'trim_per_m': 12.00
+            'exterior_standard': {
+                'name': 'Standard Exterior',
+                'description': 'Standard exterior painting with weather protection',
+                'wall_sanding_prices': {'light': 8.00, 'medium': 14.00, 'heavy': 22.00},
+                'wall_priming_prices': {'one_coat': 7.50, 'two_coat': 12.00},
+                'wall_painting_prices': {'one_coat': 10.00, 'two_coat': 16.00, 'three_coat': 24.00},
+                'exterior_prices': {
+                    'doors': 120.00, 'fixedWindows': 65.00, 'turnWindows': 85.00,
+                    'dormerWindows': 120.00, 'fasciaBoards': 18.00, 'rainPipe': 15.00,
+                    'otherItems': 20.00
                 },
-                'labor_prices': {
-                    'prep_per_m2': 4.00,
-                    'painting_per_m2': 6.50,
-                    'trim_per_m': 15.00
+                'additional_fees': {'cleanup_fee': 200.00, 'materials_markup': 0.25}
+            },
+            'commercial': {
+                'name': 'Commercial',
+                'description': 'Commercial painting with durable finishes',
+                'wall_sanding_prices': {'light': 6.00, 'medium': 10.00, 'heavy': 16.00},
+                'wall_priming_prices': {'one_coat': 5.50, 'two_coat': 9.00},
+                'wall_painting_prices': {'one_coat': 7.50, 'two_coat': 12.00, 'three_coat': 18.00},
+                'ceiling_prep_prices': {'light': 5.00, 'medium': 8.50, 'heavy': 14.00},
+                'ceiling_paint_prices': {'one_coat': 6.50, 'two_coat': 10.00},
+                'interior_prices': {
+                    'doors': 95.00, 'fixedWindows': 50.00, 'turnWindows': 65.00,
+                    'stairs': 30.00, 'radiators': 40.00, 'skirtingBoards': 14.00,
+                    'otherItems': 12.00
                 },
-                'additional_fees': {
-                    'scaffolding_per_day': 120.00,
-                    'cleanup_fee': 250.00,
-                    'materials_markup': 0.25
-                }
+                'exterior_prices': {
+                    'doors': 140.00, 'fixedWindows': 75.00, 'turnWindows': 95.00,
+                    'dormerWindows': 140.00, 'fasciaBoards': 22.00, 'rainPipe': 18.00,
+                    'otherItems': 25.00
+                },
+                'additional_fees': {'cleanup_fee': 300.00, 'materials_markup': 0.20}
             }
         }
         
         return jsonify({
-            'templates': templates
+            'templates': templates,
+            'currency': 'GBP',
+            'last_updated': datetime.utcnow().isoformat()
         })
         
     except Exception as e:
