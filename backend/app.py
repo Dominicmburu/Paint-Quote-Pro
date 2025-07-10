@@ -26,6 +26,8 @@ from routes.projects import projects_bp
 from routes.quotes import quotes_bp
 from routes.subscriptions import subscriptions_bp
 from routes.admin import admin_bp
+from routes.clients import clients_bp
+from routes.settings import settings_bp
 
 def create_app(config_name=None):
     """Application factory pattern with enhanced JWT, CORS, and static file configuration"""
@@ -408,6 +410,8 @@ def create_app(config_name=None):
     app.register_blueprint(quotes_bp, url_prefix='/api/quotes')
     app.register_blueprint(subscriptions_bp, url_prefix='/api/subscriptions')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
+    app.register_blueprint(clients_bp, url_prefix='/api/clients')
+    app.register_blueprint(settings_bp, url_prefix='/api/settings')
     
     # TEST/DEBUG ENDPOINTS
     @app.route('/api/test-auth')

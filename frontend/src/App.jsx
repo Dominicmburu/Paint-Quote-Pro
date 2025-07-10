@@ -71,6 +71,9 @@ import NotFound from './pages/NotFound';
 // Styles
 import './App.css';
 import './styles/globals.css';
+// import ProjectCreationPage from './components/projects/ProjectCreationPage';
+import CreateProjectUnified from './components/projects/CreateProjectUnified';
+import PricingSettings from './components/settings/PricingSettings';
 
 function App() {
   return (
@@ -154,7 +157,7 @@ function App() {
               <Route path="/payment/success" element={<PaymentSuccess />} />
               <Route path="/payment/cancelled" element={<PaymentCancelled />} />
               <Route path="/payment/failed" element={<PaymentFailed />} />
-              
+
               {/* Subscription Status Routes - Protected but accessible when expired */}
               <Route path="/subscription/expired" element={
                 <ProtectedRoute allowExpired={true}>
@@ -211,7 +214,9 @@ function App() {
 
                       <Route path="/projects/new" element={
                         <ProtectedRoute>
-                          <CreateProject />
+                          <CreateProjectUnified />
+                          {/* <CreateProject /> */}
+                          {/* <ProjectCreationPage/> */}
                         </ProtectedRoute>
                       } />
 
@@ -275,6 +280,14 @@ function App() {
                         <ProtectedRoute>
                           <PaintBrandSettings />
                         </ProtectedRoute>
+                      } />
+
+                      <Route path="/settings/pricing" element={
+                        <>
+                          <ProtectedRoute>
+                            <PricingSettings />
+                          </ProtectedRoute>
+                        </>
                       } />
 
                       {/* Protected Routes - Subscription */}

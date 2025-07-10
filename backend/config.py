@@ -130,8 +130,8 @@ class Config:
     SUBSCRIPTION_PLANS = {
         'starter': {
             'name': 'Starter',
-            'price_monthly': 29,
-            'price_yearly': 290,
+            'price_monthly': 9.99,
+            'price_yearly': 90.99,
             'stripe_price_id_monthly': os.environ.get('STRIPE_STARTER_MONTHLY'),
             'stripe_price_id_yearly': os.environ.get('STRIPE_STARTER_YEARLY'),
             'max_projects': 5,

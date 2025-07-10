@@ -13,11 +13,13 @@ from utils.decorators import require_active_subscription
 
 quotes_bp = Blueprint('quotes', __name__)
 
+
+# Add to routes/quotes.py (updated generate_quote function)
 @quotes_bp.route('/project/<int:project_id>', methods=['POST'])
 @jwt_required()
 @require_active_subscription
 def generate_quote(project_id):
-    """Generate a quote for a project with enhanced room-based organization"""
+    """Generate a comprehensive quote with all client and company information"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -30,21 +32,7 @@ def generate_quote(project_id):
         if not project:
             return jsonify({'error': 'Project not found'}), 404
         
-        # Enhanced validation - allow manual quotes without strict status check
         data = request.get_json()
-        
-        # If line_items are provided (manual quote), allow any status
-        if not data.get('line_items'):
-            # Only enforce status check for auto-generated quotes without line items
-            if project.status not in ['ready', 'completed']:
-                return jsonify({
-                    'error': 'Project must be analyzed or have measurements before generating quotes',
-                    'current_status': project.status
-                }), 400
-        else:
-            # For manual quotes with line items, update status to ready if it's draft
-            if project.status == 'draft':
-                project.status = 'ready'
         
         # Validate quote data
         required_fields = ['title', 'line_items']
@@ -56,7 +44,7 @@ def generate_quote(project_id):
         if not isinstance(line_items, list) or not line_items:
             return jsonify({'error': 'line_items must be a non-empty list'}), 400
         
-        # Enhanced line item processing with better organization
+        # Process line items with enhanced validation
         processed_line_items = []
         subtotal = 0.0
         
@@ -88,7 +76,7 @@ def generate_quote(project_id):
         vat_amount = subtotal * vat_rate
         total_amount = subtotal + vat_amount
         
-        # Create quote with enhanced data
+        # Create quote with comprehensive information
         quote = Quote(
             quote_number=Quote.generate_quote_number(),
             title=data['title'],
@@ -104,9 +92,9 @@ def generate_quote(project_id):
         db.session.add(quote)
         db.session.flush()  # Get quote ID
         
-        # Generate enhanced PDF with room-based organization
+        # Generate enhanced PDF with comprehensive information
         quote_generator = QuoteGenerator()
-        pdf_path = quote_generator.generate_quote_pdf(
+        pdf_path = quote_generator.generate_enhanced_quote_pdf(
             quote=quote,
             project=project,
             company=user.company,
@@ -120,39 +108,35 @@ def generate_quote(project_id):
         quote.pdf_path = pdf_path
         project.quote_pdf_path = pdf_path
         
-        # Update project quote data with enhanced information
+        # Update project quote data with comprehensive information
         project.quote_data = {
             'quote_id': quote.id,
+            'quote_number': quote.quote_number,
             'subtotal': quote.subtotal,
             'vat_amount': quote.vat_amount,
             'total_amount': quote.total_amount,
             'line_items_count': len(processed_line_items),
             'generated_at': datetime.utcnow().isoformat(),
-            'room_based': any(' - ' in item['description'] for item in processed_line_items),
-            'interior_items_count': len([item for item in processed_line_items if 'Interior' in item['description']]),
-            'exterior_items_count': len([item for item in processed_line_items if 'Exterior' in item['description']])
+            'valid_until': quote.valid_until.isoformat()
         }
+        
+        # Update project status if this is first quote
+        if project.status in ['draft', 'ready']:
+            project.status = 'quoted'
         
         db.session.commit()
         
         return jsonify({
-            'message': 'Enhanced quote generated successfully',
-            'quote': quote.to_dict(include_project=True),
-            'pdf_path': pdf_path,
-            'organization_info': {
-                'total_line_items': len(processed_line_items),
-                'room_based_items': len([item for item in processed_line_items if ' - ' in item['description']]),
-                'interior_items': len([item for item in processed_line_items if 'Interior' in item['description']]),
-                'exterior_items': len([item for item in processed_line_items if 'Exterior' in item['description']])
-            }
+            'message': 'Quote generated successfully with comprehensive information',
+            'quote': quote.to_dict(include_project=True, include_company=True),
+            'pdf_path': pdf_path
         }), 201
         
-    except ValueError as e:
-        return jsonify({'error': f'Invalid data: {str(e)}'}), 400
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Generate quote error: {e}')
         return jsonify({'error': 'Failed to generate quote'}), 500
+    
 
 @quotes_bp.route('/project/<int:project_id>/auto-generate', methods=['POST'])
 @jwt_required()

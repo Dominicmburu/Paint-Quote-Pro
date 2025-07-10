@@ -28,6 +28,8 @@ class Company(db.Model):
     users = db.relationship('User', back_populates='company')
     projects = db.relationship('Project', back_populates='company', lazy='dynamic')
     subscription = db.relationship('Subscription', back_populates='company', uselist=False)
+    # Add pricing relationship
+    pricing_settings = db.relationship('PricingSettings', back_populates='company', uselist=False)
     
     def to_dict(self):
         return {

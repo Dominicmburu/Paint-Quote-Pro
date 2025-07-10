@@ -1,0 +1,53 @@
+{
+    "analysis_summary": {
+        "timestamp": "2025-07-10T10:52:55.635605",
+        "analysis_method": "Enhanced GPT-4 Vision",
+        "rooms_detected": 5,
+        "total_wall_area_m2": 165.34,
+        "total_ceiling_area_m2": 62.56,
+        "total_paintable_area_m2": 227.9
+    },
+    "room_breakdown": [
+        {
+            "name": "Bedroom",
+            "type": "Bedroom",
+            "wall_count": 4,
+            "total_wall_area": 29.28,
+            "ceiling_area": 8.9304,
+            "dimensions": "2.44m x 3.66m"
+        },
+        {
+            "name": "Bedroom",
+            "type": "Bedroom",
+            "wall_count": 4,
+            "total_wall_area": 29.28,
+            "ceiling_area": 8.9304,
+            "dimensions": "2.44m x 3.66m"
+        },
+        {
+            "name": "Living Room",
+            "type": "Living Room",
+            "wall_count": 4,
+            "total_wall_area": 40.980000000000004,
+            "ceiling_area": 17.8608,
+            "dimensions": "4.88m x 3.66m"
+        },
+        {
+            "name": "Kitchen",
+            "type": "Kitchen",
+            "wall_count": 4,
+            "total_wall_area": 45.36,
+            "ceiling_area": 22.3016,
+            "dimensions": "4.57m x 4.88m"
+        },
+        {
+            "name": "Bath",
+            "type": "Bathroom",
+            "wall_count": 4,
+            "total_wall_area": 20.44,
+            "ceiling_area": 4.536899999999999,
+            "dimensions": "2.13m x 2.13m"
+        }
+    ],
+    "notes": "Enhanced analysis with detailed wall and ceiling measurements"
+}

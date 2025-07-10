@@ -1,0 +1,12 @@
+{
+    "analysis_summary": {
+        "timestamp": "2025-07-10T11:00:04.815946",
+        "analysis_method": "Enhanced GPT-4 Vision",
+        "rooms_detected": 0,
+        "total_wall_area_m2": 0,
+        "total_ceiling_area_m2": 0,
+        "total_paintable_area_m2": 0
+    },
+    "room_breakdown": [],
+    "notes": "Enhanced analysis with detailed wall and ceiling measurements"
+}

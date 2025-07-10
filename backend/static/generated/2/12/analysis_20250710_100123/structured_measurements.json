@@ -1,0 +1,224 @@
+{
+    "rooms": [
+        {
+            "id": 1,
+            "name": "Woonkamer",
+            "type": "Living Room",
+            "walls": [
+                {
+                    "id": 1,
+                    "name": "North Wall",
+                    "length": 6.65,
+                    "height": 2.4,
+                    "area": 15.96,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 2,
+                    "name": "South Wall",
+                    "length": 6.65,
+                    "height": 2.4,
+                    "area": 15.96,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 3,
+                    "name": "East Wall",
+                    "length": 8.44,
+                    "height": 2.4,
+                    "area": 20.26,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 4,
+                    "name": "West Wall",
+                    "length": 8.44,
+                    "height": 2.4,
+                    "area": 20.26,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "length": 6.65,
+                "width": 8.44,
+                "area": 56.126,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null
+        },
+        {
+            "id": 2,
+            "name": "Keuken",
+            "type": "Kitchen",
+            "walls": [],
+            "ceiling": {
+                "length": 0,
+                "width": 0,
+                "area": 0,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null
+        },
+        {
+            "id": 3,
+            "name": "Eetkamer",
+            "type": "Dining Room",
+            "walls": [
+                {
+                    "id": 1,
+                    "name": "North Wall",
+                    "length": 3.95,
+                    "height": 2.4,
+                    "area": 9.48,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 2,
+                    "name": "South Wall",
+                    "length": 3.95,
+                    "height": 2.4,
+                    "area": 9.48,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 3,
+                    "name": "East Wall",
+                    "length": 2.53,
+                    "height": 2.4,
+                    "area": 6.07,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 4,
+                    "name": "West Wall",
+                    "length": 2.53,
+                    "height": 2.4,
+                    "area": 6.07,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "length": 3.95,
+                "width": 2.53,
+                "area": 9.9935,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null
+        },
+        {
+            "id": 4,
+            "name": "Entree",
+            "type": "Entrance",
+            "walls": [
+                {
+                    "id": 1,
+                    "name": "North Wall",
+                    "length": 2.58,
+                    "height": 2.4,
+                    "area": 6.19,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 2,
+                    "name": "South Wall",
+                    "length": 2.58,
+                    "height": 2.4,
+                    "area": 6.19,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 3,
+                    "name": "East Wall",
+                    "length": 1.3,
+                    "height": 2.4,
+                    "area": 3.12,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 4,
+                    "name": "West Wall",
+                    "length": 1.3,
+                    "height": 2.4,
+                    "area": 3.12,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 5,
+                    "name": "North Wall",
+                    "length": 0.97,
+                    "height": 2.4,
+                    "area": 2.33,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 6,
+                    "name": "South Wall",
+                    "length": 0.97,
+                    "height": 2.4,
+                    "area": 2.33,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 7,
+                    "name": "East Wall",
+                    "length": 0.83,
+                    "height": 2.4,
+                    "area": 1.99,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                },
+                {
+                    "id": 8,
+                    "name": "West Wall",
+                    "length": 0.83,
+                    "height": 2.4,
+                    "area": 1.99,
+                    "sanding_level": "light",
+                    "priming_coats": "one_coat",
+                    "painting_coats": "two_coat"
+                }
+            ],
+            "ceiling": {
+                "length": 0.97,
+                "width": 0.83,
+                "area": 0.8050999999999999,
+                "preparation_level": "light",
+                "painting_coats": "one_coat"
+            },
+            "other_surfaces": null
+        }
+    ],
+    "notes": "Generated from enhanced AI analysis with detailed room measurements"
+}

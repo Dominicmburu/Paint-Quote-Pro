@@ -1,0 +1,45 @@
+{
+    "analysis_summary": {
+        "timestamp": "2025-07-10T19:26:45.983310",
+        "analysis_method": "Enhanced GPT-4 Vision",
+        "rooms_detected": 4,
+        "total_wall_area_m2": 138.04,
+        "total_ceiling_area_m2": 58.98,
+        "total_paintable_area_m2": 197.02
+    },
+    "room_breakdown": [
+        {
+            "name": "Keuken",
+            "type": "Kitchen",
+            "wall_count": 4,
+            "total_wall_area": 31.1,
+            "ceiling_area": 9.9935,
+            "dimensions": "3.95m x 2.53m"
+        },
+        {
+            "name": "Woonkamer",
+            "type": "Living Room",
+            "wall_count": 4,
+            "total_wall_area": 58.28,
+            "ceiling_area": 36.508500000000005,
+            "dimensions": "6.65m x 5.49m"
+        },
+        {
+            "name": "Eetkamer",
+            "type": "Dining Room",
+            "wall_count": 4,
+            "total_wall_area": 30.04,
+            "ceiling_area": 9.124500000000001,
+            "dimensions": "3.95m x 2.31m"
+        },
+        {
+            "name": "Entree",
+            "type": "Entrance",
+            "wall_count": 4,
+            "total_wall_area": 18.62,
+            "ceiling_area": 3.354,
+            "dimensions": "2.58m x 1.3m"
+        }
+    ],
+    "notes": "Enhanced analysis with detailed wall and ceiling measurements"
+}

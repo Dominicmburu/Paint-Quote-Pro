@@ -1,5 +1,4 @@
-# Update your Quote model's to_dict method in models/quote.py
-
+# models/quote.py (Updated)
 from datetime import datetime, timedelta
 from . import db
 
@@ -46,8 +45,8 @@ class Quote(db.Model):
     def is_expired(self):
         return datetime.utcnow() > self.valid_until
     
-    def to_dict(self, include_project=True):
-        """Convert quote to dictionary with optional project data"""
+    def to_dict(self, include_project=True, include_company=True):
+        """Convert quote to dictionary with comprehensive information"""
         quote_dict = {
             'id': self.id,
             'quote_number': self.quote_number,
@@ -68,27 +67,55 @@ class Quote(db.Model):
             'project_id': self.project_id
         }
         
-        # Include project data if requested and available
+        # Include comprehensive project and client data
         if include_project and self.project:
+            client_info = self.project.get_client_info()
+            
             quote_dict['project'] = {
                 'id': self.project.id,
                 'name': self.project.name,
                 'description': self.project.description,
-                'client_name': self.project.client_name,
-                'client_email': self.project.client_email,
-                'client_phone': self.project.client_phone,
-                'client_address': self.project.client_address,
                 'project_type': self.project.project_type,
                 'property_type': self.project.property_type,
+                'property_address': self.project.property_address,
                 'status': self.project.status,
-                'created_at': self.project.created_at.isoformat() if self.project.created_at else None
+                'created_at': self.project.created_at.isoformat() if self.project.created_at else None,
+                
+                # Client information
+                'client_info': client_info
             }
             
             # Also add client info directly to quote for easier access
-            quote_dict['client_name'] = self.project.client_name
-            quote_dict['client_email'] = self.project.client_email
-            quote_dict['client_phone'] = self.project.client_phone
-            quote_dict['client_address'] = self.project.client_address
-            quote_dict['project_name'] = self.project.name
+            quote_dict.update({
+                'client_company_name': client_info['company_name'],
+                'client_contact_name': client_info['contact_name'],
+                'client_email': client_info['email'],
+                'client_phone': client_info['phone'],
+                'client_address': client_info['address'],
+                'client_btw_number': client_info['btw_number'],
+                'client_kvk_number': client_info['kvk_number'],
+                'client_iban': client_info['iban'],
+                'client_website': client_info['website'],
+                'project_name': self.project.name,
+                'property_address': self.project.property_address
+            })
+        
+        # Include company information for quote
+        if include_company and self.project and self.project.company:
+            company = self.project.company
+            quote_dict['company'] = {
+                'id': company.id,
+                'name': company.name,
+                'email': company.email,
+                'phone': company.phone,
+                'address': company.address,
+                'website': company.website,
+                'logo_url': company.logo_url,
+                'vat_number': company.vat_number,
+                'vat_rate': company.vat_rate,
+                'preferred_paint_brand': company.preferred_paint_brand,
+                'quote_footer_text': company.quote_footer_text,
+                'quote_terms_conditions': company.quote_terms_conditions
+            }
         
         return quote_dict
