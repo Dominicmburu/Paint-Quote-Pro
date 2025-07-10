@@ -1,4 +1,20 @@
 @import "tailwindcss";
+
+/* @import "tailwindcss/preflight"; */
+@import "tailwindcss/utilities";
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .my-input {
+    @apply focus:ring-purple-500;
+  }
+} */
+
+
+
 /* @import "tailwindcss/forms"; */
 /* @import "tailwindcss/components";
 @import "tailwindcss/utilities";
@@ -21,6 +37,9 @@
 @import "tailwindcss/scrollbar-thumb-rounded";
 @import "tailwindcss/scrollbar-thumb-rounded-full";  */
 
+
 .App {
   text-align: left;
 }
+
+
