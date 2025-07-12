@@ -328,12 +328,81 @@ def send_subscription_cancelled_email(email: str, first_name: str, company_name:
         raise
 
 
+# def send_quote_email(client_email: str, quote, project, company):
+#     """Send quote to client"""
+#     try:
+#         mail = Mail(current_app)
+        
+#         subject = f"Paint Quote #{quote.quote_number} from {company.name}"
+        
+#         html_body = f"""
+#         <html>
+#         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+#             <div style="background-color: #7C3AED; color: white; padding: 20px; text-align: center;">
+#                 <h1>Paint Quote</h1>
+#             </div>
+            
+#             <div style="padding: 30px;">
+#                 <h2>Quote for {project.name}</h2>
+                
+#                 <p>Dear {project.client_name or 'Valued Customer'},</p>
+                
+#                 <p>Thank you for your interest in our painting services. Please find attached your detailed quote.</p>
+                
+#                 <div style="background-color: #F3F4F6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+#                     <h3>Quote Summary</h3>
+#                     <p><strong>Quote Number:</strong> {quote.quote_number}</p>
+#                     <p><strong>Project:</strong> {project.name}</p>
+#                     <p><strong>Total Amount:</strong> £{quote.total_amount:.2f}</p>
+#                     <p><strong>Valid Until:</strong> {quote.valid_until.strftime('%B %d, %Y')}</p>
+#                 </div>
+                
+#                 <p>This quote includes all materials and labor as specified in the attached document.</p>
+                
+#                 <p>If you have any questions or would like to discuss this quote, please don't hesitate to contact us.</p>
+                
+#                 <p>We look forward to working with you!</p>
+                
+#                 <p>Best regards,<br>{company.name}<br>
+#                 {company.phone or ''}<br>
+#                 {company.email or ''}</p>
+#             </div>
+#         </body>
+#         </html>
+#         """
+        
+#         msg = Message(
+#             subject=subject,
+#             recipients=[client_email],
+#             html=html_body
+#         )
+        
+#         # Attach PDF if it exists
+#         if quote.pdf_path and os.path.exists(quote.pdf_path):
+#             with open(quote.pdf_path, 'rb') as f:
+#                 msg.attach(
+#                     filename=f"quote_{quote.quote_number}.pdf",
+#                     content_type="application/pdf",
+#                     data=f.read()
+#                 )
+        
+#         mail.send(msg)
+#         logger.info(f"Quote email sent to {client_email}")
+        
+#     except Exception as e:
+#         logger.error(f"Failed to send quote email: {e}")
+#         raise
+
+
 def send_quote_email(client_email: str, quote, project, company):
-    """Send quote to client"""
+    """Send quote to client with comprehensive PDF attachment logging"""
     try:
         mail = Mail(current_app)
         
         subject = f"Paint Quote #{quote.quote_number} from {company.name}"
+        
+        # 📧 LOG: Starting quote email process
+        logger.info(f"📧 Starting quote email to {client_email} for quote #{quote.quote_number}")
         
         html_body = f"""
         <html>
@@ -377,18 +446,91 @@ def send_quote_email(client_email: str, quote, project, company):
             html=html_body
         )
         
-        # Attach PDF if it exists
-        if quote.pdf_path and os.path.exists(quote.pdf_path):
-            with open(quote.pdf_path, 'rb') as f:
-                msg.attach(
-                    filename=f"quote_{quote.quote_number}.pdf",
-                    content_type="application/pdf",
-                    data=f.read()
-                )
+        # 📎 LOG: PDF attachment process
+        pdf_attachment_log = {
+            'attempted_paths': [],
+            'successful_attachment': False,
+            'attached_file': None,
+            'file_size_bytes': 0,
+            'errors': []
+        }
+        
+        # Try multiple PDF path sources
+        pdf_paths_to_try = [
+            ('quote.pdf_path', quote.pdf_path if hasattr(quote, 'pdf_path') else None),
+            ('project.quote_pdf_path', project.quote_pdf_path if hasattr(project, 'quote_pdf_path') else None)
+        ]
+        
+        logger.info(f"📎 Checking PDF paths for quote #{quote.quote_number}")
+        
+        for path_source, pdf_path in pdf_paths_to_try:
+            pdf_attachment_log['attempted_paths'].append({
+                'source': path_source,
+                'path': pdf_path,
+                'exists': bool(pdf_path and os.path.exists(pdf_path))
+            })
+            
+            logger.info(f"📋 Checking {path_source}: {pdf_path} (exists: {bool(pdf_path and os.path.exists(pdf_path))})")
+            
+            if pdf_path and os.path.exists(pdf_path):
+                try:
+                    logger.info(f"📎 Attempting to attach PDF from {path_source}: {pdf_path}")
+                    
+                    with open(pdf_path, 'rb') as f:
+                        pdf_data = f.read()
+                        msg.attach(
+                            filename=f"quote_{quote.quote_number}.pdf",
+                            content_type="application/pdf",
+                            data=pdf_data
+                        )
+                    
+                    pdf_attachment_log['successful_attachment'] = True
+                    pdf_attachment_log['attached_file'] = pdf_path
+                    pdf_attachment_log['file_size_bytes'] = len(pdf_data)
+                    
+                    logger.info(f"✅ PDF attached successfully from {path_source}: {pdf_path} ({len(pdf_data)} bytes)")
+                    break
+                    
+                except Exception as e:
+                    error_msg = f"Failed to attach PDF from {path_source}: {str(e)}"
+                    pdf_attachment_log['errors'].append(error_msg)
+                    logger.warning(f"⚠️ {error_msg}")
+        
+        # 📎 LOG: Final PDF attachment status
+        if not pdf_attachment_log['successful_attachment']:
+            logger.warning(f"⚠️ No PDF could be attached to quote email for quote #{quote.quote_number}")
+            logger.warning(f"📋 PDF attachment summary: {pdf_attachment_log}")
+        else:
+            logger.info(f"✅ PDF attachment successful for quote #{quote.quote_number}")
+        
+        # 📤 LOG: Sending email
+        logger.info(f"📤 Sending quote email to {client_email} (PDF attached: {pdf_attachment_log['successful_attachment']})")
         
         mail.send(msg)
-        logger.info(f"Quote email sent to {client_email}")
+        
+        # 📧 LOG: Email sent successfully
+        logger.info(f"✅ Quote email sent successfully to {client_email}")
+        logger.info(f"📊 Email summary - Quote: #{quote.quote_number}, PDF attached: {pdf_attachment_log['successful_attachment']}, File size: {pdf_attachment_log['file_size_bytes']} bytes")
+        
+        return {
+            'success': True,
+            'email_sent': True,
+            'pdf_attached': pdf_attachment_log['successful_attachment'],
+            'pdf_details': pdf_attachment_log
+        }
         
     except Exception as e:
-        logger.error(f"Failed to send quote email: {e}")
+        logger.error(f"❌ Failed to send quote email to {client_email}: {e}")
+        logger.error(f"📋 PDF attachment log: {pdf_attachment_log}")
         raise
+
+
+
+
+
+
+
+
+
+
+
