@@ -1,109 +1,19 @@
+// 2. Updated RoomMeasurements.jsx - Remove Individual Cost Calculation
 import React, { useEffect, useCallback } from 'react';
 import { Plus, Trash2, Square, Building, AlertCircle, RefreshCw } from 'lucide-react';
 import { usePricing } from '../../hooks/usePricing';
 
-const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
+const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
   const { 
     pricing, 
     loading: pricingLoading, 
     error: pricingError, 
-    getRoomPricing,
     refreshPricing 
   } = usePricing();
 
-  // Calculate total cost whenever rooms or pricing changes
-  const calculateTotalCost = useCallback(() => {
-    if (!pricing?.walls || !pricing?.ceiling) {
-      console.log('⚠️ Pricing not loaded yet, skipping cost calculation');
-      onCostChange(0);
-      return;
-    }
-
-    let total = 0;
-    
-    try {
-      console.log('🔍 Database pricing structure:', pricing);
-      
-      rooms.forEach(room => {
-        // Calculate wall costs
-        (room.walls || []).forEach(wall => {
-          const area = parseFloat(wall.area) || 0;
-          
-          if (wall.sanding_filling) {
-            // Use light sanding as default for sanding/filling
-            const price = pricing.walls?.sanding?.light?.price || 0;
-            total += area * price;
-            console.log(`Wall sanding/filling: ${area}m² × £${price} = £${(area * price).toFixed(2)}`);
-          }
-          if (wall.priming) {
-            // Use single coat priming as default
-            const price = pricing.walls?.priming?.one_coat?.price || 0;
-            total += area * price;
-            console.log(`Wall priming: ${area}m² × £${price} = £${(area * price).toFixed(2)}`);
-          }
-          if (wall.one_coat) {
-            // Use single coat painting
-            const price = pricing.walls?.painting?.one_coat?.price || 0;
-            total += area * price;
-            console.log(`Wall 1 coat: ${area}m² × £${price} = £${(area * price).toFixed(2)}`);
-          }
-          if (wall.two_coats) {
-            // Use double coat painting
-            const price = pricing.walls?.painting?.two_coat?.price || 0;
-            total += area * price;
-            console.log(`Wall 2 coats: ${area}m² × £${price} = £${(area * price).toFixed(2)}`);
-          }
-        });
-
-        // Calculate ceiling costs
-        if (room.ceiling) {
-          const area = parseFloat(room.ceiling.area) || 0;
-          
-          if (room.ceiling.sanding_filling) {
-            // Use light preparation as default for sanding/filling
-            const price = pricing.ceiling?.preparation?.light?.price || 0;
-            total += area * price;
-            console.log(`Ceiling sanding/filling: ${area}m² × £${price} = £${(area * price).toFixed(2)}`);
-          }
-          if (room.ceiling.priming) {
-            // For ceiling priming, we'll use light preparation price as there's no separate priming
-            const price = pricing.ceiling?.preparation?.light?.price || 0;
-            total += area * price;
-            console.log(`Ceiling priming: ${area}m² × £${price} = £${(area * price).toFixed(2)}`);
-          }
-          if (room.ceiling.one_coat) {
-            // Use single coat ceiling painting
-            const price = pricing.ceiling?.painting?.one_coat?.price || 0;
-            total += area * price;
-            console.log(`Ceiling 1 coat: ${area}m² × £${price} = £${(area * price).toFixed(2)}`);
-          }
-          if (room.ceiling.two_coats) {
-            // Use double coat ceiling painting
-            const price = pricing.ceiling?.painting?.two_coat?.price || 0;
-            total += area * price;
-            console.log(`Ceiling 2 coats: ${area}m² × £${price} = £${(area * price).toFixed(2)}`);
-          }
-        }
-      });
-
-      // Ensure total is a valid number
-      if (isNaN(total) || !isFinite(total)) {
-        console.warn('⚠️ Total calculated as NaN or infinite, setting to 0');
-        total = 0;
-      }
-
-      console.log('💰 Room measurements total cost calculated:', total.toFixed(2));
-      onCostChange(total);
-    } catch (error) {
-      console.error('❌ Error calculating room costs:', error);
-      onCostChange(0);
-    }
-  }, [rooms, pricing, onCostChange]);
-
-  // Recalculate costs when rooms or pricing changes
-  useEffect(() => {
-    calculateTotalCost();
-  }, [calculateTotalCost]);
+  // REMOVED: Individual cost calculation - now handled by parent
+  // const calculateTotalCost = useCallback(() => { ... }
+  // useEffect(() => { calculateTotalCost(); }, [calculateTotalCost]);
 
   const addRoom = () => {
     const newRoom = {
@@ -301,6 +211,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
         <h2 className="text-2xl font-bold text-gray-900 flex items-center">
           <Square className="h-6 w-6 mr-3 text-teal-800" />
           Room Measurements
+          <div className="ml-4 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
+            Real-time calculation
+          </div>
         </h2>
         <div className="flex items-center space-x-4">
           {pricingLoading && (
@@ -341,6 +254,14 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
         </div>
       )}
 
+      {/* Real-time Status */}
+      <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-6">
+        <div className="flex items-center text-sm text-green-800">
+          <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+          All changes update the total price instantly
+        </div>
+      </div>
+
       {/* Current Pricing Display */}
       {pricing && !pricingLoading && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -366,7 +287,7 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
             </div>
             <div className="col-span-2">
               <span className="text-xs text-blue-700">
-                Pricing loaded from database • Last updated: {new Date().toLocaleTimeString()}
+                Pricing loaded from database • Real-time updates enabled
               </span>
             </div>
           </div>
@@ -381,10 +302,12 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
               value={room.name}
               onChange={(e) => updateRoom(room.id, 'name', e.target.value)}
               className="text-xl font-semibold bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1"
+              placeholder="Room Name"
             />
             <button
               onClick={() => removeRoom(room.id)}
               className="text-red-600 hover:text-red-700"
+              title="Remove Room"
             >
               <Trash2 className="h-5 w-5" />
             </button>
@@ -416,7 +339,8 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       min="0"
                       value={wall.length || ''}
                       onChange={(e) => updateWallInRoom(room.id, wall.id, 'length', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="0.0"
                     />
                   </div>
                   <div>
@@ -427,7 +351,8 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       min="0"
                       value={wall.height || ''}
                       onChange={(e) => updateWallInRoom(room.id, wall.id, 'height', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="2.4"
                     />
                   </div>
                   <div>
@@ -445,9 +370,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={wall.sanding_filling}
+                          checked={wall.sanding_filling || false}
                           onChange={() => toggleWallTreatment(room.id, wall.id, 'sanding_filling')}
-                          className="mr-2"
+                          className="mr-2 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="text-xs">
                           Sanding/Filling {getPriceDisplay('walls', 'sanding_filling')}
@@ -456,9 +381,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={wall.priming}
+                          checked={wall.priming || false}
                           onChange={() => toggleWallTreatment(room.id, wall.id, 'priming')}
-                          className="mr-2"
+                          className="mr-2 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="text-xs">
                           Priming {getPriceDisplay('walls', 'priming')}
@@ -467,9 +392,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={wall.one_coat}
+                          checked={wall.one_coat || false}
                           onChange={() => toggleWallTreatment(room.id, wall.id, 'one_coat')}
-                          className="mr-2"
+                          className="mr-2 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="text-xs">
                           1 Coat {getPriceDisplay('walls', 'one_coat')}
@@ -478,9 +403,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={wall.two_coats}
+                          checked={wall.two_coats || false}
                           onChange={() => toggleWallTreatment(room.id, wall.id, 'two_coats')}
-                          className="mr-2"
+                          className="mr-2 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="text-xs">
                           2 Coats {getPriceDisplay('walls', 'two_coats')}
@@ -500,7 +425,8 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                 <div className="flex justify-end mt-2">
                   <button
                     onClick={() => removeWallFromRoom(room.id, wall.id)}
-                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
+                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                    title="Remove Wall"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -544,7 +470,8 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       min="0"
                       value={room.ceiling.width || ''}
                       onChange={(e) => updateCeilingInRoom(room.id, 'width', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="0.0"
                     />
                   </div>
                   <div>
@@ -555,7 +482,8 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       min="0"
                       value={room.ceiling.length || ''}
                       onChange={(e) => updateCeilingInRoom(room.id, 'length', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="0.0"
                     />
                   </div>
                   <div>
@@ -573,9 +501,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={room.ceiling.sanding_filling}
+                          checked={room.ceiling.sanding_filling || false}
                           onChange={() => toggleCeilingTreatment(room.id, 'sanding_filling')}
-                          className="mr-2"
+                          className="mr-2 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="text-xs">
                           Sanding/Filling {getPriceDisplay('ceiling', 'sanding_filling')}
@@ -584,9 +512,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={room.ceiling.priming}
+                          checked={room.ceiling.priming || false}
                           onChange={() => toggleCeilingTreatment(room.id, 'priming')}
-                          className="mr-2"
+                          className="mr-2 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="text-xs">
                           Priming {getPriceDisplay('ceiling', 'priming')}
@@ -595,9 +523,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={room.ceiling.one_coat}
+                          checked={room.ceiling.one_coat || false}
                           onChange={() => toggleCeilingTreatment(room.id, 'one_coat')}
-                          className="mr-2"
+                          className="mr-2 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="text-xs">
                           1 Coat {getPriceDisplay('ceiling', 'one_coat')}
@@ -606,9 +534,9 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
                       <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={room.ceiling.two_coats}
+                          checked={room.ceiling.two_coats || false}
                           onChange={() => toggleCeilingTreatment(room.id, 'two_coats')}
-                          className="mr-2"
+                          className="mr-2 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="text-xs">
                           2 Coats {getPriceDisplay('ceiling', 'two_coats')}
@@ -636,7 +564,8 @@ const RoomMeasurements = ({ rooms, setRooms, onCostChange }) => {
           <Square className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No rooms added yet</h3>
           <p className="text-gray-500 mb-6">
-            Add rooms manually or they will be populated from AI analysis
+            Add rooms manually or they will be populated from AI analysis.
+            Total price updates automatically as you add measurements.
           </p>
           <button
             onClick={addRoom}

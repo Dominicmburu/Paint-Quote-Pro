@@ -182,102 +182,284 @@ class FloorPlanAnalyzer:
                 "timestamp": datetime.utcnow().isoformat()
             }
     
+
+
+    # def _extract_detailed_room_data(self, analysis_text: str) -> List[Dict]:
+    #     """Extract detailed room data from GPT analysis"""
+    #     import re
+        
+    #     rooms = []
+    #     lines = analysis_text.split('\n')
+    #     current_room = None
+        
+    #     for line in lines:
+    #         line = line.strip()
+            
+    #         # Match room header: "Room 1: Living Room (living room)"
+    #         room_match = re.match(r'Room\s+\d+:\s*(.+?)\s*\((.+?)\)', line)
+    #         if room_match:
+    #             if current_room:
+    #                 rooms.append(current_room)
+                
+    #             room_name = room_match.group(1).strip()
+    #             room_type = room_match.group(2).strip()
+                
+    #             current_room = {
+    #                 'id': len(rooms) + 1,
+    #                 'name': room_name,
+    #                 'type': room_type,
+    #                 'dimensions': {'length': 0, 'width': 0},
+    #                 'floor_area': 0,
+    #                 'wall_height': 2.4,
+    #                 'total_wall_area': 0,
+    #                 'ceiling_area': 0,
+    #                 'walls': []
+    #             }
+    #             continue
+            
+    #         if current_room:
+    #             # Extract dimensions
+    #             dim_match = re.search(r'Dimensions:\s*(\d+\.?\d*)m?\s*x\s*(\d+\.?\d*)m?', line)
+    #             if dim_match:
+    #                 current_room['dimensions']['length'] = float(dim_match.group(1))
+    #                 current_room['dimensions']['width'] = float(dim_match.group(2))
+    #                 current_room['floor_area'] = current_room['dimensions']['length'] * current_room['dimensions']['width']
+    #                 current_room['ceiling_area'] = current_room['floor_area']
+                
+    #             # Extract total wall area
+    #             wall_area_match = re.search(r'Total Wall Area:\s*(\d+\.?\d*)\s*m²?', line)
+    #             if wall_area_match:
+    #                 current_room['total_wall_area'] = float(wall_area_match.group(1))
+                
+    #             # Extract individual walls
+    #             wall_match = re.search(r'\*\s*(\w+)\s*Wall:\s*(\d+\.?\d*)m?\s*x\s*(\d+\.?\d*)m?\s*=\s*(\d+\.?\d*)\s*m²?', line)
+    #             if wall_match:
+    #                 wall_name = wall_match.group(1)
+    #                 wall_length = float(wall_match.group(2))
+    #                 wall_height = float(wall_match.group(3))
+    #                 wall_area = float(wall_match.group(4))
+                    
+    #                 # AI provides measurements only - no treatment recommendations
+    #                 current_room['walls'].append({
+    #                     'id': len(current_room['walls']) + 1,
+    #                     'name': f"{wall_name} Wall",
+    #                     'length': wall_length,
+    #                     'height': wall_height,
+    #                     'area': wall_area
+    #                     # No treatment fields - user will input these manually
+    #                 })
+        
+    #     # Add the last room
+    #     if current_room:
+    #         rooms.append(current_room)
+        
+    #     # Validate and fill missing data
+    #     for room in rooms:
+    #         # If no individual walls but have total wall area, create a summary wall
+    #         if not room['walls'] and room['total_wall_area'] > 0:
+    #             room['walls'].append({
+    #                 'id': 1,
+    #                 'name': 'Total Wall Area',
+    #                 'length': 0,
+    #                 'height': room['wall_height'],
+    #                 'area': room['total_wall_area']
+    #                 # No treatment fields - user will select these
+    #             })
+            
+    #         # Calculate perimeter if we have dimensions
+    #         if room['dimensions']['length'] > 0 and room['dimensions']['width'] > 0:
+    #             perimeter = 2 * (room['dimensions']['length'] + room['dimensions']['width'])
+                
+    #             # If we don't have total wall area, estimate it
+    #             if room['total_wall_area'] == 0:
+    #                 room['total_wall_area'] = perimeter * room['wall_height']
+                
+    #             # If we have a summary wall, calculate its equivalent length
+    #             if room['walls'] and room['walls'][0]['length'] == 0:
+    #                 room['walls'][0]['length'] = room['total_wall_area'] / room['wall_height']
+        
+    #     return rooms
+    
+
     def _extract_detailed_room_data(self, analysis_text: str) -> List[Dict]:
-        """Extract detailed room data from GPT analysis"""
+        """Extract detailed room data from GPT analysis with improved parsing"""
         import re
         
         rooms = []
         lines = analysis_text.split('\n')
         current_room = None
         
-        for line in lines:
+        print(f"🔍 Parsing analysis text with {len(lines)} lines")
+        
+        for i, line in enumerate(lines):
             line = line.strip()
-            
-            # Match room header: "Room 1: Living Room (living room)"
-            room_match = re.match(r'Room\s+\d+:\s*(.+?)\s*\((.+?)\)', line)
-            if room_match:
-                if current_room:
-                    rooms.append(current_room)
-                
-                room_name = room_match.group(1).strip()
-                room_type = room_match.group(2).strip()
-                
-                current_room = {
-                    'id': len(rooms) + 1,
-                    'name': room_name,
-                    'type': room_type,
-                    'dimensions': {'length': 0, 'width': 0},
-                    'floor_area': 0,
-                    'wall_height': 2.4,
-                    'total_wall_area': 0,
-                    'ceiling_area': 0,
-                    'walls': []
-                }
+            if not line:
                 continue
+                
+            print(f"Processing line {i}: {line}")
             
+            # Enhanced room header matching - handle multiple formats
+            room_patterns = [
+                r'###?\s*Room\s+\d+:\s*(.+?)\s*\((.+?)\)',  # ### Room 1: Bedroom (Bedroom)
+                r'Room\s+\d+:\s*(.+?)\s*\((.+?)\)',         # Room 1: Bedroom (Bedroom)
+                r'###\s*(.+?)\s*\((.+?)\)',                 # ### Bedroom (Bedroom)
+            ]
+            
+            room_matched = False
+            for pattern in room_patterns:
+                room_match = re.match(pattern, line, re.IGNORECASE)
+                if room_match:
+                    # Save previous room if exists
+                    if current_room and current_room.get('name'):
+                        print(f"✅ Completed room: {current_room['name']}")
+                        rooms.append(current_room)
+                    
+                    room_name = room_match.group(1).strip()
+                    room_type = room_match.group(2).strip()
+                    
+                    print(f"🏠 Found new room: {room_name} ({room_type})")
+                    
+                    current_room = {
+                        'id': len(rooms) + 1,
+                        'name': room_name,
+                        'type': room_type.lower(),
+                        'dimensions': {'length': 0, 'width': 0},
+                        'floor_area': 0,
+                        'wall_height': 2.4,
+                        'total_wall_area': 0,
+                        'ceiling_area': 0,
+                        'walls': []
+                    }
+                    room_matched = True
+                    break
+            
+            if room_matched:
+                continue
+                
             if current_room:
-                # Extract dimensions
-                dim_match = re.search(r'Dimensions:\s*(\d+\.?\d*)m?\s*x\s*(\d+\.?\d*)m?', line)
-                if dim_match:
-                    current_room['dimensions']['length'] = float(dim_match.group(1))
-                    current_room['dimensions']['width'] = float(dim_match.group(2))
-                    current_room['floor_area'] = current_room['dimensions']['length'] * current_room['dimensions']['width']
-                    current_room['ceiling_area'] = current_room['floor_area']
+                # Extract dimensions - multiple formats
+                dim_patterns = [
+                    r'Dimensions:\s*(\d+(?:\.\d+)?)m?\s*x\s*(\d+(?:\.\d+)?)m?',
+                    r'(\d+(?:\.\d+)?)m\s*x\s*(\d+(?:\.\d+)?)m',
+                    r'Floor Area:\s*(\d+(?:\.\d+)?)\s*m².*Dimensions.*?(\d+(?:\.\d+)?)m?\s*x\s*(\d+(?:\.\d+)?)m?'
+                ]
+                
+                for pattern in dim_patterns:
+                    dim_match = re.search(pattern, line, re.IGNORECASE)
+                    if dim_match:
+                        if len(dim_match.groups()) >= 2:
+                            length = float(dim_match.group(1))
+                            width = float(dim_match.group(2))
+                            current_room['dimensions']['length'] = length
+                            current_room['dimensions']['width'] = width
+                            current_room['floor_area'] = length * width
+                            current_room['ceiling_area'] = length * width
+                            print(f"📐 Set dimensions: {length}m x {width}m = {current_room['floor_area']}m²")
+                        break
+                
+                # Extract floor area directly if dimensions parsing failed
+                if current_room['floor_area'] == 0:
+                    area_match = re.search(r'Floor Area:\s*(\d+(?:\.\d+)?)\s*m²?', line, re.IGNORECASE)
+                    if area_match:
+                        current_room['floor_area'] = float(area_match.group(1))
+                        current_room['ceiling_area'] = current_room['floor_area']
+                        print(f"📐 Set floor area directly: {current_room['floor_area']}m²")
                 
                 # Extract total wall area
-                wall_area_match = re.search(r'Total Wall Area:\s*(\d+\.?\d*)\s*m²?', line)
-                if wall_area_match:
-                    current_room['total_wall_area'] = float(wall_area_match.group(1))
+                wall_area_patterns = [
+                    r'Total Wall Area:\s*(\d+(?:\.\d+)?)\s*m²?',
+                    r'Wall Area:\s*(\d+(?:\.\d+)?)\s*m²?'
+                ]
+                
+                for pattern in wall_area_patterns:
+                    wall_area_match = re.search(pattern, line, re.IGNORECASE)
+                    if wall_area_match:
+                        current_room['total_wall_area'] = float(wall_area_match.group(1))
+                        print(f"🧱 Set total wall area: {current_room['total_wall_area']}m²")
+                        break
                 
                 # Extract individual walls
-                wall_match = re.search(r'\*\s*(\w+)\s*Wall:\s*(\d+\.?\d*)m?\s*x\s*(\d+\.?\d*)m?\s*=\s*(\d+\.?\d*)\s*m²?', line)
-                if wall_match:
-                    wall_name = wall_match.group(1)
-                    wall_length = float(wall_match.group(2))
-                    wall_height = float(wall_match.group(3))
-                    wall_area = float(wall_match.group(4))
-                    
-                    # AI provides measurements only - no treatment recommendations
-                    current_room['walls'].append({
-                        'id': len(current_room['walls']) + 1,
-                        'name': f"{wall_name} Wall",
-                        'length': wall_length,
-                        'height': wall_height,
-                        'area': wall_area
-                        # No treatment fields - user will input these manually
-                    })
+                wall_patterns = [
+                    r'\*\s*(\w+)\s*Wall:\s*(\d+(?:\.\d+)?)m?\s*x\s*(\d+(?:\.\d+)?)m?\s*=\s*(\d+(?:\.\d+)?)\s*m²?',
+                    r'(\w+)\s*Wall:\s*(\d+(?:\.\d+)?)m?\s*x\s*(\d+(?:\.\d+)?)m?\s*=\s*(\d+(?:\.\d+)?)\s*m²?'
+                ]
+                
+                for pattern in wall_patterns:
+                    wall_match = re.search(pattern, line, re.IGNORECASE)
+                    if wall_match:
+                        wall_name = wall_match.group(1)
+                        wall_length = float(wall_match.group(2))
+                        wall_height = float(wall_match.group(3))
+                        wall_area = float(wall_match.group(4))
+                        
+                        wall_data = {
+                            'id': len(current_room['walls']) + 1,
+                            'name': f"{wall_name.title()} Wall",
+                            'length': wall_length,
+                            'height': wall_height,
+                            'area': wall_area
+                        }
+                        current_room['walls'].append(wall_data)
+                        print(f"🧱 Added wall: {wall_name} - {wall_length}m x {wall_height}m = {wall_area}m²")
+                        break
         
         # Add the last room
-        if current_room:
+        if current_room and current_room.get('name'):
+            print(f"✅ Completed final room: {current_room['name']}")
             rooms.append(current_room)
         
-        # Validate and fill missing data
+        # Post-process rooms to ensure data consistency
         for room in rooms:
-            # If no individual walls but have total wall area, create a summary wall
-            if not room['walls'] and room['total_wall_area'] > 0:
-                room['walls'].append({
-                    'id': 1,
-                    'name': 'Total Wall Area',
-                    'length': 0,
-                    'height': room['wall_height'],
-                    'area': room['total_wall_area']
-                    # No treatment fields - user will select these
-                })
+            print(f"🔧 Post-processing room: {room['name']}")
             
-            # Calculate perimeter if we have dimensions
-            if room['dimensions']['length'] > 0 and room['dimensions']['width'] > 0:
-                perimeter = 2 * (room['dimensions']['length'] + room['dimensions']['width'])
-                
-                # If we don't have total wall area, estimate it
-                if room['total_wall_area'] == 0:
-                    room['total_wall_area'] = perimeter * room['wall_height']
-                
-                # If we have a summary wall, calculate its equivalent length
-                if room['walls'] and room['walls'][0]['length'] == 0:
-                    room['walls'][0]['length'] = room['total_wall_area'] / room['wall_height']
+            # If no individual walls but have total wall area, create summary walls
+            if not room['walls'] and room['total_wall_area'] > 0:
+                # Try to estimate individual walls from dimensions
+                if room['dimensions']['length'] > 0 and room['dimensions']['width'] > 0:
+                    length = room['dimensions']['length']
+                    width = room['dimensions']['width']
+                    height = room['wall_height']
+                    
+                    walls = [
+                        {'id': 1, 'name': 'North Wall', 'length': length, 'height': height, 'area': length * height},
+                        {'id': 2, 'name': 'South Wall', 'length': length, 'height': height, 'area': length * height},
+                        {'id': 3, 'name': 'East Wall', 'length': width, 'height': height, 'area': width * height},
+                        {'id': 4, 'name': 'West Wall', 'length': width, 'height': height, 'area': width * height}
+                    ]
+                    room['walls'] = walls
+                    room['total_wall_area'] = sum(wall['area'] for wall in walls)
+                    print(f"🔧 Generated 4 walls from dimensions for {room['name']}")
+                else:
+                    # Create a single summary wall
+                    room['walls'] = [{
+                        'id': 1,
+                        'name': 'Total Wall Area',
+                        'length': room['total_wall_area'] / room['wall_height'] if room['wall_height'] > 0 else 0,
+                        'height': room['wall_height'],
+                        'area': room['total_wall_area']
+                    }]
+                    print(f"🔧 Created summary wall for {room['name']}")
+            
+            # Calculate missing total wall area from individual walls
+            if room['total_wall_area'] == 0 and room['walls']:
+                room['total_wall_area'] = sum(wall['area'] for wall in room['walls'])
+                print(f"🔧 Calculated total wall area: {room['total_wall_area']}m²")
+            
+            # Calculate missing dimensions from floor area
+            if room['floor_area'] > 0 and (room['dimensions']['length'] == 0 or room['dimensions']['width'] == 0):
+                # Assume square room if no dimensions
+                side = (room['floor_area'] ** 0.5)
+                room['dimensions']['length'] = side
+                room['dimensions']['width'] = side
+                print(f"🔧 Estimated dimensions as square: {side:.2f}m x {side:.2f}m")
+        
+        print(f"🎉 Successfully extracted {len(rooms)} rooms from analysis")
+        for room in rooms:
+            print(f"  - {room['name']} ({room['type']}): {len(room['walls'])} walls, {room['total_wall_area']}m² wall area, {room['ceiling_area']}m² ceiling")
         
         return rooms
-    
+
+
     def _generate_detailed_structured_measurements(self, gpt_analysis: Dict) -> Dict[str, Any]:
         """Generate detailed structured measurements compatible with frontend"""
         structured = {

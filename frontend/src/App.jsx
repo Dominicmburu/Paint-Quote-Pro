@@ -72,7 +72,7 @@ import NotFound from './pages/NotFound';
 import './App.css';
 import './styles/globals.css';
 // import ProjectCreationPage from './components/projects/ProjectCreationPage';
-import CreateProjectUnified from './components/projects/CreateProjectUnified';
+// import CreateProjectUnified from './components/projects/CreateProjectUnified';
 import PricingSettings from './components/settings/PricingSettings';
 
 function App() {
@@ -214,8 +214,8 @@ function App() {
 
                       <Route path="/projects/new" element={
                         <ProtectedRoute>
-                          <CreateProjectUnified />
-                          {/* <CreateProject /> */}
+                          {/* <CreateProjectUnified /> */}
+                          <CreateProject />
                           {/* <ProjectCreationPage/> */}
                         </ProtectedRoute>
                       } />

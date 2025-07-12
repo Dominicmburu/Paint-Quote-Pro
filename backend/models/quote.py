@@ -1,5 +1,5 @@
-# models/quote.py (Updated)
 from datetime import datetime, timedelta
+import uuid
 from . import db
 
 class Quote(db.Model):
@@ -18,10 +18,11 @@ class Quote(db.Model):
     total_amount = db.Column(db.Float, nullable=False, default=0.0)
     
     # Quote items breakdown
-    line_items = db.Column(db.JSON, nullable=True)  # Detailed breakdown
+    line_items = db.Column(db.JSON, nullable=True)  # Detailed line items
+    measurement_details = db.Column(db.JSON, nullable=True)  # NEW: Detailed measurements
     
     # Status and dates
-    status = db.Column(db.String(20), default='draft')  # draft, sent, accepted, rejected, expired
+    status = db.Column(db.String(20), default='draft')
     valid_until = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=30))
     sent_at = db.Column(db.DateTime, nullable=True)
     accepted_at = db.Column(db.DateTime, nullable=True)
@@ -38,11 +39,12 @@ class Quote(db.Model):
     
     @staticmethod
     def generate_quote_number():
-        import uuid
+        """Generate a unique quote number"""
         return f"PQ{datetime.utcnow().strftime('%Y%m')}-{str(uuid.uuid4())[:8].upper()}"
     
     @property
     def is_expired(self):
+        """Check if the quote has expired"""
         return datetime.utcnow() > self.valid_until
     
     def to_dict(self, include_project=True, include_company=True):
@@ -55,7 +57,8 @@ class Quote(db.Model):
             'subtotal': self.subtotal,
             'vat_amount': self.vat_amount,
             'total_amount': self.total_amount,
-            'line_items': self.line_items,
+            'line_items': self.line_items or [],
+            'measurement_details': self.measurement_details or {},
             'status': self.status,
             'valid_until': self.valid_until.isoformat(),
             'is_expired': self.is_expired,
@@ -67,26 +70,27 @@ class Quote(db.Model):
             'project_id': self.project_id
         }
         
-        # Include comprehensive project and client data
+        # Include project and client data
         if include_project and self.project:
             client_info = self.project.get_client_info()
             
-            quote_dict['project'] = {
-                'id': self.project.id,
-                'name': self.project.name,
-                'description': self.project.description,
+            quote_dict.update({
+                'project': {
+                    'id': self.project.id,
+                    'name': self.project.name,
+                    'description': self.project.description,
+                    'project_type': self.project.project_type,
+                    'property_type': self.project.property_type,
+                    'property_address': self.project.property_address,
+                    'status': self.project.status,
+                    'created_at': self.project.created_at.isoformat() if self.project.created_at else None,
+                },
+                
+                # Direct access fields
+                'project_name': self.project.name,
+                'property_address': self.project.property_address,
                 'project_type': self.project.project_type,
                 'property_type': self.project.property_type,
-                'property_address': self.project.property_address,
-                'status': self.project.status,
-                'created_at': self.project.created_at.isoformat() if self.project.created_at else None,
-                
-                # Client information
-                'client_info': client_info
-            }
-            
-            # Also add client info directly to quote for easier access
-            quote_dict.update({
                 'client_company_name': client_info['company_name'],
                 'client_contact_name': client_info['contact_name'],
                 'client_email': client_info['email'],
@@ -95,12 +99,10 @@ class Quote(db.Model):
                 'client_btw_number': client_info['btw_number'],
                 'client_kvk_number': client_info['kvk_number'],
                 'client_iban': client_info['iban'],
-                'client_website': client_info['website'],
-                'project_name': self.project.name,
-                'property_address': self.project.property_address
+                'client_website': client_info['website']
             })
         
-        # Include company information for quote
+        # Include company information
         if include_company and self.project and self.project.company:
             company = self.project.company
             quote_dict['company'] = {
@@ -110,12 +112,9 @@ class Quote(db.Model):
                 'phone': company.phone,
                 'address': company.address,
                 'website': company.website,
-                'logo_url': company.logo_url,
-                'vat_number': company.vat_number,
-                'vat_rate': company.vat_rate,
-                'preferred_paint_brand': company.preferred_paint_brand,
-                'quote_footer_text': company.quote_footer_text,
-                'quote_terms_conditions': company.quote_terms_conditions
+                'logo_url': getattr(company, 'logo_url', None),
+                'vat_number': getattr(company, 'vat_number', None),
+                'vat_rate': getattr(company, 'vat_rate', 0.20)
             }
         
         return quote_dict

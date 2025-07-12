@@ -2,6 +2,7 @@
 from datetime import datetime
 import json
 from . import db
+import os
 
 class Project(db.Model):
     __tablename__ = 'projects'
@@ -121,3 +122,35 @@ class Project(db.Model):
             'company_id': self.company_id,
             'client_id': self.client_id
         }
+    
+
+
+def clear_analysis_data(self):
+    """Clear all analysis data and files"""
+    self.floor_plan_analysis = None
+    self.manual_measurements = None
+    
+    # Clean up generated files
+    if self.generated_files:
+        for file_path in self.generated_files:
+            try:
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print(f"Warning: Could not delete file {file_path}: {e}")
+    
+    self.generated_files = []
+    db.session.commit()
+
+def set_analysis_results(self, results):
+    """Set analysis results and ensure measurements are saved"""
+    self.floor_plan_analysis = results
+    
+    # Automatically save structured measurements if available
+    if 'structured_measurements' in results:
+        self.manual_measurements = results['structured_measurements']
+        print(f"💾 Auto-saved {len(results['structured_measurements'].get('rooms', []))} rooms to manual_measurements")
+    
+    self.status = 'ready'
+    self.updated_at = datetime.utcnow()
+    db.session.commit()

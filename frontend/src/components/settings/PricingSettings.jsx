@@ -1,4 +1,4 @@
-// components/settings/PricingSettings.jsx
+// 6. UPDATED PricingSettings.jsx - Ensure Wall/Ceiling Simple Pricing Updates Database
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, ArrowLeft, RefreshCw, Settings, RotateCcw } from 'lucide-react';
@@ -28,6 +28,17 @@ const PricingSettings = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // UPDATE SIMPLE WALL/CEILING PRICING (NEW FUNCTIONALITY)
+  const updateSimplePrice = (category, type, newPrice) => {
+    setPricing(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category],
+        [type]: parseFloat(newPrice) || 0
+      }
+    }));
   };
 
   const updatePrice = (category, type, subtype, newPrice) => {
@@ -62,7 +73,7 @@ const PricingSettings = () => {
       setSaving(true);
       setError('');
       await api.post('/settings/pricing', { pricing });
-      setSuccessMessage('Pricing settings saved successfully!');
+      setSuccessMessage('Pricing settings saved successfully! Wall and ceiling pricing updated.');
       setTimeout(() => setSuccessMessage(''), 5000);
     } catch (err) {
       setError('Failed to save pricing settings: ' + (err.response?.data?.message || err.message));
@@ -104,8 +115,11 @@ const PricingSettings = () => {
 
   const formatTypeName = (type) => {
     const typeNames = {
-      sanding: 'Sanding',
+      sanding_filling: 'Sanding/Filling',
       priming: 'Priming',
+      one_coat: 'One Coat',
+      two_coats: 'Two Coats',
+      sanding: 'Sanding',
       painting: 'Painting',
       preparation: 'Preparation',
       doors: 'Doors',
@@ -170,6 +184,45 @@ const PricingSettings = () => {
     </div>
   );
 
+  // RENDER SIMPLE WALL/CEILING PRICING SECTION
+  const renderSimplePricingSection = (category, categoryData) => {
+    if (category !== 'walls' && category !== 'ceiling') return null;
+
+    const simpleFields = ['sanding_filling', 'priming', 'one_coat', 'two_coats'];
+    
+    return (
+      <div key={`${category}_simple`} className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            {formatCategoryName(category)} - Simple Pricing (Used in Real-time Calculator)
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {simpleFields.map(field => (
+              <div key={field}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {formatTypeName(field)} (per m²)
+                </label>
+                <PriceInput
+                  value={categoryData[field] || 0}
+                  onChange={(e) => updateSimplePrice(category, field, e.target.value)}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Used in real-time calculation
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> These simple pricing fields are used in the real-time total calculator. 
+              Changes here will immediately affect project cost calculations.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderPricingSection = (category, categoryData) => {
     if (category === 'additional') {
       return (
@@ -212,32 +265,39 @@ const PricingSettings = () => {
       <div key={category} className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {formatCategoryName(category)}
+            {formatCategoryName(category)} - Advanced Pricing (Legacy Structure)
           </h3>
           <div className="space-y-6">
-            {Object.entries(categoryData).map(([type, typeData]) => (
-              <div key={type} className="border-b border-gray-100 pb-4 last:border-b-0">
-                <h4 className="text-md font-medium text-gray-800 mb-3">
-                  {formatTypeName(type)}
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {Object.entries(typeData).map(([subtype, subtypeData]) => (
-                    <div key={subtype} className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        {formatSubtypeName(subtype)}
-                      </label>
-                      <PriceInput
-                        value={subtypeData.price || 0}
-                        onChange={(e) => updatePrice(category, type, subtype, e.target.value)}
-                      />
-                      <p className="text-xs text-gray-500">
-                        {subtypeData.description}
-                      </p>
-                    </div>
-                  ))}
+            {Object.entries(categoryData).map(([type, typeData]) => {
+              // Skip simple pricing fields in advanced section
+              if (['sanding_filling', 'priming', 'one_coat', 'two_coats'].includes(type)) {
+                return null;
+              }
+
+              return (
+                <div key={type} className="border-b border-gray-100 pb-4 last:border-b-0">
+                  <h4 className="text-md font-medium text-gray-800 mb-3">
+                    {formatTypeName(type)}
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Object.entries(typeData).map(([subtype, subtypeData]) => (
+                      <div key={subtype} className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          {formatSubtypeName(subtype)}
+                        </label>
+                        <PriceInput
+                          value={subtypeData.price || 0}
+                          onChange={(e) => updatePrice(category, type, subtype, e.target.value)}
+                        />
+                        <p className="text-xs text-gray-500">
+                          {subtypeData.description}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -273,7 +333,7 @@ const PricingSettings = () => {
                   <Settings className="h-6 w-6 mr-3 text-teal-600" />
                   Pricing Settings
                 </h1>
-                <p className="text-gray-600">Configure default pricing for quotes and estimates</p>
+                <p className="text-gray-600">Configure pricing for real-time calculations and quotes</p>
               </div>
             </div>
             <div className="flex space-x-3">
@@ -330,18 +390,26 @@ const PricingSettings = () => {
           </div>
         )}
 
-        {/* Pricing Summary Card */}
+        {/* Real-time Calculation Info */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="text-lg font-medium text-blue-900 mb-2">💡 Pricing Tips</h3>
+          <h3 className="text-lg font-medium text-blue-900 mb-2">🔄 Real-time Calculation Pricing</h3>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>• These prices are used as defaults for all new projects and quotes</li>
-            <li>• You can still override prices on individual projects if needed</li>
-            <li>• Changes will apply to new calculations, not existing saved projects</li>
-            <li>• Regular price reviews help maintain competitive and profitable rates</li>
+            <li>• Simple wall and ceiling pricing is used for instant total calculations</li>
+            <li>• Changes take effect immediately in project calculators</li>
+            <li>• Advanced pricing structures provide backward compatibility</li>
+            <li>• All pricing is automatically saved to the database</li>
           </ul>
         </div>
 
-        {/* Pricing Sections */}
+        {/* SIMPLE PRICING SECTIONS (WALLS & CEILING) */}
+        {Object.entries(pricing).map(([category, categoryData]) => {
+          if (['walls', 'ceiling'].includes(category)) {
+            return renderSimplePricingSection(category, categoryData);
+          }
+          return null;
+        })}
+
+        {/* ADVANCED PRICING SECTIONS */}
         <div className="space-y-8">
           {Object.entries(pricing).map(([category, categoryData]) => {
             // Filter out metadata fields
@@ -356,6 +424,8 @@ const PricingSettings = () => {
         {pricing.updated_at && (
           <div className="mt-8 text-center text-sm text-gray-500">
             Last updated: {new Date(pricing.updated_at).toLocaleString()}
+            <br />
+            Wall and ceiling pricing updates real-time calculations
           </div>
         )}
       </div>

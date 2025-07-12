@@ -13,12 +13,9 @@ const CreateProject = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        client_name: '',
-        client_email: '',
-        client_phone: '',
-        client_address: '',
         project_type: 'interior',
-        property_type: 'residential'
+        property_type: 'residential',
+        property_address: ''
     });
 
     const [loading, setLoading] = useState(false);
@@ -38,7 +35,7 @@ const CreateProject = () => {
         try {
             const response = await api.post('/projects', formData);
             
-            // Navigate to the new project details page
+            // Navigate to the project details page to continue setup
             navigate(`/projects/${response.data.project.id}`);
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to create project');
@@ -106,6 +103,9 @@ const CreateProject = () => {
                     {/* Project Information */}
                     <div>
                         <h3 className="text-xl font-semibold text-purple-700 mb-6">Project Information</h3>
+                        <p className="text-sm text-gray-600 mb-6">
+                            Start by entering basic project details. You'll add client information and other details on the next step.
+                        </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="md:col-span-2">
@@ -126,7 +126,7 @@ const CreateProject = () => {
 
                             <div>
                                 <label htmlFor="project_type" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Project Type
+                                    Project Type *
                                 </label>
                                 <select
                                     id="project_type"
@@ -143,7 +143,7 @@ const CreateProject = () => {
 
                             <div>
                                 <label htmlFor="property_type" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Property Type
+                                    Property Type *
                                 </label>
                                 <select
                                     id="property_type"
@@ -159,6 +159,22 @@ const CreateProject = () => {
                             </div>
 
                             <div className="md:col-span-2">
+                                <label htmlFor="property_address" className="block text-sm font-medium text-gray-700 mb-2">
+                                    Property Address *
+                                </label>
+                                <textarea
+                                    id="property_address"
+                                    name="property_address"
+                                    rows={3}
+                                    required
+                                    value={formData.property_address}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    placeholder="123 High Street, London, SW1A 1AA"
+                                />
+                            </div>
+
+                            <div className="md:col-span-2">
                                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                                     Description
                                 </label>
@@ -170,73 +186,6 @@ const CreateProject = () => {
                                     onChange={handleChange}
                                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     placeholder="Brief description of the painting project, rooms involved, special requirements, etc."
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Client Information */}
-                    <div>
-                        <h3 className="text-xl font-semibold text-purple-700 mb-6">Client Information</h3>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label htmlFor="client_name" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Client Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="client_name"
-                                    name="client_name"
-                                    value={formData.client_name}
-                                    onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    placeholder="John Smith"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="client_email" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Client Email
-                                </label>
-                                <input
-                                    type="email"
-                                    id="client_email"
-                                    name="client_email"
-                                    value={formData.client_email}
-                                    onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    placeholder="john@example.com"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="client_phone" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Client Phone
-                                </label>
-                                <input
-                                    type="tel"
-                                    id="client_phone"
-                                    name="client_phone"
-                                    value={formData.client_phone}
-                                    onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    placeholder="+44 123 456 7890"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="client_address" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Property Address
-                                </label>
-                                <textarea
-                                    id="client_address"
-                                    name="client_address"
-                                    rows={3}
-                                    value={formData.client_address}
-                                    onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    placeholder="123 High Street, London, SW1A 1AA"
                                 />
                             </div>
                         </div>
@@ -264,7 +213,7 @@ const CreateProject = () => {
                             ) : (
                                 <>
                                     <Save className="h-4 w-4 mr-2" />
-                                    Create Project
+                                    Create Project & Continue
                                 </>
                             )}
                         </button>
@@ -272,16 +221,16 @@ const CreateProject = () => {
                 </form>
             </div>
 
-            {/* Tips */}
+            {/* Next Steps */}
             <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h4 className="text-sm font-medium text-blue-900 mb-3">💡 Tips for creating projects:</h4>
-                <ul className="text-sm text-blue-800 space-y-2">
-                    <li>• Use descriptive names like "Kitchen Renovation - Smith House" for easy identification</li>
-                    <li>• Include client contact information for easy communication</li>
-                    <li>• Add a detailed description to help with accurate quoting later</li>
-                    <li>• You can always edit project details after creation</li>
-                    <li>• Upload floor plans and images after creating the project</li>
-                </ul>
+                <h4 className="text-sm font-medium text-blue-900 mb-3">📋 What happens next:</h4>
+                <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+                    <li>Create your project with basic information</li>
+                    <li>Add client information and contact details</li>
+                    <li>Upload floor plans and images</li>
+                    <li>Run AI analysis or add measurements manually</li>
+                    <li>Generate and send quotes to clients</li>
+                </ol>
             </div>
         </div>
     );

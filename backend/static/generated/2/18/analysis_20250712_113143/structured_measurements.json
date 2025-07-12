@@ -1,0 +1,212 @@
+{
+    "rooms": [
+        {
+            "id": 1,
+            "name": "Bedroom",
+            "type": "Bedroom",
+            "walls": [
+                {
+                    "id": 1,
+                    "name": "North Wall",
+                    "length": 4.0,
+                    "height": 2.4,
+                    "area": 9.6
+                },
+                {
+                    "id": 2,
+                    "name": "South Wall",
+                    "length": 4.0,
+                    "height": 2.4,
+                    "area": 9.6
+                },
+                {
+                    "id": 3,
+                    "name": "East Wall",
+                    "length": 3.0,
+                    "height": 2.4,
+                    "area": 7.2
+                },
+                {
+                    "id": 4,
+                    "name": "West Wall",
+                    "length": 3.0,
+                    "height": 2.4,
+                    "area": 7.2
+                }
+            ],
+            "ceiling": {
+                "length": 4.0,
+                "width": 3.0,
+                "area": 12.0
+            },
+            "other_surfaces": null
+        },
+        {
+            "id": 2,
+            "name": "Bedroom",
+            "type": "Bedroom",
+            "walls": [
+                {
+                    "id": 1,
+                    "name": "North Wall",
+                    "length": 4.0,
+                    "height": 2.4,
+                    "area": 9.6
+                },
+                {
+                    "id": 2,
+                    "name": "South Wall",
+                    "length": 4.0,
+                    "height": 2.4,
+                    "area": 9.6
+                },
+                {
+                    "id": 3,
+                    "name": "East Wall",
+                    "length": 3.0,
+                    "height": 2.4,
+                    "area": 7.2
+                },
+                {
+                    "id": 4,
+                    "name": "West Wall",
+                    "length": 3.0,
+                    "height": 2.4,
+                    "area": 7.2
+                }
+            ],
+            "ceiling": {
+                "length": 4.0,
+                "width": 3.0,
+                "area": 12.0
+            },
+            "other_surfaces": null
+        },
+        {
+            "id": 3,
+            "name": "Kitchen",
+            "type": "Kitchen",
+            "walls": [
+                {
+                    "id": 1,
+                    "name": "North Wall",
+                    "length": 4.75,
+                    "height": 2.4,
+                    "area": 11.4
+                },
+                {
+                    "id": 2,
+                    "name": "South Wall",
+                    "length": 4.75,
+                    "height": 2.4,
+                    "area": 11.4
+                },
+                {
+                    "id": 3,
+                    "name": "East Wall",
+                    "length": 4.8,
+                    "height": 2.4,
+                    "area": 11.52
+                },
+                {
+                    "id": 4,
+                    "name": "West Wall",
+                    "length": 4.8,
+                    "height": 2.4,
+                    "area": 11.52
+                }
+            ],
+            "ceiling": {
+                "length": 4.75,
+                "width": 4.8,
+                "area": 22.8
+            },
+            "other_surfaces": null
+        },
+        {
+            "id": 4,
+            "name": "Living Room",
+            "type": "Living Room",
+            "walls": [
+                {
+                    "id": 1,
+                    "name": "North Wall",
+                    "length": 6.0,
+                    "height": 2.4,
+                    "area": 14.4
+                },
+                {
+                    "id": 2,
+                    "name": "South Wall",
+                    "length": 6.0,
+                    "height": 2.4,
+                    "area": 14.4
+                },
+                {
+                    "id": 3,
+                    "name": "East Wall",
+                    "length": 4.0,
+                    "height": 2.4,
+                    "area": 9.6
+                },
+                {
+                    "id": 4,
+                    "name": "West Wall",
+                    "length": 4.0,
+                    "height": 2.4,
+                    "area": 9.6
+                }
+            ],
+            "ceiling": {
+                "length": 6.0,
+                "width": 4.0,
+                "area": 24.0
+            },
+            "other_surfaces": null
+        },
+        {
+            "id": 5,
+            "name": "Bath",
+            "type": "Bathroom",
+            "walls": [
+                {
+                    "id": 1,
+                    "name": "North Wall",
+                    "length": 2.3,
+                    "height": 2.4,
+                    "area": 5.52
+                },
+                {
+                    "id": 2,
+                    "name": "South Wall",
+                    "length": 2.3,
+                    "height": 2.4,
+                    "area": 5.52
+                },
+                {
+                    "id": 3,
+                    "name": "East Wall",
+                    "length": 2.9,
+                    "height": 2.4,
+                    "area": 6.96
+                },
+                {
+                    "id": 4,
+                    "name": "West Wall",
+                    "length": 2.9,
+                    "height": 2.4,
+                    "area": 6.96
+                }
+            ],
+            "ceiling": {
+                "length": 2.3,
+                "width": 2.9,
+                "area": 6.669999999999999
+            },
+            "other_surfaces": null
+        }
+    ],
+    "notes": "Generated from enhanced AI analysis with detailed room measurements",
+    "analysis_timestamp": "2025-07-12T11:32:02.395868",
+    "fresh_analysis": true
+}

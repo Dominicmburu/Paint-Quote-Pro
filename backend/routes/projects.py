@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, request, jsonify, current_app, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 import json
 import traceback
@@ -72,11 +72,13 @@ def get_projects():
         current_app.logger.error(f'Get projects error: {str(e)}\n{traceback.format_exc()}')
         return jsonify({'error': 'Failed to get projects'}), 500
 
+
+# routes/projects.py - Updated create_project function
 @projects_bp.route('', methods=['POST'])
 @projects_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_project():
-    """Create a new project with client integration"""
+    """Create a new project with basic project details only"""
     try:
         current_user_id = get_jwt_identity()
         user = db.session.get(User, int(current_user_id))
@@ -98,62 +100,25 @@ def create_project():
         if not data:
             return jsonify({'error': 'No data provided'}), 400
         
+        # Only require basic project fields
         required_fields = ['name', 'property_type', 'property_address']
         for field in required_fields:
             if not data.get(field):
                 return jsonify({'error': f'{field} is required'}), 400
         
-        client_id = data.get('client_id')
-        client = None
-        
-        if client_id:
-            client = Client.query.filter_by(
-                id=client_id,
-                company_id=user.company_id
-            ).first()
-            
-            if not client:
-                return jsonify({'error': 'Selected client not found'}), 404
-        else:
-            client_data = data.get('client_data', {})
-            if client_data and client_data.get('company_name') and client_data.get('email'):
-                existing_client = Client.query.filter_by(
-                    company_id=user.company_id,
-                    email=client_data['email']
-                ).first()
-                
-                if existing_client:
-                    client = existing_client
-                else:
-                    client = Client(
-                        company_name=client_data['company_name'],
-                        contact_name=client_data.get('contact_name', ''),
-                        email=client_data['email'],
-                        phone=client_data.get('phone', ''),
-                        address=client_data.get('address', ''),
-                        postcode=client_data.get('postcode', ''),
-                        city=client_data.get('city', ''),
-                        btw_number=client_data.get('btw_number', ''),
-                        kvk_number=client_data.get('kvk_number', ''),
-                        iban=client_data.get('iban', ''),
-                        website=client_data.get('website', ''),
-                        company_id=user.company_id,
-                        created_by=user.id
-                    )
-                    db.session.add(client)
-                    db.session.flush()
-        
+        # Create project with only basic details
         project = Project(
             name=data['name'],
             description=data.get('description', ''),
             project_type=data.get('project_type', 'interior'),
             property_type=data['property_type'],
             property_address=data['property_address'],
-            client_id=client.id if client else None,
-            client_name=client.company_name if client else data.get('client_name', ''),
-            client_email=client.email if client else data.get('client_email', ''),
-            client_phone=client.phone if client else data.get('client_phone', ''),
-            client_address=client.address if client else data.get('client_address', ''),
+            # Client fields are now optional and will be None initially
+            client_id=None,
+            client_name=None,
+            client_email=None,
+            client_phone=None,
+            client_address=None,
             company_id=user.company_id,
             created_by=user.id,
             status='draft'
@@ -175,6 +140,100 @@ def create_project():
         db.session.rollback()
         current_app.logger.error(f'Create project error: {str(e)}\n{traceback.format_exc()}')
         return jsonify({'error': f'Failed to create project: {str(e)}'}), 500
+
+# Add a new route for updating client information
+@projects_bp.route('/<int:project_id>/client', methods=['PUT'])
+@jwt_required()
+def update_project_client(project_id):
+    """Update client information for a project"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = db.session.get(User, int(current_user_id))
+        
+        project = Project.query.filter_by(
+            id=project_id,
+            company_id=user.company_id
+        ).first()
+        
+        if not project:
+            return jsonify({'error': 'Project not found'}), 404
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        # Handle client selection or creation
+        client_id = data.get('client_id')
+        client = None
+        
+        if client_id:
+            # Using existing client
+            client = Client.query.filter_by(
+                id=client_id,
+                company_id=user.company_id
+            ).first()
+            
+            if not client:
+                return jsonify({'error': 'Selected client not found'}), 404
+        else:
+            # Creating new client or using manual entry
+            client_data = data.get('client_data', {})
+            if client_data and client_data.get('company_name') and client_data.get('email'):
+                # Check if client already exists
+                existing_client = Client.query.filter_by(
+                    company_id=user.company_id,
+                    email=client_data['email']
+                ).first()
+                
+                if existing_client:
+                    client = existing_client
+                else:
+                    # Create new client
+                    client = Client(
+                        company_name=client_data['company_name'],
+                        contact_name=client_data.get('contact_name', ''),
+                        email=client_data['email'],
+                        phone=client_data.get('phone', ''),
+                        address=client_data.get('address', ''),
+                        postcode=client_data.get('postcode', ''),
+                        city=client_data.get('city', ''),
+                        btw_number=client_data.get('btw_number', ''),
+                        kvk_number=client_data.get('kvk_number', ''),
+                        iban=client_data.get('iban', ''),
+                        website=client_data.get('website', ''),
+                        company_id=user.company_id,
+                        created_by=user.id
+                    )
+                    db.session.add(client)
+                    db.session.flush()
+        
+        # Update project with client information
+        if client:
+            project.client_id = client.id
+            project.client_name = client.company_name
+            project.client_email = client.email
+            project.client_phone = client.phone
+            project.client_address = client.address
+        else:
+            # Manual client entry without creating a client record
+            project.client_name = data.get('client_name', '')
+            project.client_email = data.get('client_email', '')
+            project.client_phone = data.get('client_phone', '')
+            project.client_address = data.get('client_address', '')
+        
+        project.updated_at = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Client information updated successfully',
+            'project': project.to_dict()
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Update project client error: {str(e)}\n{traceback.format_exc()}')
+        return jsonify({'error': 'Failed to update client information'}), 500
+
 
 @projects_bp.route('/<int:project_id>', methods=['GET'])
 @jwt_required()
@@ -362,6 +421,7 @@ def upload_project_files(project_id):
         current_app.logger.error(f'Upload files error: {str(e)}\n{traceback.format_exc()}')
         return jsonify({'error': 'Failed to upload files'}), 500
 
+
 @projects_bp.route('/<int:project_id>/analyze', methods=['POST'])
 @jwt_required()
 @require_active_subscription
@@ -382,9 +442,44 @@ def analyze_floor_plan(project_id):
         if not project.uploaded_images:
             return jsonify({'error': 'No images uploaded for analysis'}), 400
         
+        # 🔧 NEW: Clean up existing analysis files and data
+        current_app.logger.info(f"🧹 Cleaning up existing analysis data for project {project_id}")
+        
+        # Clear existing analysis data
+        project.floor_plan_analysis = None
+        project.manual_measurements = None
+        
+        # Remove existing generated files
+        if project.generated_files:
+            for file_path in project.generated_files:
+                try:
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        current_app.logger.info(f"🗑️ Deleted existing file: {file_path}")
+                except Exception as e:
+                    current_app.logger.warning(f"⚠️ Could not delete file {file_path}: {e}")
+        
+        # Remove existing analysis directories
+        base_results_dir = os.path.join(
+            current_app.config['RESULTS_FOLDER'],
+            str(user.company_id),
+            str(project_id)
+        )
+        
+        if os.path.exists(base_results_dir):
+            try:
+                import shutil
+                shutil.rmtree(base_results_dir)
+                current_app.logger.info(f"🗑️ Deleted existing analysis directory: {base_results_dir}")
+            except Exception as e:
+                current_app.logger.warning(f"⚠️ Could not delete directory {base_results_dir}: {e}")
+        
+        project.generated_files = []
         project.status = 'analyzing'
         db.session.commit()
+        current_app.logger.info("✅ Cleanup completed, starting fresh analysis")
         
+        # Create new analysis
         analyzer = FloorPlanAnalyzer(
             openai_api_key=current_app.config['OPENAI_API_KEY']
         )
@@ -399,6 +494,7 @@ def analyze_floor_plan(project_id):
         
         floor_plan_path = project.uploaded_images[0]
         
+        current_app.logger.info(f"🚀 Starting fresh AI analysis for project {project_id}")
         analysis_results = analyzer.process_floor_plan(
             image_path=floor_plan_path,
             results_dir=results_dir,
@@ -406,8 +502,24 @@ def analyze_floor_plan(project_id):
         )
         
         if analysis_results.get('status') == 'success':
-            project.set_analysis_results(analysis_results)
+            # Save analysis results
+            project.floor_plan_analysis = analysis_results
             
+            # 🔧 ENHANCED: Save structured measurements immediately to database
+            if 'structured_measurements' in analysis_results:
+                measurements = analysis_results['structured_measurements']
+                project.manual_measurements = measurements
+                
+                # Log the measurements for debugging
+                rooms_count = len(measurements.get('rooms', []))
+                current_app.logger.info(f"💾 Saving {rooms_count} rooms to database")
+                
+                for i, room in enumerate(measurements.get('rooms', [])):
+                    walls_count = len(room.get('walls', []))
+                    ceiling_area = room.get('ceiling', {}).get('area', 0) if room.get('ceiling') else 0
+                    current_app.logger.info(f"  Room {i+1}: {room.get('name')} - {walls_count} walls, ceiling: {ceiling_area}m²")
+            
+            # Save generated files
             generated_files = []
             for filename in os.listdir(results_dir):
                 file_path = os.path.join(results_dir, filename)
@@ -415,10 +527,15 @@ def analyze_floor_plan(project_id):
             
             project.generated_files = generated_files
             project.status = 'ready'
+            project.updated_at = datetime.utcnow()
             db.session.commit()
             
+            # Log success with details
+            rooms_detected = len(analysis_results.get('structured_measurements', {}).get('rooms', []))
+            current_app.logger.info(f"✅ Analysis completed successfully - {rooms_detected} rooms detected")
+            
             return jsonify({
-                'message': 'Floor plan analysis completed successfully (rooms, walls, and ceilings only)',
+                'message': f'Floor plan analysis completed successfully - {rooms_detected} rooms detected',
                 'analysis': analysis_results,
                 'project': project.to_dict()
             })
@@ -445,6 +562,7 @@ def analyze_floor_plan(project_id):
             'error': 'Floor plan analysis failed',
             'details': str(e)
         }), 500
+
 
 @projects_bp.route('/<int:project_id>/manual-measurements', methods=['POST'])
 @jwt_required()
@@ -809,3 +927,1215 @@ def get_project_stats():
             'recent_projects': [],
             'subscription_status': None
         }), 200
+
+
+# @projects_bp.route('/<int:project_id>/quote', methods=['POST'])
+# @jwt_required()
+# def generate_quote(project_id):
+#     """Generate a comprehensive quote from project measurements"""
+#     try:
+#         current_user_id = get_jwt_identity()
+#         user = db.session.get(User, int(current_user_id))
+        
+#         project = Project.query.filter_by(
+#             id=project_id,
+#             company_id=user.company_id
+#         ).first()
+        
+#         if not project:
+#             return jsonify({'error': 'Project not found'}), 404
+        
+#         if not project.manual_measurements:
+#             return jsonify({'error': 'No measurements found for quote generation'}), 400
+        
+#         data = request.get_json()
+#         measurements = project.manual_measurements
+        
+#         # Generate comprehensive line items from measurements
+#         line_items = []
+        
+#         # Process rooms (walls and ceilings)
+#         rooms = measurements.get('rooms', [])
+#         for room in rooms:
+#             room_name = room.get('name', 'Unknown Room')
+            
+#             # Process walls
+#             walls = room.get('walls', [])
+#             for wall in walls:
+#                 wall_name = wall.get('name', 'Wall')
+#                 wall_area = wall.get('area', 0)
+                
+#                 if wall_area > 0:
+#                     # Sanding/Filling
+#                     if wall.get('sanding_filling'):
+#                         line_items.append({
+#                             'description': f'{room_name} - {wall_name} - Sanding & Filling',
+#                             'quantity': wall_area,
+#                             'unit': 'm²',
+#                             'unit_price': data.get('wall_sanding_price', 5.00),
+#                             'total': wall_area * data.get('wall_sanding_price', 5.00)
+#                         })
+                    
+#                     # Priming
+#                     if wall.get('priming'):
+#                         line_items.append({
+#                             'description': f'{room_name} - {wall_name} - Priming',
+#                             'quantity': wall_area,
+#                             'unit': 'm²',
+#                             'unit_price': data.get('wall_priming_price', 4.50),
+#                             'total': wall_area * data.get('wall_priming_price', 4.50)
+#                         })
+                    
+#                     # One Coat
+#                     if wall.get('one_coat'):
+#                         line_items.append({
+#                             'description': f'{room_name} - {wall_name} - Painting (1 Coat)',
+#                             'quantity': wall_area,
+#                             'unit': 'm²',
+#                             'unit_price': data.get('wall_one_coat_price', 6.00),
+#                             'total': wall_area * data.get('wall_one_coat_price', 6.00)
+#                         })
+                    
+#                     # Two Coats
+#                     if wall.get('two_coats'):
+#                         line_items.append({
+#                             'description': f'{room_name} - {wall_name} - Painting (2 Coats)',
+#                             'quantity': wall_area,
+#                             'unit': 'm²',
+#                             'unit_price': data.get('wall_two_coats_price', 9.50),
+#                             'total': wall_area * data.get('wall_two_coats_price', 9.50)
+#                         })
+            
+#             # Process ceiling
+#             ceiling = room.get('ceiling')
+#             if ceiling and ceiling.get('area', 0) > 0:
+#                 ceiling_area = ceiling['area']
+                
+#                 # Ceiling Sanding/Filling
+#                 if ceiling.get('sanding_filling'):
+#                     line_items.append({
+#                         'description': f'{room_name} - Ceiling - Sanding & Filling',
+#                         'quantity': ceiling_area,
+#                         'unit': 'm²',
+#                         'unit_price': data.get('ceiling_prep_price', 4.00),
+#                         'total': ceiling_area * data.get('ceiling_prep_price', 4.00)
+#                     })
+                
+#                 # Ceiling Priming
+#                 if ceiling.get('priming'):
+#                     line_items.append({
+#                         'description': f'{room_name} - Ceiling - Priming',
+#                         'quantity': ceiling_area,
+#                         'unit': 'm²',
+#                         'unit_price': data.get('ceiling_priming_price', 4.00),
+#                         'total': ceiling_area * data.get('ceiling_priming_price', 4.00)
+#                     })
+                
+#                 # Ceiling One Coat
+#                 if ceiling.get('one_coat'):
+#                     line_items.append({
+#                         'description': f'{room_name} - Ceiling - Painting (1 Coat)',
+#                         'quantity': ceiling_area,
+#                         'unit': 'm²',
+#                         'unit_price': data.get('ceiling_one_coat_price', 5.50),
+#                         'total': ceiling_area * data.get('ceiling_one_coat_price', 5.50)
+#                     })
+                
+#                 # Ceiling Two Coats
+#                 if ceiling.get('two_coats'):
+#                     line_items.append({
+#                         'description': f'{room_name} - Ceiling - Painting (2 Coats)',
+#                         'quantity': ceiling_area,
+#                         'unit': 'm²',
+#                         'unit_price': data.get('ceiling_two_coats_price', 8.50),
+#                         'total': ceiling_area * data.get('ceiling_two_coats_price', 8.50)
+#                     })
+        
+#         # Process interior items
+#         interior_items = measurements.get('interiorItems', {})
+#         interior_prices = {
+#             'doors': data.get('interior_door_price', 85.00),
+#             'fixedWindows': data.get('interior_fixed_window_price', 45.00),
+#             'turnWindows': data.get('interior_turn_window_price', 55.00),
+#             'stairs': data.get('interior_stairs_price', 25.00),
+#             'radiators': data.get('interior_radiator_price', 35.00),
+#             'skirtingBoards': data.get('interior_skirting_price', 12.00),
+#             'otherItems': data.get('interior_other_price', 10.00)
+#         }
+        
+#         for item_type, items in interior_items.items():
+#             if item_type in interior_prices:
+#                 for item in items:
+#                     quantity = item.get('quantity', 0)
+#                     description = item.get('description', item_type.replace('_', ' ').title())
+#                     if quantity > 0:
+#                         line_items.append({
+#                             'description': f'Interior - {description}',
+#                             'quantity': quantity,
+#                             'unit': 'piece',
+#                             'unit_price': interior_prices[item_type],
+#                             'total': quantity * interior_prices[item_type]
+#                         })
+        
+#         # Process exterior items
+#         exterior_items = measurements.get('exteriorItems', {})
+#         exterior_prices = {
+#             'doors': data.get('exterior_door_price', 120.00),
+#             'fixedWindows': data.get('exterior_fixed_window_price', 65.00),
+#             'turnWindows': data.get('exterior_turn_window_price', 75.00),
+#             'dormerWindows': data.get('exterior_dormer_window_price', 120.00),
+#             'fasciaBoards': data.get('exterior_fascia_price', 18.00),
+#             'rainPipe': data.get('exterior_rain_pipe_price', 15.00),
+#             'otherItems': data.get('exterior_other_price', 15.00)
+#         }
+        
+#         for item_type, items in exterior_items.items():
+#             if item_type in exterior_prices:
+#                 for item in items:
+#                     quantity = item.get('quantity', 0)
+#                     description = item.get('description', item_type.replace('_', ' ').title())
+#                     if quantity > 0:
+#                         line_items.append({
+#                             'description': f'Exterior - {description}',
+#                             'quantity': quantity,
+#                             'unit': 'piece',
+#                             'unit_price': exterior_prices[item_type],
+#                             'total': quantity * exterior_prices[item_type]
+#                         })
+        
+#         # Process special jobs
+#         special_jobs = measurements.get('specialJobs', [])
+#         for job in special_jobs:
+#             if job.get('quantity', 0) > 0 and job.get('unitPrice', 0) > 0:
+#                 line_items.append({
+#                     'description': f'Special Job - {job.get("name", "Custom Work")}',
+#                     'quantity': job.get('quantity', 1),
+#                     'unit': job.get('unit', 'job'),
+#                     'unit_price': job.get('unitPrice', 0),
+#                     'total': job.get('quantity', 1) * job.get('unitPrice', 0)
+#                 })
+        
+#         # Add cleanup fee if there are items
+#         if line_items:
+#             cleanup_fee = data.get('cleanup_fee', 150.00)
+#             line_items.append({
+#                 'description': 'Site Cleanup & Preparation',
+#                 'quantity': 1,
+#                 'unit': 'job',
+#                 'unit_price': cleanup_fee,
+#                 'total': cleanup_fee
+#             })
+        
+#         if not line_items:
+#             return jsonify({'error': 'No work items found to generate quote from'}), 400
+        
+#         # Calculate totals
+#         subtotal = sum(item['total'] for item in line_items)
+#         vat_rate = user.company.vat_rate if user.company and hasattr(user.company, 'vat_rate') else 0.20
+#         vat_amount = subtotal * vat_rate
+#         total_amount = subtotal + vat_amount
+        
+#         # Create quote
+#         from models.quote import Quote
+#         quote = Quote(
+#             quote_number=Quote.generate_quote_number(),
+#             title=data.get('title', f"Paint Quote - {project.name}"),
+#             description=data.get('description', f"Comprehensive painting quote for {project.name} including detailed room-by-room breakdown"),
+#             subtotal=round(subtotal, 2),
+#             vat_amount=round(vat_amount, 2),
+#             total_amount=round(total_amount, 2),
+#             line_items=line_items,
+#             project_id=project_id,
+#             valid_until=datetime.utcnow() + timedelta(days=data.get('valid_days', 30))
+#         )
+        
+#         db.session.add(quote)
+#         db.session.flush()
+        
+#         # Generate PDF
+#         from services.quote_generator import QuoteGenerator
+#         quote_generator = QuoteGenerator()
+#         pdf_path = quote_generator.generate_quote_pdf(
+#             quote=quote,
+#             project=project,
+#             company=user.company,
+#             output_dir=os.path.join(
+#                 current_app.config['RESULTS_FOLDER'],
+#                 str(user.company_id),
+#                 str(project_id)
+#             )
+#         )
+        
+#         quote.pdf_path = pdf_path
+#         project.quote_pdf_path = pdf_path
+#         project.quote_data = {
+#             'quote_id': quote.id,
+#             'quote_number': quote.quote_number,
+#             'subtotal': quote.subtotal,
+#             'vat_amount': quote.vat_amount,
+#             'total_amount': quote.total_amount,
+#             'line_items_count': len(line_items),
+#             'generated_at': datetime.utcnow().isoformat()
+#         }
+        
+#         if project.status in ['draft', 'ready']:
+#             project.status = 'quoted'
+        
+#         db.session.commit()
+        
+#         return jsonify({
+#             'message': 'Quote generated successfully with detailed measurements',
+#             'quote': quote.to_dict(include_project=True, include_company=True),
+#             'quote_id': quote.id,
+#             'pdf_path': pdf_path
+#         }), 201
+        
+#     except Exception as e:
+#         db.session.rollback()
+#         current_app.logger.error(f'Generate project quote error: {e}')
+#         return jsonify({'error': 'Failed to generate quote'}), 500
+
+
+# @projects_bp.route('/<int:project_id>/quote', methods=['POST'])
+# @jwt_required()
+# def generate_quote(project_id):
+#     """Generate a comprehensive quote from project measurements"""
+#     try:
+#         current_user_id = get_jwt_identity()
+#         user = db.session.get(User, int(current_user_id))
+        
+#         project = Project.query.filter_by(
+#             id=project_id,
+#             company_id=user.company_id
+#         ).first()
+        
+#         if not project:
+#             return jsonify({'error': 'Project not found'}), 404
+        
+#         if not project.manual_measurements:
+#             return jsonify({'error': 'No measurements found for quote generation'}), 400
+        
+#         data = request.get_json()
+#         measurements = project.manual_measurements
+        
+#         # Generate comprehensive line items from measurements
+#         line_items = []
+        
+#         current_app.logger.info(f"🔄 Generating quote for project {project_id}")
+#         current_app.logger.info(f"📊 Measurements data: {measurements}")
+        
+#         # Process rooms (walls and ceilings)
+#         rooms = measurements.get('rooms', [])
+#         current_app.logger.info(f"🏠 Processing {len(rooms)} rooms")
+        
+#         for room in rooms:
+#             room_name = room.get('name', 'Unknown Room')
+#             current_app.logger.info(f"🔄 Processing room: {room_name}")
+            
+#             # Process walls
+#             walls = room.get('walls', [])
+#             for wall in walls:
+#                 wall_name = wall.get('name', 'Wall')
+                
+#                 # Ensure area is a float
+#                 try:
+#                     wall_area = float(wall.get('area', 0))
+#                 except (ValueError, TypeError):
+#                     wall_area = 0.0
+                
+#                 current_app.logger.info(f"🧱 Processing wall: {wall_name}, area: {wall_area}")
+                
+#                 if wall_area > 0:
+#                     # Sanding/Filling
+#                     if wall.get('sanding_filling') is True:
+#                         price = float(data.get('wall_sanding_price', 5.00))
+#                         line_items.append({
+#                             'description': f'{room_name} - {wall_name} - Sanding & Filling',
+#                             'quantity': wall_area,
+#                             'unit': 'm²',
+#                             'unit_price': price,
+#                             'total': wall_area * price
+#                         })
+#                         current_app.logger.info(f"✅ Added sanding/filling: {wall_area}m² × £{price}")
+                    
+#                     # Priming
+#                     if wall.get('priming') is True:
+#                         price = float(data.get('wall_priming_price', 4.50))
+#                         line_items.append({
+#                             'description': f'{room_name} - {wall_name} - Priming',
+#                             'quantity': wall_area,
+#                             'unit': 'm²',
+#                             'unit_price': price,
+#                             'total': wall_area * price
+#                         })
+#                         current_app.logger.info(f"✅ Added priming: {wall_area}m² × £{price}")
+                    
+#                     # One Coat
+#                     if wall.get('one_coat') is True:
+#                         price = float(data.get('wall_one_coat_price', 6.00))
+#                         line_items.append({
+#                             'description': f'{room_name} - {wall_name} - Painting (1 Coat)',
+#                             'quantity': wall_area,
+#                             'unit': 'm²',
+#                             'unit_price': price,
+#                             'total': wall_area * price
+#                         })
+#                         current_app.logger.info(f"✅ Added one coat: {wall_area}m² × £{price}")
+                    
+#                     # Two Coats
+#                     if wall.get('two_coats') is True:
+#                         price = float(data.get('wall_two_coats_price', 9.50))
+#                         line_items.append({
+#                             'description': f'{room_name} - {wall_name} - Painting (2 Coats)',
+#                             'quantity': wall_area,
+#                             'unit': 'm²',
+#                             'unit_price': price,
+#                             'total': wall_area * price
+#                         })
+#                         current_app.logger.info(f"✅ Added two coats: {wall_area}m² × £{price}")
+            
+#             # Process ceiling
+#             ceiling = room.get('ceiling')
+#             if ceiling and ceiling.get('area'):
+#                 try:
+#                     ceiling_area = float(ceiling.get('area', 0))
+#                 except (ValueError, TypeError):
+#                     ceiling_area = 0.0
+                
+#                 current_app.logger.info(f"🏔️ Processing ceiling, area: {ceiling_area}")
+                
+#                 if ceiling_area > 0:
+#                     # Ceiling Sanding/Filling
+#                     if ceiling.get('sanding_filling') is True:
+#                         price = float(data.get('ceiling_prep_price', 4.00))
+#                         line_items.append({
+#                             'description': f'{room_name} - Ceiling - Sanding & Filling',
+#                             'quantity': ceiling_area,
+#                             'unit': 'm²',
+#                             'unit_price': price,
+#                             'total': ceiling_area * price
+#                         })
+#                         current_app.logger.info(f"✅ Added ceiling sanding: {ceiling_area}m² × £{price}")
+                    
+#                     # Ceiling Priming
+#                     if ceiling.get('priming') is True:
+#                         price = float(data.get('ceiling_priming_price', 4.00))
+#                         line_items.append({
+#                             'description': f'{room_name} - Ceiling - Priming',
+#                             'quantity': ceiling_area,
+#                             'unit': 'm²',
+#                             'unit_price': price,
+#                             'total': ceiling_area * price
+#                         })
+#                         current_app.logger.info(f"✅ Added ceiling priming: {ceiling_area}m² × £{price}")
+                    
+#                     # Ceiling One Coat
+#                     if ceiling.get('one_coat') is True:
+#                         price = float(data.get('ceiling_one_coat_price', 5.50))
+#                         line_items.append({
+#                             'description': f'{room_name} - Ceiling - Painting (1 Coat)',
+#                             'quantity': ceiling_area,
+#                             'unit': 'm²',
+#                             'unit_price': price,
+#                             'total': ceiling_area * price
+#                         })
+#                         current_app.logger.info(f"✅ Added ceiling one coat: {ceiling_area}m² × £{price}")
+                    
+#                     # Ceiling Two Coats
+#                     if ceiling.get('two_coats') is True:
+#                         price = float(data.get('ceiling_two_coats_price', 8.50))
+#                         line_items.append({
+#                             'description': f'{room_name} - Ceiling - Painting (2 Coats)',
+#                             'quantity': ceiling_area,
+#                             'unit': 'm²',
+#                             'unit_price': price,
+#                             'total': ceiling_area * price
+#                         })
+#                         current_app.logger.info(f"✅ Added ceiling two coats: {ceiling_area}m² × £{price}")
+        
+#         # Process interior items
+#         interior_items = measurements.get('interiorItems', {})
+#         interior_prices = {
+#             'doors': float(data.get('interior_door_price', 85.00)),
+#             'fixedWindows': float(data.get('interior_fixed_window_price', 45.00)),
+#             'turnWindows': float(data.get('interior_turn_window_price', 55.00)),
+#             'stairs': float(data.get('interior_stairs_price', 25.00)),
+#             'radiators': float(data.get('interior_radiator_price', 35.00)),
+#             'skirtingBoards': float(data.get('interior_skirting_price', 12.00)),
+#             'otherItems': float(data.get('interior_other_price', 10.00))
+#         }
+        
+#         current_app.logger.info(f"🏠 Processing interior items: {interior_items}")
+        
+#         for item_type, items in interior_items.items():
+#             if item_type in interior_prices and isinstance(items, list):
+#                 for item in items:
+#                     try:
+#                         quantity = float(item.get('quantity', 0))
+#                     except (ValueError, TypeError):
+#                         quantity = 0.0
+                    
+#                     description = item.get('description', item_type.replace('_', ' ').title())
+                    
+#                     if quantity > 0:
+#                         price = interior_prices[item_type]
+#                         line_items.append({
+#                             'description': f'Interior - {description}',
+#                             'quantity': quantity,
+#                             'unit': 'piece',
+#                             'unit_price': price,
+#                             'total': quantity * price
+#                         })
+#                         current_app.logger.info(f"✅ Added interior item: {description}, qty: {quantity}")
+        
+#         # Process exterior items
+#         exterior_items = measurements.get('exteriorItems', {})
+#         exterior_prices = {
+#             'doors': float(data.get('exterior_door_price', 120.00)),
+#             'fixedWindows': float(data.get('exterior_fixed_window_price', 65.00)),
+#             'turnWindows': float(data.get('exterior_turn_window_price', 75.00)),
+#             'dormerWindows': float(data.get('exterior_dormer_window_price', 120.00)),
+#             'fasciaBoards': float(data.get('exterior_fascia_price', 18.00)),
+#             'rainPipe': float(data.get('exterior_rain_pipe_price', 15.00)),
+#             'otherItems': float(data.get('exterior_other_price', 15.00))
+#         }
+        
+#         current_app.logger.info(f"🌿 Processing exterior items: {exterior_items}")
+        
+#         for item_type, items in exterior_items.items():
+#             if item_type in exterior_prices and isinstance(items, list):
+#                 for item in items:
+#                     try:
+#                         quantity = float(item.get('quantity', 0))
+#                     except (ValueError, TypeError):
+#                         quantity = 0.0
+                    
+#                     description = item.get('description', item_type.replace('_', ' ').title())
+                    
+#                     if quantity > 0:
+#                         price = exterior_prices[item_type]
+#                         line_items.append({
+#                             'description': f'Exterior - {description}',
+#                             'quantity': quantity,
+#                             'unit': 'piece',
+#                             'unit_price': price,
+#                             'total': quantity * price
+#                         })
+#                         current_app.logger.info(f"✅ Added exterior item: {description}, qty: {quantity}")
+        
+#         # Process special jobs
+#         special_jobs = measurements.get('specialJobs', [])
+#         current_app.logger.info(f"🔧 Processing {len(special_jobs)} special jobs")
+        
+#         for job in special_jobs:
+#             try:
+#                 quantity = float(job.get('quantity', 0))
+#                 unit_price = float(job.get('unitPrice', 0))
+#             except (ValueError, TypeError):
+#                 quantity = 0.0
+#                 unit_price = 0.0
+            
+#             if quantity > 0 and unit_price > 0:
+#                 line_items.append({
+#                     'description': f'Special Job - {job.get("name", "Custom Work")}',
+#                     'quantity': quantity,
+#                     'unit': job.get('unit', 'job'),
+#                     'unit_price': unit_price,
+#                     'total': quantity * unit_price
+#                 })
+#                 current_app.logger.info(f"✅ Added special job: {job.get('name')}, qty: {quantity}")
+        
+#         # Add cleanup fee if there are items
+#         if line_items:
+#             cleanup_fee = float(data.get('cleanup_fee', 150.00))
+#             line_items.append({
+#                 'description': 'Site Cleanup & Preparation',
+#                 'quantity': 1,
+#                 'unit': 'job',
+#                 'unit_price': cleanup_fee,
+#                 'total': cleanup_fee
+#             })
+#             current_app.logger.info(f"✅ Added cleanup fee: £{cleanup_fee}")
+        
+#         if not line_items:
+#             current_app.logger.error("❌ No line items generated")
+#             return jsonify({'error': 'No work items found to generate quote from'}), 400
+        
+#         # Calculate totals
+#         subtotal = sum(float(item['total']) for item in line_items)
+#         vat_rate = float(getattr(user.company, 'vat_rate', 0.20))
+#         vat_amount = subtotal * vat_rate
+#         total_amount = subtotal + vat_amount
+        
+#         current_app.logger.info(f"💰 Quote totals: subtotal=£{subtotal}, vat=£{vat_amount}, total=£{total_amount}")
+        
+#         # Import Quote model
+#         from models.quote import Quote
+        
+#         # Create quote
+#         quote = Quote(
+#             quote_number=Quote.generate_quote_number(),
+#             title=data.get('title', f"Paint Quote - {project.name}"),
+#             description=data.get('description', f"Comprehensive painting quote for {project.name} including detailed room-by-room breakdown"),
+#             subtotal=round(subtotal, 2),
+#             vat_amount=round(vat_amount, 2),
+#             total_amount=round(total_amount, 2),
+#             line_items=line_items,
+#             project_id=project_id,
+#             valid_until=datetime.utcnow() + timedelta(days=int(data.get('valid_days', 30)))
+#         )
+        
+#         db.session.add(quote)
+#         db.session.flush()
+        
+#         current_app.logger.info(f"✅ Quote created with ID: {quote.id}")
+        
+#         # Generate PDF
+#         from services.quote_generator import QuoteGenerator
+#         quote_generator = QuoteGenerator()
+        
+#         # Create output directory
+#         output_dir = os.path.join(
+#             current_app.config.get('RESULTS_FOLDER', 'static/generated'),
+#             str(user.company_id),
+#             str(project_id)
+#         )
+        
+#         pdf_path = quote_generator.generate_quote_pdf(
+#             quote=quote,
+#             project=project,
+#             company=user.company,
+#             output_dir=output_dir
+#         )
+        
+#         # Update quote and project with PDF path
+#         quote.pdf_path = pdf_path
+#         project.quote_pdf_path = pdf_path
+#         project.quote_data = {
+#             'quote_id': quote.id,
+#             'quote_number': quote.quote_number,
+#             'subtotal': quote.subtotal,
+#             'vat_amount': quote.vat_amount,
+#             'total_amount': quote.total_amount,
+#             'line_items_count': len(line_items),
+#             'generated_at': datetime.utcnow().isoformat()
+#         }
+        
+#         # Update project status
+#         if project.status in ['draft', 'ready']:
+#             project.status = 'quoted'
+        
+#         db.session.commit()
+        
+#         current_app.logger.info(f"🎉 Quote generation completed successfully")
+        
+#         return jsonify({
+#             'message': 'Quote generated successfully with detailed measurements',
+#             'quote': quote.to_dict(include_project=True, include_company=True),
+#             'quote_id': quote.id,
+#             'pdf_path': pdf_path
+#         }), 201
+        
+#     except Exception as e:
+#         db.session.rollback()
+#         current_app.logger.error(f'Generate project quote error: {str(e)}')
+#         current_app.logger.error(f'Full traceback: {traceback.format_exc()}')
+#         return jsonify({'error': 'Failed to generate quote'}), 500
+
+
+@projects_bp.route('/<int:project_id>/quote', methods=['POST'])
+@jwt_required()
+def generate_quote(project_id):
+    """Generate a comprehensive quote with full project details"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = db.session.get(User, int(current_user_id))
+        
+        project = Project.query.filter_by(
+            id=project_id,
+            company_id=user.company_id
+        ).first()
+        
+        if not project:
+            return jsonify({'error': 'Project not found'}), 404
+        
+        if not project.manual_measurements:
+            return jsonify({'error': 'No measurements found for quote generation'}), 400
+        
+        data = request.get_json()
+        measurements = project.manual_measurements
+        
+        # Generate comprehensive line items with full details
+        line_items = []
+        measurement_details = {
+            'rooms': [],
+            'interior_items': [],
+            'exterior_items': [],
+            'special_jobs': []
+        }
+        
+        current_app.logger.info(f"🔄 Generating detailed quote for project {project_id}")
+        
+        # Process rooms with full wall and ceiling details
+        rooms = measurements.get('rooms', [])
+        current_app.logger.info(f"🏠 Processing {len(rooms)} rooms with detailed measurements")
+        
+        for room in rooms:
+            room_name = room.get('name', 'Unknown Room')
+            room_type = room.get('type', 'general')
+            
+            room_details = {
+                'name': room_name,
+                'type': room_type,
+                'walls': [],
+                'ceiling': None,
+                'total_wall_area': 0,
+                'total_ceiling_area': 0,
+                'room_total': 0
+            }
+            
+            current_app.logger.info(f"🔄 Processing room: {room_name} ({room_type})")
+            
+            # Process each wall with full details
+            walls = room.get('walls', [])
+            wall_subtotal = 0
+            
+            for wall in walls:
+                wall_name = wall.get('name', 'Wall')
+                
+                try:
+                    wall_length = float(wall.get('length', 0))
+                    wall_height = float(wall.get('height', 2.4))
+                    wall_area = float(wall.get('area', 0))
+                except (ValueError, TypeError):
+                    wall_length = wall_height = wall_area = 0.0
+                
+                # Get selected treatments
+                treatments_selected = {
+                    'sanding_filling': wall.get('sanding_filling', False),
+                    'priming': wall.get('priming', False),
+                    'one_coat': wall.get('one_coat', False),
+                    'two_coats': wall.get('two_coats', False)
+                }
+                
+                wall_detail = {
+                    'name': wall_name,
+                    'length': wall_length,
+                    'height': wall_height,
+                    'area': wall_area,
+                    'treatments': treatments_selected,
+                    'wall_total': 0
+                }
+                
+                wall_total = 0
+                
+                if wall_area > 0:
+                    room_details['total_wall_area'] += wall_area
+                    
+                    # Add line items for each selected treatment
+                    if treatments_selected['sanding_filling']:
+                        price = float(data.get('wall_sanding_price', 5.00))
+                        treatment_total = wall_area * price
+                        wall_total += treatment_total
+                        
+                        line_items.append({
+                            'description': f'{room_name} - {wall_name} - Sanding & Filling',
+                            'quantity': wall_area,
+                            'unit': 'm²',
+                            'unit_price': price,
+                            'total': treatment_total,
+                            'category': 'room_work',
+                            'room': room_name,
+                            'surface': 'wall',
+                            'treatment': 'sanding_filling',
+                            'measurements': {
+                                'length': wall_length,
+                                'height': wall_height,
+                                'area': wall_area
+                            }
+                        })
+                    
+                    if treatments_selected['priming']:
+                        price = float(data.get('wall_priming_price', 4.50))
+                        treatment_total = wall_area * price
+                        wall_total += treatment_total
+                        
+                        line_items.append({
+                            'description': f'{room_name} - {wall_name} - Priming',
+                            'quantity': wall_area,
+                            'unit': 'm²',
+                            'unit_price': price,
+                            'total': treatment_total,
+                            'category': 'room_work',
+                            'room': room_name,
+                            'surface': 'wall',
+                            'treatment': 'priming',
+                            'measurements': {
+                                'length': wall_length,
+                                'height': wall_height,
+                                'area': wall_area
+                            }
+                        })
+                    
+                    if treatments_selected['one_coat']:
+                        price = float(data.get('wall_one_coat_price', 6.00))
+                        treatment_total = wall_area * price
+                        wall_total += treatment_total
+                        
+                        line_items.append({
+                            'description': f'{room_name} - {wall_name} - Painting (1 Coat)',
+                            'quantity': wall_area,
+                            'unit': 'm²',
+                            'unit_price': price,
+                            'total': treatment_total,
+                            'category': 'room_work',
+                            'room': room_name,
+                            'surface': 'wall',
+                            'treatment': 'one_coat',
+                            'measurements': {
+                                'length': wall_length,
+                                'height': wall_height,
+                                'area': wall_area
+                            }
+                        })
+                    
+                    if treatments_selected['two_coats']:
+                        price = float(data.get('wall_two_coats_price', 9.50))
+                        treatment_total = wall_area * price
+                        wall_total += treatment_total
+                        
+                        line_items.append({
+                            'description': f'{room_name} - {wall_name} - Painting (2 Coats)',
+                            'quantity': wall_area,
+                            'unit': 'm²',
+                            'unit_price': price,
+                            'total': treatment_total,
+                            'category': 'room_work',
+                            'room': room_name,
+                            'surface': 'wall',
+                            'treatment': 'two_coats',
+                            'measurements': {
+                                'length': wall_length,
+                                'height': wall_height,
+                                'area': wall_area
+                            }
+                        })
+                
+                wall_detail['wall_total'] = wall_total
+                wall_subtotal += wall_total
+                room_details['walls'].append(wall_detail)
+                
+                current_app.logger.info(f"✅ Wall {wall_name}: {wall_length}m × {wall_height}m = {wall_area}m², total: £{wall_total}")
+            
+            # Process ceiling with full details
+            ceiling = room.get('ceiling')
+            ceiling_subtotal = 0
+            
+            if ceiling and ceiling.get('area'):
+                try:
+                    ceiling_length = float(ceiling.get('length', 0))
+                    ceiling_width = float(ceiling.get('width', 0))
+                    ceiling_area = float(ceiling.get('area', 0))
+                except (ValueError, TypeError):
+                    ceiling_length = ceiling_width = ceiling_area = 0.0
+                
+                # Get selected ceiling treatments
+                ceiling_treatments = {
+                    'sanding_filling': ceiling.get('sanding_filling', False),
+                    'priming': ceiling.get('priming', False),
+                    'one_coat': ceiling.get('one_coat', False),
+                    'two_coats': ceiling.get('two_coats', False)
+                }
+                
+                ceiling_detail = {
+                    'length': ceiling_length,
+                    'width': ceiling_width,
+                    'area': ceiling_area,
+                    'treatments': ceiling_treatments,
+                    'ceiling_total': 0
+                }
+                
+                if ceiling_area > 0:
+                    room_details['total_ceiling_area'] = ceiling_area
+                    
+                    # Add line items for each selected ceiling treatment
+                    if ceiling_treatments['sanding_filling']:
+                        price = float(data.get('ceiling_prep_price', 4.00))
+                        treatment_total = ceiling_area * price
+                        ceiling_subtotal += treatment_total
+                        
+                        line_items.append({
+                            'description': f'{room_name} - Ceiling - Sanding & Filling',
+                            'quantity': ceiling_area,
+                            'unit': 'm²',
+                            'unit_price': price,
+                            'total': treatment_total,
+                            'category': 'room_work',
+                            'room': room_name,
+                            'surface': 'ceiling',
+                            'treatment': 'sanding_filling',
+                            'measurements': {
+                                'length': ceiling_length,
+                                'width': ceiling_width,
+                                'area': ceiling_area
+                            }
+                        })
+                    
+                    if ceiling_treatments['priming']:
+                        price = float(data.get('ceiling_priming_price', 4.00))
+                        treatment_total = ceiling_area * price
+                        ceiling_subtotal += treatment_total
+                        
+                        line_items.append({
+                            'description': f'{room_name} - Ceiling - Priming',
+                            'quantity': ceiling_area,
+                            'unit': 'm²',
+                            'unit_price': price,
+                            'total': treatment_total,
+                            'category': 'room_work',
+                            'room': room_name,
+                            'surface': 'ceiling',
+                            'treatment': 'priming',
+                            'measurements': {
+                                'length': ceiling_length,
+                                'width': ceiling_width,
+                                'area': ceiling_area
+                            }
+                        })
+                    
+                    if ceiling_treatments['one_coat']:
+                        price = float(data.get('ceiling_one_coat_price', 5.50))
+                        treatment_total = ceiling_area * price
+                        ceiling_subtotal += treatment_total
+                        
+                        line_items.append({
+                            'description': f'{room_name} - Ceiling - Painting (1 Coat)',
+                            'quantity': ceiling_area,
+                            'unit': 'm²',
+                            'unit_price': price,
+                            'total': treatment_total,
+                            'category': 'room_work',
+                            'room': room_name,
+                            'surface': 'ceiling',
+                            'treatment': 'one_coat',
+                            'measurements': {
+                                'length': ceiling_length,
+                                'width': ceiling_width,
+                                'area': ceiling_area
+                            }
+                        })
+                    
+                    if ceiling_treatments['two_coats']:
+                        price = float(data.get('ceiling_two_coats_price', 8.50))
+                        treatment_total = ceiling_area * price
+                        ceiling_subtotal += treatment_total
+                        
+                        line_items.append({
+                            'description': f'{room_name} - Ceiling - Painting (2 Coats)',
+                            'quantity': ceiling_area,
+                            'unit': 'm²',
+                            'unit_price': price,
+                            'total': treatment_total,
+                            'category': 'room_work',
+                            'room': room_name,
+                            'surface': 'ceiling',
+                            'treatment': 'two_coats',
+                            'measurements': {
+                                'length': ceiling_length,
+                                'width': ceiling_width,
+                                'area': ceiling_area
+                            }
+                        })
+                
+                ceiling_detail['ceiling_total'] = ceiling_subtotal
+                room_details['ceiling'] = ceiling_detail
+                
+                current_app.logger.info(f"✅ Ceiling: {ceiling_length}m × {ceiling_width}m = {ceiling_area}m², total: £{ceiling_subtotal}")
+            
+            room_details['room_total'] = wall_subtotal + ceiling_subtotal
+            measurement_details['rooms'].append(room_details)
+        
+        # Process interior items with full details
+        interior_items = measurements.get('interiorItems', {})
+        interior_prices = {
+            'doors': float(data.get('interior_door_price', 85.00)),
+            'fixedWindows': float(data.get('interior_fixed_window_price', 45.00)),
+            'turnWindows': float(data.get('interior_turn_window_price', 55.00)),
+            'stairs': float(data.get('interior_stairs_price', 25.00)),
+            'radiators': float(data.get('interior_radiator_price', 35.00)),
+            'skirtingBoards': float(data.get('interior_skirting_price', 12.00)),
+            'otherItems': float(data.get('interior_other_price', 10.00))
+        }
+        
+        for item_type, items in interior_items.items():
+            if item_type in interior_prices and isinstance(items, list):
+                for item in items:
+                    try:
+                        quantity = float(item.get('quantity', 0))
+                    except (ValueError, TypeError):
+                        quantity = 0.0
+                    
+                    if quantity > 0:
+                        price = interior_prices[item_type]
+                        item_total = quantity * price
+                        
+                        # Get detailed item information
+                        item_detail = {
+                            'type': item_type,
+                            'description': item.get('description', item_type.replace('_', ' ').title()),
+                            'quantity': quantity,
+                            'unit_price': price,
+                            'total': item_total,
+                            'condition': item.get('condition', 'N/A'),
+                            'size': item.get('size', 'N/A'),
+                            'notes': item.get('notes', ''),
+                            'location': item.get('location', ''),
+                            'material': item.get('material', ''),
+                            'finish': item.get('finish', '')
+                        }
+                        
+                        # Create detailed description based on item type
+                        if item_type == 'doors':
+                            detailed_desc = f"Interior Door - {item.get('description', 'Door')} (Condition: {item.get('condition', 'Standard')})"
+                        elif item_type in ['fixedWindows', 'turnWindows']:
+                            detailed_desc = f"Interior Window - {item.get('description', 'Window')} (Size: {item.get('size', 'Standard')})"
+                        else:
+                            detailed_desc = f"Interior - {item.get('description', item_type.replace('_', ' ').title())}"
+                        
+                        line_items.append({
+                            'description': detailed_desc,
+                            'quantity': quantity,
+                            'unit': 'piece',
+                            'unit_price': price,
+                            'total': item_total,
+                            'category': 'interior',
+                            'item_type': item_type,
+                            'details': item_detail
+                        })
+                        
+                        measurement_details['interior_items'].append(item_detail)
+                        current_app.logger.info(f"✅ Interior {item_type}: {detailed_desc}, qty: {quantity}")
+        
+        # Process exterior items with full details
+        exterior_items = measurements.get('exteriorItems', {})
+        exterior_prices = {
+            'doors': float(data.get('exterior_door_price', 120.00)),
+            'fixedWindows': float(data.get('exterior_fixed_window_price', 65.00)),
+            'turnWindows': float(data.get('exterior_turn_window_price', 75.00)),
+            'dormerWindows': float(data.get('exterior_dormer_window_price', 120.00)),
+            'fasciaBoards': float(data.get('exterior_fascia_price', 18.00)),
+            'rainPipe': float(data.get('exterior_rain_pipe_price', 15.00)),
+            'otherItems': float(data.get('exterior_other_price', 15.00))
+        }
+        
+        for item_type, items in exterior_items.items():
+            if item_type in exterior_prices and isinstance(items, list):
+                for item in items:
+                    try:
+                        quantity = float(item.get('quantity', 0))
+                    except (ValueError, TypeError):
+                        quantity = 0.0
+                    
+                    if quantity > 0:
+                        price = exterior_prices[item_type]
+                        item_total = quantity * price
+                        
+                        # Get detailed item information
+                        item_detail = {
+                            'type': item_type,
+                            'description': item.get('description', item_type.replace('_', ' ').title()),
+                            'quantity': quantity,
+                            'unit_price': price,
+                            'total': item_total,
+                            'door_type': item.get('doorType', 'N/A'),
+                            'size': item.get('size', 'N/A'),
+                            'notes': item.get('notes', ''),
+                            'location': item.get('location', ''),
+                            'material': item.get('material', ''),
+                            'finish': item.get('finish', ''),
+                            'weatherproof': item.get('weatherproof', False)
+                        }
+                        
+                        # Create detailed description based on item type
+                        if item_type == 'doors':
+                            detailed_desc = f"Exterior Door - {item.get('description', 'Door')} (Type: {item.get('doorType', 'Standard')})"
+                        elif item_type in ['fixedWindows', 'turnWindows', 'dormerWindows']:
+                            detailed_desc = f"Exterior Window - {item.get('description', 'Window')} (Size: {item.get('size', 'Standard')})"
+                        else:
+                            detailed_desc = f"Exterior - {item.get('description', item_type.replace('_', ' ').title())}"
+                        
+                        line_items.append({
+                            'description': detailed_desc,
+                            'quantity': quantity,
+                            'unit': 'piece',
+                            'unit_price': price,
+                            'total': item_total,
+                            'category': 'exterior',
+                            'item_type': item_type,
+                            'details': item_detail
+                        })
+                        
+                        measurement_details['exterior_items'].append(item_detail)
+                        current_app.logger.info(f"✅ Exterior {item_type}: {detailed_desc}, qty: {quantity}")
+        
+        # Process special jobs with full details
+        special_jobs = measurements.get('specialJobs', [])
+        for job in special_jobs:
+            try:
+                quantity = float(job.get('quantity', 0))
+                unit_price = float(job.get('unitPrice', 0))
+            except (ValueError, TypeError):
+                quantity = unit_price = 0.0
+            
+            if quantity > 0 and unit_price > 0:
+                job_total = quantity * unit_price
+                
+                job_detail = {
+                    'name': job.get('name', 'Custom Work'),
+                    'description': job.get('description', ''),
+                    'quantity': quantity,
+                    'unit': job.get('unit', 'job'),
+                    'unit_price': unit_price,
+                    'total': job_total,
+                    'category': job.get('category', 'General'),
+                    'location': job.get('location', ''),
+                    'materials_included': job.get('materialsIncluded', True),
+                    'estimated_hours': job.get('estimatedHours', 0),
+                    'difficulty': job.get('difficulty', 'Standard'),
+                    'notes': job.get('notes', '')
+                }
+                
+                detailed_desc = f"Special Job - {job.get('name', 'Custom Work')}"
+                if job.get('description'):
+                    detailed_desc += f" ({job.get('description')})"
+                
+                line_items.append({
+                    'description': detailed_desc,
+                    'quantity': quantity,
+                    'unit': job.get('unit', 'job'),
+                    'unit_price': unit_price,
+                    'total': job_total,
+                    'category': 'special',
+                    'details': job_detail
+                })
+                
+                measurement_details['special_jobs'].append(job_detail)
+                current_app.logger.info(f"✅ Special job: {job.get('name')}, qty: {quantity}")
+        
+        # Add cleanup fee if there are items
+        if line_items:
+            cleanup_fee = float(data.get('cleanup_fee', 150.00))
+            line_items.append({
+                'description': 'Site Cleanup & Preparation',
+                'quantity': 1,
+                'unit': 'job',
+                'unit_price': cleanup_fee,
+                'total': cleanup_fee,
+                'category': 'general'
+            })
+        
+        if not line_items:
+            return jsonify({'error': 'No work items found to generate quote from'}), 400
+        
+        # Calculate totals
+        subtotal = sum(float(item['total']) for item in line_items)
+        vat_rate = float(getattr(user.company, 'vat_rate', 0.20))
+        vat_amount = subtotal * vat_rate
+        total_amount = subtotal + vat_amount
+        
+        # Import Quote model
+        from models.quote import Quote
+        
+        # Create quote with detailed information
+        quote = Quote(
+            quote_number=Quote.generate_quote_number(),
+            title=data.get('title', f"Comprehensive Paint Quote - {project.name}"),
+            description=data.get('description', f"Detailed painting quote for {project.name} including comprehensive room-by-room breakdown with measurements and selected treatments"),
+            subtotal=round(subtotal, 2),
+            vat_amount=round(vat_amount, 2),
+            total_amount=round(total_amount, 2),
+            line_items=line_items,
+            project_id=project_id,
+            valid_until=datetime.utcnow() + timedelta(days=int(data.get('valid_days', 30))),
+            measurement_details=measurement_details  # Store detailed measurements
+        )
+        
+        db.session.add(quote)
+        db.session.flush()
+        
+        # Generate enhanced PDF with full details
+        from services.quote_generator import QuoteGenerator
+        quote_generator = QuoteGenerator()
+        
+        output_dir = os.path.join(
+            current_app.config.get('RESULTS_FOLDER', 'static/generated'),
+            str(user.company_id),
+            str(project_id)
+        )
+        
+        pdf_path = quote_generator.generate_enhanced_quote_pdf(
+            quote=quote,
+            project=project,
+            company=user.company,
+            output_dir=output_dir
+        )
+        
+        # Update quote and project
+        quote.pdf_path = pdf_path
+        project.quote_pdf_path = pdf_path
+        project.quote_data = {
+            'quote_id': quote.id,
+            'quote_number': quote.quote_number,
+            'subtotal': quote.subtotal,
+            'vat_amount': quote.vat_amount,
+            'total_amount': quote.total_amount,
+            'line_items_count': len(line_items),
+            'rooms_count': len(measurement_details['rooms']),
+            'interior_items_count': len(measurement_details['interior_items']),
+            'exterior_items_count': len(measurement_details['exterior_items']),
+            'special_jobs_count': len(measurement_details['special_jobs']),
+            'generated_at': datetime.utcnow().isoformat()
+        }
+        
+        if project.status in ['draft', 'ready']:
+            project.status = 'quoted'
+        
+        db.session.commit()
+        
+        current_app.logger.info(f"🎉 Comprehensive quote generation completed successfully")
+        
+        return jsonify({
+            'message': 'Comprehensive quote generated successfully with detailed measurements',
+            'quote': quote.to_dict(include_project=True, include_company=True),
+            'quote_id': quote.id,
+            'pdf_path': pdf_path,
+            'summary': {
+                'total_line_items': len(line_items),
+                'rooms_processed': len(measurement_details['rooms']),
+                'interior_items': len(measurement_details['interior_items']),
+                'exterior_items': len(measurement_details['exterior_items']),
+                'special_jobs': len(measurement_details['special_jobs'])
+            }
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Generate comprehensive quote error: {str(e)}')
+        current_app.logger.error(f'Full traceback: {traceback.format_exc()}')
+        return jsonify({'error': 'Failed to generate quote'}), 500
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,5 @@
-// components/projects/FloorPlanUpload.jsx
 import React, { useState } from 'react';
-import { Upload, FileImage, X, Eye, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Upload, FileImage, X, Eye, AlertTriangle, RefreshCw, CheckCircle } from 'lucide-react';
 
 const FloorPlanUpload = ({ 
   projectId, 
@@ -8,8 +7,8 @@ const FloorPlanUpload = ({
   onFileUpload, 
   uploading, 
   uploadProgress = 0,
-  hasExistingData = false, // New prop to indicate if there's existing room data
-  onDataOverwriteWarning // New prop to handle overwrite warnings
+  hasExistingData = false,
+  onDataOverwriteWarning
 }) => {
   const [showOverwriteWarning, setShowOverwriteWarning] = useState(false);
   const [pendingFiles, setPendingFiles] = useState(null);
@@ -17,12 +16,10 @@ const FloorPlanUpload = ({
   const handleFileChange = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      // If there's existing data, show warning first
       if (hasExistingData && uploadedImages.length > 0) {
         setPendingFiles(files);
         setShowOverwriteWarning(true);
       } else {
-        // No existing data, upload directly
         onFileUpload(files);
       }
     }
@@ -42,22 +39,23 @@ const FloorPlanUpload = ({
   const handleCancelOverwrite = () => {
     setPendingFiles(null);
     setShowOverwriteWarning(false);
-    // Reset file input
     const fileInput = document.getElementById('floor-plan-upload');
     if (fileInput) {
       fileInput.value = '';
     }
   };
 
-  const removeImage = (indexToRemove) => {
-    // This would need to be implemented in the parent component
-    // For now, we'll just show a message
-    console.log(`Remove image at index ${indexToRemove}`);
-  };
-
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="text-xl font-bold text-gray-900 mb-6">Floor Plan Upload</h3>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-bold text-gray-900">Floor Plan Upload</h3>
+        {uploadedImages.length > 0 && (
+          <div className="text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full flex items-center">
+            <CheckCircle className="h-4 w-4 mr-1" />
+            Auto-saved
+          </div>
+        )}
+      </div>
 
       {/* Overwrite Warning Modal */}
       {showOverwriteWarning && (
@@ -68,7 +66,7 @@ const FloorPlanUpload = ({
               <h4 className="text-lg font-semibold text-gray-900">Replace Existing Analysis?</h4>
             </div>
             <p className="text-gray-600 mb-6">
-              You have existing room measurements and analysis data. Uploading new floor plans and running AI analysis will completely replace your current data. This action cannot be undone.
+              You have existing room measurements and analysis data. Uploading new floor plans and running AI analysis will completely replace your current data. All changes are automatically saved.
             </p>
             <div className="flex space-x-3">
               <button
@@ -88,6 +86,16 @@ const FloorPlanUpload = ({
         </div>
       )}
 
+      {/* Auto-save Status */}
+      {uploadedImages.length > 0 && (
+        <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-6">
+          <div className="flex items-center text-sm text-green-800">
+            <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+            Floor plans automatically saved to project
+          </div>
+        </div>
+      )}
+
       {/* Data Overwrite Warning */}
       {hasExistingData && uploadedImages.length > 0 && (
         <div className="bg-orange-50 border border-orange-200 rounded-md p-4 mb-6">
@@ -98,7 +106,7 @@ const FloorPlanUpload = ({
                 Existing Data Will Be Replaced
               </p>
               <p className="text-sm text-orange-600">
-                New floor plan uploads will overwrite existing room measurements when analyzed.
+                New floor plan uploads will overwrite existing room measurements when analyzed. Changes are automatically saved.
               </p>
             </div>
           </div>
@@ -115,7 +123,7 @@ const FloorPlanUpload = ({
           Drop your floor plan images here, or click to browse
         </p>
         <p className="text-xs text-gray-400 mb-4">
-          Supports: PNG, JPG, PDF (max 32MB each)
+          Supports: PNG, JPG, PDF (max 32MB each) • Auto-saved immediately
         </p>
         
         <input
@@ -141,7 +149,7 @@ const FloorPlanUpload = ({
           {uploading ? (
             <>
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-              Uploading...
+              Uploading & Auto-saving...
             </>
           ) : uploadedImages.length > 0 ? (
             'Replace Files'
@@ -155,7 +163,7 @@ const FloorPlanUpload = ({
       {uploading && (
         <div className="mt-4">
           <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
-            <span>Uploading files...</span>
+            <span>Uploading and auto-saving files...</span>
             <span>{uploadProgress}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -174,11 +182,16 @@ const FloorPlanUpload = ({
             <h4 className="text-lg font-medium text-gray-900">
               Uploaded Images ({uploadedImages.length})
             </h4>
-            {hasExistingData && (
-              <div className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
-                Ready for fresh analysis
+            <div className="flex items-center space-x-2">
+              {hasExistingData && (
+                <div className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                  Ready for fresh analysis
+                </div>
+              )}
+              <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
+                Auto-saved
               </div>
-            )}
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {uploadedImages.map((imagePath, index) => (
@@ -204,7 +217,6 @@ const FloorPlanUpload = ({
                   />
                 </div>
                 
-                {/* Image Actions */}
                 <div className="mt-2 flex items-center justify-between">
                   <p className="text-sm text-gray-600 truncate">
                     Floor Plan {index + 1}
@@ -218,15 +230,6 @@ const FloorPlanUpload = ({
                       <Eye className="h-3 w-3 mr-1" />
                       View
                     </button>
-                    {/* Optional: Add remove button
-                    <button
-                      onClick={() => removeImage(index)}
-                      className="text-xs text-red-600 hover:text-red-800 flex items-center"
-                      title="Remove image"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                    */}
                   </div>
                 </div>
               </div>
@@ -243,8 +246,8 @@ const FloorPlanUpload = ({
                 </p>
                 <p className="text-sm text-blue-600">
                   {hasExistingData 
-                    ? 'Run AI analysis to replace current room data with fresh measurements from these floor plans.'
-                    : 'Run AI analysis to automatically detect rooms, walls, and ceilings from your floor plans.'
+                    ? 'Run AI analysis to replace current room data with fresh measurements from these floor plans. Results will be auto-saved.'
+                    : 'Run AI analysis to automatically detect rooms, walls, and ceilings from your floor plans. Results will be auto-saved immediately.'
                   }
                 </p>
               </div>
@@ -262,6 +265,7 @@ const FloorPlanUpload = ({
             <li>• Ensure room labels and dimensions are visible</li>
             <li>• Multiple views can improve analysis accuracy</li>
             <li>• PDF files are supported for architectural drawings</li>
+            <li>• <strong>All uploads are automatically saved to your project</strong></li>
           </ul>
         </div>
       )}
