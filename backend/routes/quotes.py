@@ -641,76 +641,10 @@ def update_quote(quote_id):
         current_app.logger.error(f'Update quote error: {e}')
         return jsonify({'error': 'Failed to update quote'}), 500
 
-
-# @quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
-# @jwt_required()
-# def send_quote(quote_id):
-#     """Send quote to client with enhanced email handling"""
-#     try:
-#         current_user_id = get_jwt_identity()
-#         user = User.query.get(current_user_id)
-        
-#         quote = Quote.query.join(Project).filter(
-#             Quote.id == quote_id,
-#             Project.company_id == user.company_id
-#         ).first()
-        
-#         if not quote:
-#             return jsonify({'error': 'Quote not found'}), 404
-        
-#         data = request.get_json()
-#         client_email = data.get('client_email') or quote.project.client_email
-        
-#         if not client_email:
-#             return jsonify({'error': 'Client email is required'}), 400
-        
-#         # Validate email format
-#         import re
-#         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-#         if not re.match(email_pattern, client_email):
-#             return jsonify({'error': 'Invalid email format'}), 400
-        
-#         # Update quote status
-#         quote.status = 'sent'
-#         quote.sent_at = datetime.utcnow()
-#         db.session.commit()
-        
-#         # Send email with quote (implement email service)
-#         try:
-#             from services.email_service import send_quote_email
-#             send_quote_email(
-#                 client_email=client_email,
-#                 quote=quote,
-#                 project=quote.project,
-#                 company=user.company
-#             )
-            
-#             return jsonify({
-#                 'message': f'Quote sent successfully to {client_email}',
-#                 'quote': quote.to_dict(include_project=True)
-#             })
-            
-#         except Exception as e:
-#             current_app.logger.warning(f'Failed to send quote email: {e}')
-#             # Revert status change if email fails
-#             quote.status = 'draft'
-#             quote.sent_at = None
-#             db.session.commit()
-            
-#             return jsonify({
-#                 'error': 'Failed to send email',
-#                 'details': 'Quote status not changed due to email delivery failure'
-#             }), 500
-        
-#     except Exception as e:
-#         db.session.rollback()
-#         current_app.logger.error(f'Send quote error: {e}')
-#         return jsonify({'error': 'Failed to send quote'}), 500
-
 @quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
 @jwt_required()
 def send_quote(quote_id):
-    """Send quote to client with enhanced email handling and PDF logging"""
+    """Send quote to client with enhanced email handling"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -735,65 +669,28 @@ def send_quote(quote_id):
         if not re.match(email_pattern, client_email):
             return jsonify({'error': 'Invalid email format'}), 400
         
-        # 📧 LOG: Starting quote send process
-        current_app.logger.info(f"📧 Sending quote #{quote.quote_number} to {client_email}")
+        # Update quote status
+        quote.status = 'sent'
+        quote.sent_at = datetime.utcnow()
+        db.session.commit()
         
-        # Check PDF status before sending
-        pdf_status = {
-            'quote_pdf_path': getattr(quote, 'pdf_path', None),
-            'project_pdf_path': getattr(quote.project, 'quote_pdf_path', None),
-            'pdf_available': False
-        }
-        
-        # Check if any PDF exists
-        for path_name, path in [('quote_pdf_path', pdf_status['quote_pdf_path']), 
-                               ('project_pdf_path', pdf_status['project_pdf_path'])]:
-            if path and os.path.exists(path):
-                pdf_status['pdf_available'] = True
-                pdf_status[f'{path_name}_exists'] = True
-                pdf_status[f'{path_name}_size'] = os.path.getsize(path)
-                current_app.logger.info(f"📎 Found PDF at {path_name}: {path} ({pdf_status[f'{path_name}_size']} bytes)")
-            else:
-                pdf_status[f'{path_name}_exists'] = False
-                if path:
-                    current_app.logger.warning(f"⚠️ PDF path set but file missing for {path_name}: {path}")
-        
-        if not pdf_status['pdf_available']:
-            current_app.logger.warning(f"⚠️ No PDF available for quote #{quote.quote_number}")
-        
-        # Send email with quote
+        # Send email with quote (implement email service)
         try:
             from services.email_service import send_quote_email
-            email_result = send_quote_email(
+            send_quote_email(
                 client_email=client_email,
                 quote=quote,
                 project=quote.project,
                 company=user.company
             )
             
-            # Update quote status only if email was successful
-            quote.status = 'sent'
-            quote.sent_at = datetime.utcnow()
-            db.session.commit()
-            
-            # 📧 LOG: Quote sent successfully
-            current_app.logger.info(f"✅ Quote #{quote.quote_number} sent successfully to {client_email}")
-            current_app.logger.info(f"📊 Send summary - PDF attached: {email_result.get('pdf_attached', False)}")
-            
             return jsonify({
                 'message': f'Quote sent successfully to {client_email}',
-                'quote': quote.to_dict(include_project=True),
-                'email_details': {
-                    'sent_to': client_email,
-                    'sent_at': quote.sent_at.isoformat(),
-                    'pdf_attached': email_result.get('pdf_attached', False),
-                    'pdf_details': email_result.get('pdf_details', {})
-                },
-                'pdf_status': pdf_status
+                'quote': quote.to_dict(include_project=True)
             })
             
         except Exception as e:
-            current_app.logger.error(f'❌ Failed to send quote email: {e}')
+            current_app.logger.warning(f'Failed to send quote email: {e}')
             # Revert status change if email fails
             quote.status = 'draft'
             quote.sent_at = None
@@ -801,15 +698,13 @@ def send_quote(quote_id):
             
             return jsonify({
                 'error': 'Failed to send email',
-                'details': 'Quote status not changed due to email delivery failure',
-                'pdf_status': pdf_status
+                'details': 'Quote status not changed due to email delivery failure'
             }), 500
         
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Send quote error: {e}')
         return jsonify({'error': 'Failed to send quote'}), 500
-
 
 @quotes_bp.route('/<int:quote_id>/download', methods=['GET'])
 @jwt_required()
