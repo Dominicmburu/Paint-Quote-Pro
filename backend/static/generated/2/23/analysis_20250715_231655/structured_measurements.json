@@ -1,0 +1,64 @@
+{
+    "rooms": [
+        {
+            "id": 1,
+            "name": "Entree",
+            "type": "entrance",
+            "walls_surface_m2": 13.39,
+            "area_m2": 3.38,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 2,
+            "name": "Eetkamer",
+            "type": "dining room",
+            "walls_surface_m2": 18.43,
+            "area_m2": 9.99,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 3,
+            "name": "Woonkamer",
+            "type": "living room",
+            "walls_surface_m2": 47.98,
+            "area_m2": 39.47,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        }
+    ],
+    "notes": "Generated from AI analysis with total wall area per room",
+    "analysis_timestamp": "2025-07-15T23:17:02.103355",
+    "fresh_analysis": true
+}

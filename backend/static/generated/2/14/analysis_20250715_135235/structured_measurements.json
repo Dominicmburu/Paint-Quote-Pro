@@ -1,0 +1,102 @@
+{
+    "rooms": [
+        {
+            "id": 1,
+            "name": "Room: Bedroom 1",
+            "type": "bedroom",
+            "walls_surface_m2": 0,
+            "area_m2": 0,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 2,
+            "name": "Room: Bedroom 2",
+            "type": "bedroom",
+            "walls_surface_m2": 0,
+            "area_m2": 0,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 3,
+            "name": "Room: Living Room",
+            "type": "living room",
+            "walls_surface_m2": 0,
+            "area_m2": 0,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 4,
+            "name": "Room: Kitchen",
+            "type": "kitchen",
+            "walls_surface_m2": 0,
+            "area_m2": 0,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 5,
+            "name": "Room: Bath",
+            "type": "bathroom",
+            "walls_surface_m2": 0,
+            "area_m2": 0,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        }
+    ],
+    "notes": "Generated from AI analysis with total wall area per room",
+    "analysis_timestamp": "2025-07-15T13:52:52.885845",
+    "fresh_analysis": true
+}

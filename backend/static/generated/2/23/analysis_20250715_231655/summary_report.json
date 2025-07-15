@@ -1,0 +1,31 @@
+{
+    "analysis_summary": {
+        "timestamp": "2025-07-15T23:17:02.104384",
+        "analysis_method": "GPT-4 Vision with Total Wall Area",
+        "rooms_detected": 3,
+        "total_wall_area_m2": 79.8,
+        "total_ceiling_area_m2": 52.84,
+        "total_paintable_area_m2": 132.64
+    },
+    "room_breakdown": [
+        {
+            "name": "Entree",
+            "type": "entrance",
+            "walls_surface_m2": 13.39,
+            "ceiling_area_m2": 3.38
+        },
+        {
+            "name": "Eetkamer",
+            "type": "dining room",
+            "walls_surface_m2": 18.43,
+            "ceiling_area_m2": 9.99
+        },
+        {
+            "name": "Woonkamer",
+            "type": "living room",
+            "walls_surface_m2": 47.98,
+            "ceiling_area_m2": 39.47
+        }
+    ],
+    "notes": "Total wall area analysis - treatments to be selected by user"
+}
