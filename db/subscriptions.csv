@@ -1,0 +1,4 @@
+"id","company_id","stripe_customer_id","stripe_subscription_id","stripe_price_id","plan_name","billing_cycle","status","max_projects","max_users","projects_used_this_month","trial_start","trial_end","current_period_start","current_period_end","cancelled_at","created_at","updated_at"
+1,1,NULL,NULL,NULL,"professional","monthly","trial",30,2,0,"2025-07-12 18:27:42.167038","2025-07-12 18:27:42.165502","2025-07-12 18:27:42.165439","2025-07-12 18:27:42.165478",NULL,"2025-07-12 18:27:42.167043","2025-07-12 18:27:42.167046"
+2,2,NULL,NULL,NULL,"starter","monthly","trial",30,2,3,"2025-07-12 18:29:22.838251","2025-09-20 18:29:22.838258",NULL,NULL,NULL,"2025-07-12 18:29:22.838267","2025-07-15 23:50:35.220736"
+3,3,NULL,NULL,NULL,"starter","monthly","trial",30,2,4,"2025-07-13 07:58:31.052479","2025-09-21 07:58:31.052487",NULL,NULL,NULL,"2025-07-13 07:58:31.052498","2025-08-04 16:30:59.018513"

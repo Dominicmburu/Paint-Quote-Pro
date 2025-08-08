@@ -14,7 +14,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
     const [manualClientData, setManualClientData] = useState({
         company_name: project?.client_name || '',
         contact_name: '',
-        email: project?.client_email || '',
+        email: project?.client_email || '', // This is the only required field
         phone: project?.client_phone || '',
         address: project?.client_address || '',
         postcode: '',
@@ -69,6 +69,19 @@ const ClientInformation = ({ project, onClientUpdate }) => {
         setError('');
 
         try {
+            // Validate email is provided (only mandatory field)
+            if (useManualEntry && !manualClientData.email) {
+                setError('Email is required');
+                setLoading(false);
+                return;
+            }
+
+            if (!useManualEntry && !selectedClientId) {
+                setError('Please select a client or enter client details manually');
+                setLoading(false);
+                return;
+            }
+
             const updateData = {
                 client_id: useManualEntry ? null : selectedClientId,
                 client_data: useManualEntry ? manualClientData : null,
@@ -79,12 +92,12 @@ const ClientInformation = ({ project, onClientUpdate }) => {
             };
 
             const response = await api.put(`/projects/${project.id}/client`, updateData);
-            
+
             setSuccess('Client information updated successfully!');
             if (onClientUpdate) {
                 onClientUpdate(response.data.project);
             }
-            
+
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to update client information');
@@ -176,10 +189,10 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 <option value="">Select a client...</option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
-                                        {client.company_name} - {client.email}
+                                        {client.company_name ? `${client.company_name} - ${client.email}` : client.email}
                                     </option>
                                 ))}
-                            </select>                            
+                            </select>
                         </div>
 
                         {/* Selected Client Preview */}
@@ -190,10 +203,12 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                     <h4 className="text-sm font-medium text-blue-900">Selected Client Details</h4>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <span className="font-medium text-gray-600">Company:</span>
-                                        <p className="text-gray-900">{selectedClient.company_name}</p>
-                                    </div>
+                                    {selectedClient.company_name && (
+                                        <div>
+                                            <span className="font-medium text-gray-600">Company:</span>
+                                            <p className="text-gray-900">{selectedClient.company_name}</p>
+                                        </div>
+                                    )}
                                     {selectedClient.contact_name && (
                                         <div>
                                             <span className="font-medium text-gray-600">Contact:</span>
@@ -216,61 +231,45 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                             <p className="text-gray-900">{selectedClient.full_address}</p>
                                         </div>
                                     )}
-                                    {selectedClient.btw_number && (
-                                        <div>
-                                            <span className="font-medium text-gray-600">BTW:</span>
-                                            <p className="text-gray-900">{selectedClient.btw_number}</p>
-                                        </div>
-                                    )}
-                                    {selectedClient.kvk_number && (
-                                        <div>
-                                            <span className="font-medium text-gray-600">KvK:</span>
-                                            <p className="text-gray-900">{selectedClient.kvk_number}</p>
-                                        </div>
-                                    )}
-                                    {selectedClient.iban && (
-                                        <div>
-                                            <span className="font-medium text-gray-600">IBAN:</span>
-                                            <p className="text-gray-900">{selectedClient.iban}</p>
-                                        </div>
-                                    )}
-                                    {selectedClient.website && (
-                                        <div>
-                                            <span className="font-medium text-gray-600">Website:</span>
-                                            <p className="text-gray-900">
-                                                <a 
-                                                    href={selectedClient.website} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:underline"
-                                                >
-                                                    {selectedClient.website}
-                                                </a>
-                                            </p>
-                                        </div>
-                                    )}
-                                    <div className="md:col-span-2">
-                                        <span className="font-medium text-gray-600">Projects:</span>
-                                        <p className="text-gray-900">{selectedClient.projects_count} project(s)</p>
-                                    </div>
                                 </div>
                             </div>
                         )}
                     </div>
                 )}
 
-                {/* Manual Client Entry */}
+                {/* Manual Client Entry - EMAIL ONLY MANDATORY */}
                 {useManualEntry && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Email - REQUIRED FIELD */}
+                        <div className="md:col-span-2">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                Email Address *
+                                <span className="text-red-500 text-xs ml-1">(Required)</span>
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required={useManualEntry}
+                                value={manualClientData.email}
+                                onChange={handleManualInputChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="client@example.com"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                                This is the only required field. All other information is optional.
+                            </p>
+                        </div>
+
+                        {/* Optional Fields */}
                         <div>
                             <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-2">
-                                Company Name *
+                                Company Name <span className="text-gray-400">(Optional)</span>
                             </label>
                             <input
                                 type="text"
                                 id="company_name"
                                 name="company_name"
-                                required={useManualEntry}
                                 value={manualClientData.company_name}
                                 onChange={handleManualInputChange}
                                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -280,7 +279,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div>
                             <label htmlFor="contact_name" className="block text-sm font-medium text-gray-700 mb-2">
-                                Contact Name
+                                Contact Name <span className="text-gray-400">(Optional)</span>
                             </label>
                             <input
                                 type="text"
@@ -294,24 +293,8 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                         </div>
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                Email *
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                required={useManualEntry}
-                                value={manualClientData.email}
-                                onChange={handleManualInputChange}
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                placeholder="john@company.com"
-                            />
-                        </div>
-
-                        <div>
                             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                                Phone
+                                Phone <span className="text-gray-400">(Optional)</span>
                             </label>
                             <input
                                 type="tel"
@@ -324,9 +307,24 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                             />
                         </div>
 
+                        <div>
+                            <label htmlFor="postcode" className="block text-sm font-medium text-gray-700 mb-2">
+                                Postcode <span className="text-gray-400">(Optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="postcode"
+                                name="postcode"
+                                value={manualClientData.postcode}
+                                onChange={handleManualInputChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="SW1A 1AA"
+                            />
+                        </div>
+
                         <div className="md:col-span-2">
                             <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                                Address
+                                Address <span className="text-gray-400">(Optional)</span>
                             </label>
                             <textarea
                                 id="address"
@@ -340,23 +338,8 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                         </div>
 
                         <div>
-                            <label htmlFor="postcode" className="block text-sm font-medium text-gray-700 mb-2">
-                                Postcode
-                            </label>
-                            <input
-                                type="text"
-                                id="postcode"
-                                name="postcode"
-                                value={manualClientData.postcode}
-                                onChange={handleManualInputChange}
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                placeholder="SW1A 1AA"
-                            />
-                        </div>
-
-                        <div>
                             <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                                City
+                                City <span className="text-gray-400">(Optional)</span>
                             </label>
                             <input
                                 type="text"
@@ -370,53 +353,8 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                         </div>
 
                         <div>
-                            <label htmlFor="btw_number" className="block text-sm font-medium text-gray-700 mb-2">
-                                BTW Number
-                            </label>
-                            <input
-                                type="text"
-                                id="btw_number"
-                                name="btw_number"
-                                value={manualClientData.btw_number}
-                                onChange={handleManualInputChange}
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                placeholder="NL123456789B01"
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="kvk_number" className="block text-sm font-medium text-gray-700 mb-2">
-                                KvK Number
-                            </label>
-                            <input
-                                type="text"
-                                id="kvk_number"
-                                name="kvk_number"
-                                value={manualClientData.kvk_number}
-                                onChange={handleManualInputChange}
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                placeholder="12345678"
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="iban" className="block text-sm font-medium text-gray-700 mb-2">
-                                IBAN
-                            </label>
-                            <input
-                                type="text"
-                                id="iban"
-                                name="iban"
-                                value={manualClientData.iban}
-                                onChange={handleManualInputChange}
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                placeholder="NL91ABNA0417164300"
-                            />
-                        </div>
-
-                        <div>
                             <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
-                                Website
+                                Website <span className="text-gray-400">(Optional)</span>
                             </label>
                             <input
                                 type="url"
@@ -432,7 +370,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 )}
 
                 {/* Submit Button */}
-                <div className="flex justify-end pt-6">
+                <div className="flex justify-end pt-6 border-t border-gray-200">
                     <button
                         type="submit"
                         disabled={loading}

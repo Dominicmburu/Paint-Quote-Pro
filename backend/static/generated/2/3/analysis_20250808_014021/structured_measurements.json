@@ -1,0 +1,197 @@
+{
+    "rooms": [
+        {
+            "id": 1,
+            "name": "Entree",
+            "type": "entrance",
+            "walls_surface_m2": 17.93,
+            "area_m2": 7.78,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 2,
+            "name": "Eetkamer",
+            "type": "dining room",
+            "walls_surface_m2": 17.34,
+            "area_m2": 6.41,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 3,
+            "name": "Woonkamer",
+            "type": "living room",
+            "walls_surface_m2": 51.19,
+            "area_m2": 48.29,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 4,
+            "name": "Slaapkamer 1",
+            "type": "bedroom",
+            "walls_surface_m2": 24.48,
+            "area_m2": 10.2,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 5,
+            "name": "Slaapkamer 2",
+            "type": "bedroom",
+            "walls_surface_m2": 23.04,
+            "area_m2": 9.6,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 6,
+            "name": "Keuken",
+            "type": "kitchen",
+            "walls_surface_m2": 18.72,
+            "area_m2": 7.8,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 7,
+            "name": "Badkamer",
+            "type": "bathroom",
+            "walls_surface_m2": 14.4,
+            "area_m2": 6.0,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 8,
+            "name": "Toilet",
+            "type": "toilet",
+            "walls_surface_m2": 8.64,
+            "area_m2": 3.6,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 9,
+            "name": "Hal",
+            "type": "hall",
+            "walls_surface_m2": 12.96,
+            "area_m2": 5.4,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        },
+        {
+            "id": 10,
+            "name": "Waskamer",
+            "type": "laundry room",
+            "walls_surface_m2": 10.56,
+            "area_m2": 4.4,
+            "wall_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            },
+            "ceiling_treatments": {
+                "sanding_filling": false,
+                "priming": false,
+                "one_coat": false,
+                "two_coats": false
+            }
+        }
+    ],
+    "notes": "Generated from AI analysis with total wall area per room",
+    "analysis_timestamp": "2025-08-08T01:40:32.245072",
+    "fresh_analysis": true
+}

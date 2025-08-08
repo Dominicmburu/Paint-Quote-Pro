@@ -1,3 +1,4 @@
+// components/dashboard/Dashboard.jsx (Updated - add signature status tracking)
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -14,7 +15,8 @@ import {
   Clock, 
   CheckCircle,
   AlertCircle,
-  TrendingUp
+  TrendingUp,
+  FileCheck
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -31,7 +33,6 @@ const Dashboard = () => {
   useEffect(() => {
     loadDashboardData();
   }, [currentPage, statusFilter]);
-
 
   const loadDashboardData = async () => {
     try {
@@ -73,6 +74,29 @@ const Dashboard = () => {
     loadDashboardData();
   };
 
+  // Get counts for different project states including signatures
+  const getProjectCounts = () => {
+    const counts = {
+      total: projects.length,
+      quoted: projects.filter(p => p.status === 'quoted').length,
+      signed: 0,
+      pending_signature: 0
+    };
+
+    projects.forEach(project => {
+      if (project.status === 'quoted' && project.quote_data) {
+        if (project.quote_data.is_signed === true || 
+            (project.quote_data.signed_at && project.quote_data.signed_at !== null)) {
+          counts.signed++;
+        } else {
+          counts.pending_signature++;
+        }
+      }
+    });
+
+    return counts;
+  };
+
   const statusOptions = [
     { value: 'all', label: 'All Projects' },
     { value: 'draft', label: 'Draft' },
@@ -85,6 +109,8 @@ const Dashboard = () => {
   if (loading && !projects.length) {
     return <Loading />;
   }
+
+  const projectCounts = getProjectCounts();
 
   return (
     <div className="min-h-screen bg-yellow-50">
@@ -119,7 +145,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Subscription Alert */}
+          {/* Subscription Alerts */}
           {subscription && !subscription.is_active && (
             <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
               <div className="flex items-center">
@@ -141,6 +167,51 @@ const Dashboard = () => {
               </div>
             </div>
           )}
+
+          {/* Signature Alert */}
+          {/* {projectCounts.pending_signature > 0 && (
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4">
+              <div className="flex items-center">
+                <FileCheck className="h-5 w-5 text-blue-400 mr-3" />
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-blue-800">
+                    Quotes Awaiting Signature
+                  </h3>
+                  <p className="text-sm text-blue-700 mt-1">
+                    {projectCounts.pending_signature} quote{projectCounts.pending_signature !== 1 ? 's' : ''} {projectCounts.pending_signature === 1 ? 'is' : 'are'} waiting for client signature.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setStatusFilter('quoted')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  View Quotes
+                </button>
+              </div>
+            </div>
+          )} */}
+
+          {/* {projectCounts.signed > 0 && (
+            <div className="mt-4 bg-green-50 border border-green-200 rounded-md p-4">
+              <div className="flex items-center">
+                <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-green-800">
+                    Recently Signed Quotes
+                  </h3>
+                  <p className="text-sm text-green-700 mt-1">
+                    {projectCounts.signed} quote{projectCounts.signed !== 1 ? 's' : ''} {projectCounts.signed === 1 ? 'has' : 'have'} been digitally signed by clients.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setStatusFilter('quoted')}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  View Signed
+                </button>
+              </div>
+            </div>
+          )} */}
 
           {/* Usage Warning */}
           {subscription && subscription.is_active && subscription.max_projects > 0 && (
@@ -168,8 +239,8 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Quick Stats */}
-        {stats && <QuickStats stats={stats} subscription={subscription} />}
+        {/* Enhanced Quick Stats */}
+        {stats && <QuickStats stats={{...stats, projectCounts}} subscription={subscription} />}
 
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">

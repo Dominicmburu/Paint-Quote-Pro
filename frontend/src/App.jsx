@@ -6,6 +6,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import Loading from './components/common/Loading';
+import GoogleTranslate from './components/common/GoogleTranslate';
 
 // Page Components
 import Home from './pages/Home';
@@ -29,6 +30,7 @@ import QuoteGenerator from './components/quotes/QuoteGenerator';
 import QuoteHistory from './components/quotes/QuoteHistory';
 import QuotePreview from './components/quotes/QuotePreview';
 import QuoteSettings from './components/quotes/QuoteSettings';
+import PublicQuoteSignature from './components/quotes/PublicQuoteSignature';
 
 // Settings Components
 import Settings from './pages/Settings';
@@ -74,6 +76,8 @@ import './styles/globals.css';
 // import ProjectCreationPage from './components/projects/ProjectCreationPage';
 // import CreateProjectUnified from './components/projects/CreateProjectUnified';
 import PricingSettings from './components/settings/PricingSettings';
+import QuoteSignedConfirmation from './components/quotes/QuoteSignedConfirmation';
+import QuotePDFViewer from './components/quotes/QuotePDFViewer';
 
 function App() {
   return (
@@ -88,6 +92,7 @@ function App() {
                   <Header />
                   <main className="flex-1">
                     <Home />
+                    <GoogleTranslate />
                   </main>
                   <Footer />
                 </>
@@ -152,6 +157,11 @@ function App() {
                   <Footer />
                 </>
               } />
+
+              <Route path="/quotes/:quoteId/sign" element={<PublicQuoteSignature />} />
+              <Route path="/quotes/:quoteId/signed" element={<QuoteSignedConfirmation />} />
+              <Route path="/quotes/:quoteId/pdf" element={<QuotePDFViewer />} />
+
               <Route path="/forgot-password" element={<ForgotPassword />} />
 
               <Route path="/payment/success" element={<PaymentSuccess />} />

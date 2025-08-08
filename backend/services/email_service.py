@@ -2,6 +2,8 @@ import os
 from flask import current_app, render_template_string
 from flask_mail import Mail, Message
 import logging
+from datetime import datetime
+
 
 logger = logging.getLogger(__name__)
 
@@ -393,6 +395,477 @@ def send_quote_email(client_email: str, quote, project, company):
         logger.error(f"Failed to send quote email: {e}")
         raise
 
+
+# def send_quote_with_signature_link(client_email: str, client_name: str, quote, company, signature_url: str, pdf_path: str = None):
+#     """Send quote email with PDF attachment and signature link"""
+#     try:
+#         from flask_mail import Mail, Message
+#         from email.mime.base import MIMEBase
+#         from email import encoders
+#         import os
+        
+#         mail = Mail(current_app)
+        
+#         subject = f"Quote #{quote.quote_number} - {company.name}"
+        
+#         # Create multipart message
+#         msg = Message(
+#             subject=subject,
+#             recipients=[client_email],
+#             sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+#         )
+        
+#         # HTML body with signature button
+#         html_body = f"""
+#         <html>
+#         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+#             <div style="background-color: #2563eb; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+#                 <h1 style="margin: 0; font-size: 28px;">Quote Ready for Signature</h1>
+#                 <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">
+#                     From {company.name}
+#                 </p>
+#             </div>
+            
+#             <div style="background-color: #f8fafc; padding: 30px; border-radius: 0 0 8px 8px;">
+#                 <h2 style="color: #1e293b; margin-top: 0;">Dear {client_name},</h2>
+                
+#                 <p style="color: #475569; font-size: 16px; line-height: 1.6;">
+#                     Thank you for your interest in our services. We have prepared a detailed quote for your project.
+#                 </p>
+                
+#                 <div style="background-color: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 20px 0;">
+#                     <h3 style="color: #1e293b; margin-top: 0;">Quote Details</h3>
+#                     <table style="width: 100%; border-collapse: collapse;">
+#                         <tr>
+#                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Quote Number:</td>
+#                             <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.quote_number}</td>
+#                         </tr>
+#                         <tr>
+#                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Project:</td>
+#                             <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.project.name}</td>
+#                         </tr>
+#                         <tr>
+#                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Total Amount:</td>
+#                             <td style="padding: 8px 0; color: #059669; font-weight: 700; font-size: 18px;">€{quote.total_amount:,.2f}</td>
+#                         </tr>
+#                         <tr>
+#                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Valid Until:</td>
+#                             <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.valid_until.strftime('%B %d, %Y')}</td>
+#                         </tr>
+#                     </table>
+#                 </div>
+                
+#                 <div style="text-align: center; margin: 30px 0;">
+#                     <a href="{signature_url}" 
+#                        style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; 
+#                               text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+#                         📝 SIGN QUOTE ONLINE
+#                     </a>
+#                 </div>
+                
+#                 <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 15px; margin: 20px 0;">
+#                     <h4 style="color: #047857; margin-top: 0;">Quick & Secure Digital Signing</h4>
+#                     <ul style="color: #065f46; margin: 0; padding-left: 20px;">
+#                         <li>Review the complete quote details</li>
+#                         <li>Sign digitally with your mouse or finger</li>
+#                         <li>Get instant confirmation</li>
+#                         <li>Legally binding electronic signature</li>
+#                     </ul>
+#                 </div>
+                
+#                 <p style="color: #475569; font-size: 14px; line-height: 1.6;">
+#                     📎 <strong>Quote PDF is attached</strong> for your records. You can also download it from the signing page.
+#                 </p>
+                
+#                 <p style="color: #475569; font-size: 16px; line-height: 1.6;">
+#                     If you have any questions about this quote, please don't hesitate to contact us.
+#                 </p>
+                
+#                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+#                     <p style="color: #475569; margin: 0;">
+#                         <strong>Best regards,</strong><br>
+#                         {company.name}<br>
+#                         {company.phone or ''}<br>
+#                         {company.email or ''}
+#                     </p>
+#                 </div>
+#             </div>
+            
+#             <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px;">
+#                 <p style="margin: 0;">
+#                     This is an automated message from {company.name}.<br>
+#                     Quote generated on {datetime.now().strftime('%B %d, %Y')}
+#                 </p>
+#             </div>
+#         </body>
+#         </html>
+#         """
+        
+#         msg.html = html_body
+        
+#         # Attach PDF if available
+#         if pdf_path and os.path.exists(pdf_path):
+#             try:
+#                 with open(pdf_path, "rb") as attachment:
+#                     msg.attach(
+#                         filename=f"quote_{quote.quote_number}.pdf",
+#                         content_type="application/pdf",
+#                         data=attachment.read()
+#                     )
+                
+#                 current_app.logger.info(f"📎 PDF attached to email: {pdf_path}")
+                
+#             except Exception as e:
+#                 current_app.logger.warning(f"Failed to attach PDF: {e}")
+        
+#         # Send email
+#         mail.send(msg)
+#         current_app.logger.info(f"📧 Quote email sent successfully to {client_email}")
+        
+#     except Exception as e:
+#         current_app.logger.error(f"Failed to send quote email: {e}")
+#         raise
+
+
+def send_quote_with_signature_link_frontend(client_email: str, client_name: str, quote, company, frontend_url: str, pdf_path: str = None):
+    """Send quote email with PDF attachment and frontend signature link"""
+    try:
+        from flask_mail import Mail, Message
+        
+        mail = Mail(current_app)
+        
+        # Frontend signature URL instead of backend
+        signature_url = f"{frontend_url}/quotes/{quote.id}/sign"
+        
+        subject = f"Quote #{quote.quote_number} - {company.name}"
+        
+        # ... rest of email content same as before but with frontend signature_url
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background-color: #2563eb; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                <h1 style="margin: 0; font-size: 28px;">Quote Ready for Signature</h1>
+                <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">
+                    From {company.name}
+                </p>
+            </div>
+            
+            <div style="background-color: #f8fafc; padding: 30px; border-radius: 0 0 8px 8px;">
+                <h2 style="color: #1e293b; margin-top: 0;">Dear {client_name},</h2>
+                
+                <p style="color: #475569; font-size: 16px; line-height: 1.6;">
+                    Thank you for your interest in our services. We have prepared a detailed quote for your project.
+                </p>
+                
+                <div style="background-color: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                    <h3 style="color: #1e293b; margin-top: 0;">Quote Details</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Quote Number:</td>
+                            <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.quote_number}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Project:</td>
+                            <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.project.name}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Total Amount:</td>
+                            <td style="padding: 8px 0; color: #059669; font-weight: 700; font-size: 18px;">£{quote.total_amount:,.2f}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Valid Until:</td>
+                            <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.valid_until.strftime('%B %d, %Y')}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{signature_url}" 
+                       style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; 
+                              text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                        📝 SIGN QUOTE ONLINE
+                    </a>
+                </div>
+                
+                <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                    <h4 style="color: #047857; margin-top: 0;">Quick & Secure Digital Signing</h4>
+                    <ul style="color: #065f46; margin: 0; padding-left: 20px;">
+                        <li>Review the complete quote details</li>
+                        <li>Sign digitally with your mouse or finger</li>
+                        <li>Get instant confirmation</li>
+                        <li>Legally binding electronic signature</li>
+                    </ul>
+                </div>
+                
+                <p style="color: #475569; font-size: 14px; line-height: 1.6;">
+                    📎 <strong>Quote PDF is attached</strong> for your records. You can also download it from the signing page.
+                </p>
+                
+                <p style="color: #475569; font-size: 16px; line-height: 1.6;">
+                    If you have any questions about this quote, please don't hesitate to contact us.
+                </p>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                    <p style="color: #475569; margin: 0;">
+                        <strong>Best regards,</strong><br>
+                        {company.name}<br>
+                        {company.phone or ''}<br>
+                        {company.email or ''}
+                    </p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px;">
+                <p style="margin: 0;">
+                    This is an automated message from {company.name}.<br>
+                    Quote generated on {datetime.now().strftime('%B %d, %Y')}
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg = Message(
+            subject=subject,
+            recipients=[client_email],
+            html=html_body,
+            sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+        )
+        
+        # Attach PDF if available
+        if pdf_path and os.path.exists(pdf_path):
+            try:
+                with open(pdf_path, "rb") as attachment:
+                    msg.attach(
+                        filename=f"quote_{quote.quote_number}.pdf",
+                        content_type="application/pdf",
+                        data=attachment.read()
+                    )
+                current_app.logger.info(f"📎 PDF attached to email: {pdf_path}")
+            except Exception as e:
+                current_app.logger.warning(f"Failed to attach PDF: {e}")
+        
+        mail.send(msg)
+        current_app.logger.info(f"📧 Quote email sent successfully to {client_email}")
+        
+    except Exception as e:
+        current_app.logger.error(f"Failed to send quote email: {e}")
+        raise
+
+
+# def send_signature_confirmation_email(client_email: str, client_name: str, quote):
+#     """Send signature confirmation email to client"""
+#     try:
+#         mail = Mail(current_app)
+        
+#         subject = f"Quote Signed Successfully - {quote.project.company.name}"
+        
+#         html_body = f"""
+#         <html>
+#         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+#             <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+#                 <h1>✅ Quote Signed Successfully!</h1>
+#             </div>
+            
+#             <div style="padding: 30px;">
+#                 <h2>Dear {client_name},</h2>
+                
+#                 <p>Thank you for digitally signing our quote! We have received your acceptance and are excited to work with you.</p>
+                
+#                 <div style="background-color: #e8f5e8; border: 1px solid #28a745; padding: 20px; border-radius: 8px; margin: 20px 0;">
+#                     <h3 style="color: #1e7e34; margin-top: 0;">Quote Details</h3>
+#                     <p><strong>Quote Number:</strong> {quote.quote_number}</p>
+#                     <p><strong>Project:</strong> {quote.project.name}</p>
+#                     <p><strong>Total Amount:</strong> €{quote.total_amount:.2f}</p>
+#                     <p><strong>Signed On:</strong> {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</p>
+#                 </div>
+                
+#                 <h3>What Happens Next?</h3>
+#                 <ul>
+#                     <li>Our team will review your signed quote within 1 business day</li>
+#                     <li>A project coordinator will contact you to schedule the work</li>
+#                     <li>We'll confirm all details and start dates with you directly</li>
+#                     <li>All work will be completed according to the specifications in your quote</li>
+#                 </ul>
+                
+#                 <div style="text-align: center; margin: 30px 0;">
+#                     <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/quotes/{quote.id}/pdf" 
+#                        style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+#                         Download Signed Quote PDF
+#                     </a>
+#                 </div>
+                
+#                 <p>Your digital signature has been securely recorded and has the same legal validity as a handwritten signature.</p>
+                
+#                 <p>If you have any questions, please don't hesitate to contact us.</p>
+                
+#                 <p>Best regards,<br>{quote.project.company.name}<br>
+#                 {quote.project.company.phone or ''}<br>
+#                 {quote.project.company.email or ''}</p>
+#             </div>
+            
+#             <div style="background-color: #F3F4F6; padding: 20px; text-align: center; font-size: 12px; color: #6B7280;">
+#                 <p>This is an automated confirmation of your digital signature.</p>
+#                 <p>© 2025 {quote.project.company.name}. All rights reserved.</p>
+#             </div>
+#         </body>
+#         </html>
+#         """
+        
+#         msg = Message(
+#             subject=subject,
+#             recipients=[client_email],
+#             html=html_body
+#         )
+        
+#         mail.send(msg)
+#         logger.info(f"Signature confirmation email sent to {client_email}")
+        
+#     except Exception as e:
+#         logger.error(f"Failed to send signature confirmation email: {e}")
+#         raise
+
+# services/email_service.py - Fix email templates
+def send_signature_confirmation_email(client_email: str, client_name: str, quote):
+    """Send signature confirmation email to client"""
+    try:
+        mail = Mail(current_app)
+        
+        subject = f"Quote Signed Successfully - {quote.project.company.name}"
+        
+        # Get the correct download URL
+        frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:5173')
+        pdf_view_url = f"{frontend_url}/quotes/{quote.id}/pdf"
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+                <h1>✅ Quote Signed Successfully!</h1>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h2>Dear {client_name},</h2>
+                
+                <p>Thank you for digitally signing our quote! We have received your acceptance and are excited to work with you.</p>
+                
+                <div style="background-color: #e8f5e8; border: 1px solid #28a745; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #1e7e34; margin-top: 0;">Quote Details</h3>
+                    <p><strong>Quote Number:</strong> {quote.quote_number}</p>
+                    <p><strong>Project:</strong> {quote.project.name}</p>
+                    <p><strong>Total Amount:</strong> £{quote.total_amount:.2f}</p>
+                    <p><strong>Signed On:</strong> {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</p>
+                </div>
+                
+                <h3>What Happens Next?</h3>
+                <ul>
+                    <li>Our team will review your signed quote within 1 business day</li>
+                    <li>A project coordinator will contact you to schedule the work</li>
+                    <li>We'll confirm all details and start dates with you directly</li>
+                    <li>All work will be completed according to the specifications in your quote</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{pdf_view_url}" 
+                       style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        Download Signed Quote PDF
+                    </a>
+                </div>
+                
+                <p>Your digital signature has been securely recorded and has the same legal validity as a handwritten signature.</p>
+                
+                <p>If you have any questions, please don't hesitate to contact us.</p>
+                
+                <p>Best regards,<br>{quote.project.company.name}<br>
+                {quote.project.company.phone or ''}<br>
+                {quote.project.company.email or ''}</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg = Message(
+            subject=subject,
+            recipients=[client_email],
+            html=html_body
+        )
+        
+        mail.send(msg)
+        logger.info(f"Signature confirmation email sent to {client_email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send signature confirmation email: {e}")
+        raise
+
+
+def send_quote_signed_notification_email(company_email: str, company_name: str, quote, client_name: str):
+    """Send quote signed notification to company"""
+    try:
+        mail = Mail(current_app)
+        
+        subject = f"🎉 Quote #{quote.quote_number} Signed by {client_name}"
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+                <h1>🎉 Quote Accepted!</h1>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h2>Great news!</h2>
+                
+                <p>Quote #{quote.quote_number} has been digitally signed and accepted by your client.</p>
+                
+                <div style="background-color: #e8f5e8; border: 1px solid #28a745; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #1e7e34; margin-top: 0;">Project Details</h3>
+                    <p><strong>Client:</strong> {client_name}</p>
+                    <p><strong>Project:</strong> {quote.project.name}</p>
+                    <p><strong>Quote Number:</strong> {quote.quote_number}</p>
+                    <p><strong>Total Amount:</strong> €{quote.total_amount:.2f}</p>
+                    <p><strong>Property:</strong> {quote.project.property_address}</p>
+                    <p><strong>Client Email:</strong> {quote.project.client_email}</p>
+                    <p><strong>Client Phone:</strong> {quote.project.client_phone or 'Not provided'}</p>
+                </div>
+                
+                <h3>Next Steps:</h3>
+                <ul>
+                    <li>Contact the client to schedule the project</li>
+                    <li>Confirm all project details and timeline</li>
+                    <li>Begin work as specified in the accepted quote</li>
+                    <li>Update project status in your dashboard</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/projects/{quote.project.id}" 
+                       style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        View Project Details
+                    </a>
+                </div>
+                
+                <p>The client's digital signature has been securely recorded with IP address and timestamp for your records.</p>
+                
+                <p>Congratulations on winning this project!</p>
+                
+                <p>Best regards,<br>Paint Quote Pro System</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg = Message(
+            subject=subject,
+            recipients=[company_email],
+            html=html_body
+        )
+        
+        mail.send(msg)
+        logger.info(f"Quote signed notification sent to {company_email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send quote signed notification: {e}")
+        raise
 
 
 

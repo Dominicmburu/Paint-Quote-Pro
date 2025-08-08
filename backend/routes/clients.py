@@ -78,10 +78,6 @@ def create_client():
         if not data:
             return jsonify({'error': 'No data provided'}), 400
         
-        # Validate required fields
-        if not data.get('company_name'):
-            return jsonify({'error': 'Company name is required'}), 400
-        
         if not data.get('email'):
             return jsonify({'error': 'Email is required'}), 400
         

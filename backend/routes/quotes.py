@@ -1,8 +1,11 @@
 import os
-from flask import Blueprint, request, jsonify, current_app, send_file
+from flask import Blueprint, request, jsonify, current_app, send_file, render_template_string
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 import json
+import secrets
+import base64
+
 
 from models import db
 from models.user import User
@@ -641,70 +644,157 @@ def update_quote(quote_id):
         current_app.logger.error(f'Update quote error: {e}')
         return jsonify({'error': 'Failed to update quote'}), 500
 
-@quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
-@jwt_required()
-def send_quote(quote_id):
-    """Send quote to client with enhanced email handling"""
-    try:
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
+
+
+# @quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
+# @jwt_required()
+# def send_quote(quote_id):
+#     """Send quote to client with enhanced email handling"""
+#     try:
+#         current_user_id = get_jwt_identity()
+#         user = User.query.get(current_user_id)
         
-        quote = Quote.query.join(Project).filter(
-            Quote.id == quote_id,
-            Project.company_id == user.company_id
-        ).first()
+#         quote = Quote.query.join(Project).filter(
+#             Quote.id == quote_id,
+#             Project.company_id == user.company_id
+#         ).first()
         
-        if not quote:
-            return jsonify({'error': 'Quote not found'}), 404
+#         if not quote:
+#             return jsonify({'error': 'Quote not found'}), 404
         
-        data = request.get_json()
-        client_email = data.get('client_email') or quote.project.client_email
+#         data = request.get_json()
+#         client_email = data.get('client_email') or quote.project.client_email
         
-        if not client_email:
-            return jsonify({'error': 'Client email is required'}), 400
+#         if not client_email:
+#             return jsonify({'error': 'Client email is required'}), 400
         
-        # Validate email format
-        import re
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email_pattern, client_email):
-            return jsonify({'error': 'Invalid email format'}), 400
+#         # Validate email format
+#         import re
+#         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+#         if not re.match(email_pattern, client_email):
+#             return jsonify({'error': 'Invalid email format'}), 400
         
-        # Update quote status
-        quote.status = 'sent'
-        quote.sent_at = datetime.utcnow()
-        db.session.commit()
+#         # Update quote status
+#         quote.status = 'sent'
+#         quote.sent_at = datetime.utcnow()
+#         db.session.commit()
         
-        # Send email with quote (implement email service)
-        try:
-            from services.email_service import send_quote_email
-            send_quote_email(
-                client_email=client_email,
-                quote=quote,
-                project=quote.project,
-                company=user.company
-            )
+#         # Send email with quote (implement email service)
+#         try:
+#             from services.email_service import send_quote_email
+#             send_quote_email(
+#                 client_email=client_email,
+#                 quote=quote,
+#                 project=quote.project,
+#                 company=user.company
+#             )
             
-            return jsonify({
-                'message': f'Quote sent successfully to {client_email}',
-                'quote': quote.to_dict(include_project=True)
-            })
+#             return jsonify({
+#                 'message': f'Quote sent successfully to {client_email}',
+#                 'quote': quote.to_dict(include_project=True)
+#             })
             
-        except Exception as e:
-            current_app.logger.warning(f'Failed to send quote email: {e}')
-            # Revert status change if email fails
-            quote.status = 'draft'
-            quote.sent_at = None
-            db.session.commit()
+#         except Exception as e:
+#             current_app.logger.warning(f'Failed to send quote email: {e}')
+#             # Revert status change if email fails
+#             quote.status = 'draft'
+#             quote.sent_at = None
+#             db.session.commit()
             
-            return jsonify({
-                'error': 'Failed to send email',
-                'details': 'Quote status not changed due to email delivery failure'
-            }), 500
+#             return jsonify({
+#                 'error': 'Failed to send email',
+#                 'details': 'Quote status not changed due to email delivery failure'
+#             }), 500
         
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f'Send quote error: {e}')
-        return jsonify({'error': 'Failed to send quote'}), 500
+#     except Exception as e:
+#         db.session.rollback()
+#         current_app.logger.error(f'Send quote error: {e}')
+#         return jsonify({'error': 'Failed to send quote'}), 500
+
+# routes/quotes.py - Updated send quote route
+
+# @quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
+# @jwt_required()
+# def send_quote_email(quote_id):
+#     """Send quote email to client with PDF attachment and signature link"""
+#     try:
+#         current_user_id = get_jwt_identity()
+#         user = User.query.get(current_user_id)
+        
+#         quote = Quote.query.join(Project).filter(
+#             Quote.id == quote_id,
+#             Project.company_id == user.company_id
+#         ).first()
+        
+#         if not quote:
+#             return jsonify({'error': 'Quote not found'}), 404
+        
+#         data = request.get_json()
+#         client_email = data.get('client_email') or quote.project.client_email
+        
+#         if not client_email:
+#             return jsonify({'error': 'Client email is required'}), 400
+        
+#         # Generate PDF if it doesn't exist
+#         if not quote.pdf_path or not os.path.exists(quote.pdf_path):
+#             from services.quote_generator import QuoteGenerator
+#             quote_generator = QuoteGenerator()
+            
+#             output_dir = os.path.join(
+#                 current_app.config.get('RESULTS_FOLDER', 'static/generated'),
+#                 str(user.company_id),
+#                 str(quote.project_id)
+#             )
+#             os.makedirs(output_dir, exist_ok=True)
+            
+#             try:
+#                 pdf_path = quote_generator.generate_enhanced_quote_pdf(
+#                     quote=quote,
+#                     project=quote.project,
+#                     company=user.company,
+#                     output_dir=output_dir
+#                 )
+#                 quote.pdf_path = pdf_path
+#                 db.session.commit()
+#                 current_app.logger.info(f"✅ PDF generated successfully: {pdf_path}")
+#             except Exception as pdf_error:
+#                 current_app.logger.error(f"❌ PDF generation failed: {str(pdf_error)}")
+#                 return jsonify({'error': 'Failed to generate PDF'}), 500
+        
+#         # Send email with PDF attachment and signature link
+#         signature_url = f"{request.host_url}api/quotes/{quote_id}/sign"
+        
+#         try:
+#             from services.email_service import send_quote_with_signature_link
+#             send_quote_with_signature_link(
+#                 client_email=client_email,
+#                 client_name=quote.project.client_name or 'Valued Client',
+#                 quote=quote,
+#                 company=user.company,
+#                 signature_url=signature_url,
+#                 pdf_path=quote.pdf_path
+#             )
+            
+#             # Update quote status
+#             quote.status = 'sent'
+#             quote.sent_at = datetime.utcnow()
+#             db.session.commit()
+            
+#             return jsonify({
+#                 'message': f'Quote sent successfully to {client_email}',
+#                 'signature_url': signature_url,
+#                 'pdf_attached': True
+#             })
+            
+#         except Exception as email_error:
+#             current_app.logger.error(f'Email sending failed: {email_error}')
+#             return jsonify({'error': 'Failed to send email'}), 500
+        
+#     except Exception as e:
+#         db.session.rollback()
+#         current_app.logger.error(f'Send quote error: {e}')
+#         return jsonify({'error': 'Failed to send quote'}), 500
+
 
 @quotes_bp.route('/<int:quote_id>/download', methods=['GET'])
 @jwt_required()
@@ -929,3 +1019,748 @@ def get_pricing_templates():
     except Exception as e:
         current_app.logger.error(f'Get pricing templates error: {e}')
         return jsonify({'error': 'Failed to get pricing templates'}), 500
+    
+
+@quotes_bp.route('/<int:quote_id>/signature-status', methods=['GET'])
+@jwt_required()
+def get_signature_status(quote_id):
+    """Get signature status for a quote"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        
+        quote = Quote.query.join(Project).filter(
+            Quote.id == quote_id,
+            Project.company_id == user.company_id
+        ).first()
+        
+        if not quote:
+            return jsonify({'error': 'Quote not found'}), 404
+        
+        latest_signature = quote.latest_signature
+        
+        return jsonify({
+            'is_signed': quote.is_signed,
+            'signed_at': quote.signed_at.isoformat() if quote.signed_at else None,
+            'signature': latest_signature.to_dict() if latest_signature else None
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f'Get signature status error: {e}')
+        return jsonify({'error': 'Failed to get signature status'}), 500
+
+@quotes_bp.route('/<int:quote_id>/sign', methods=['GET'])
+def quote_signature_page(quote_id):
+    """Display quote signature page (public access)"""
+    try:
+        quote = Quote.query.get_or_404(quote_id)
+        
+        if quote.is_signed:
+            return render_template_string("""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Quote Already Signed</title>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 40px; text-align: center; }
+                    .container { max-width: 600px; margin: 0 auto; }
+                    .success { color: #28a745; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1 class="success">✅ Quote Already Signed</h1>
+                    <p>This quote was digitally signed on {{ quote.signed_at.strftime('%B %d, %Y at %I:%M %p') }}.</p>
+                    <p>Quote #{{ quote.quote_number }}</p>
+                    <p>Project: {{ quote.project.name }}</p>
+                    <p>Total: £{{ "%.2f"|format(quote.total_amount) }}</p>
+                </div>
+            </body>
+            </html>
+            """, quote=quote)
+        
+        # Render signature form
+        signature_html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Sign Quote #{{ quote.quote_number }}</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 20px; 
+                    background-color: #f8f9fa; 
+                }
+                .container { 
+                    max-width: 800px; 
+                    margin: 0 auto; 
+                    background: white; 
+                    padding: 30px; 
+                    border-radius: 10px; 
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+                }
+                .quote-summary {
+                    background: #e9ecef;
+                    padding: 20px;
+                    border-radius: 5px;
+                    margin-bottom: 30px;
+                }
+                .signature-pad {
+                    border: 2px solid #333;
+                    margin: 20px 0;
+                    border-radius: 5px;
+                    cursor: crosshair;
+                    background: white;
+                }
+                .form-group {
+                    margin-bottom: 20px;
+                }
+                .form-group label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                }
+                .form-group input {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    box-sizing: border-box;
+                }
+                .btn {
+                    padding: 12px 30px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    margin: 5px;
+                }
+                .btn-primary {
+                    background-color: #007bff;
+                    color: white;
+                }
+                .btn-secondary {
+                    background-color: #6c757d;
+                    color: white;
+                }
+                .btn:hover {
+                    opacity: 0.8;
+                }
+                .btn:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+                .terms {
+                    background: #f8f9fa;
+                    padding: 15px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    margin: 20px 0;
+                }
+                .error {
+                    color: #dc3545;
+                    font-size: 14px;
+                    margin: 10px 0;
+                }
+                .success {
+                    color: #28a745;
+                    font-size: 14px;
+                    margin: 10px 0;
+                }
+            </style>
+            <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Digital Quote Signature</h1>
+                
+                <div class="quote-summary">
+                    <h3>Quote Summary</h3>
+                    <p><strong>Quote Number:</strong> {{ quote.quote_number }}</p>
+                    <p><strong>Project:</strong> {{ quote.project.name }}</p>
+                    <p><strong>Total Amount:</strong> £{{ "%.2f"|format(quote.total_amount) }}</p>
+                    <p><strong>Valid Until:</strong> {{ quote.valid_until.strftime('%B %d, %Y') }}</p>
+                    <p><strong>Company:</strong> {{ quote.project.company.name }}</p>
+                </div>
+                
+                <form id="signatureForm">
+                    <div class="form-group">
+                        <label for="clientName">Full Name *</label>
+                        <input type="text" id="clientName" name="clientName" 
+                               value="{{ quote.project.client_name or '' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientEmail">Email Address *</label>
+                        <input type="email" id="clientEmail" name="clientEmail" 
+                               value="{{ quote.project.client_email or '' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signaturePad">Digital Signature *</label>
+                        <p style="font-size: 12px; color: #666;">
+                            Please sign in the box below using your mouse, trackpad, or finger on mobile devices.
+                        </p>
+                        <canvas id="signaturePad" class="signature-pad" width="600" height="200"></canvas>
+                        <button type="button" id="clearSignature" class="btn btn-secondary">Clear Signature</button>
+                    </div>
+                    
+                    <div class="terms">
+                        <label>
+                            <input type="checkbox" id="acceptTerms" required>
+                            I accept the terms and conditions of this quotation and authorize the work to proceed as specified. 
+                            I understand this digital signature has the same legal effect as a handwritten signature.
+                        </label>
+                    </div>
+                    
+                    <div id="errorMessage" class="error" style="display: none;"></div>
+                    <div id="successMessage" class="success" style="display: none;"></div>
+                    
+                    <button type="submit" id="signButton" class="btn btn-primary">
+                        Sign Quote Digitally
+                    </button>
+                    
+                    <a href="/api/quotes/{{ quote.id }}/download" class="btn btn-secondary" target="_blank">
+                        View Full Quote PDF
+                    </a>
+                </form>
+            </div>
+            
+            <script>
+                // Initialize signature pad
+                const canvas = document.getElementById('signaturePad');
+                const signaturePad = new SignaturePad(canvas, {
+                    backgroundColor: 'rgba(255, 255, 255, 0)',
+                    penColor: 'rgb(0, 0, 0)'
+                });
+                
+                // Clear signature button
+                document.getElementById('clearSignature').addEventListener('click', function() {
+                    signaturePad.clear();
+                });
+                
+                // Form submission
+                document.getElementById('signatureForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const errorDiv = document.getElementById('errorMessage');
+                    const successDiv = document.getElementById('successMessage');
+                    const signButton = document.getElementById('signButton');
+                    
+                    // Clear previous messages
+                    errorDiv.style.display = 'none';
+                    successDiv.style.display = 'none';
+                    
+                    // Validate form
+                    const clientName = document.getElementById('clientName').value.trim();
+                    const clientEmail = document.getElementById('clientEmail').value.trim();
+                    const acceptTerms = document.getElementById('acceptTerms').checked;
+                    
+                    if (!clientName) {
+                        errorDiv.textContent = 'Please enter your full name.';
+                        errorDiv.style.display = 'block';
+                        return;
+                    }
+                    
+                    if (!clientEmail) {
+                        errorDiv.textContent = 'Please enter your email address.';
+                        errorDiv.style.display = 'block';
+                        return;
+                    }
+                    
+                    if (signaturePad.isEmpty()) {
+                        errorDiv.textContent = 'Please provide your digital signature.';
+                        errorDiv.style.display = 'block';
+                        return;
+                    }
+                    
+                    if (!acceptTerms) {
+                        errorDiv.textContent = 'Please accept the terms and conditions.';
+                        errorDiv.style.display = 'block';
+                        return;
+                    }
+                    
+                    // Disable button and show loading
+                    signButton.disabled = true;
+                    signButton.textContent = 'Signing...';
+                    
+                    try {
+                        // Submit signature
+                        const signatureData = signaturePad.toDataURL();
+                        
+                        const response = await fetch(`/api/quotes/{{ quote.id }}/sign`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                client_name: clientName,
+                                client_email: clientEmail,
+                                signature_data: signatureData
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (response.ok) {
+                            successDiv.textContent = 'Quote signed successfully! You will receive a confirmation email shortly.';
+                            successDiv.style.display = 'block';
+                            
+                            // Redirect after 3 seconds
+                            setTimeout(function() {
+                                window.location.href = `/api/quotes/{{ quote.id }}/signed`;
+                            }, 3000);
+                        } else {
+                            errorDiv.textContent = result.error || 'Failed to sign quote. Please try again.';
+                            errorDiv.style.display = 'block';
+                        }
+                        
+                    } catch (error) {
+                        errorDiv.textContent = 'Network error. Please check your connection and try again.';
+                        errorDiv.style.display = 'block';
+                    } finally {
+                        signButton.disabled = false;
+                        signButton.textContent = 'Sign Quote Digitally';
+                    }
+                });
+                
+                // Resize canvas for mobile
+                function resizeCanvas() {
+                    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                    const canvas = document.getElementById('signaturePad');
+                    canvas.width = canvas.offsetWidth * ratio;
+                    canvas.height = canvas.offsetHeight * ratio;
+                    canvas.getContext('2d').scale(ratio, ratio);
+                    signaturePad.clear();
+                }
+                
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas();
+            </script>
+        </body>
+        </html>
+        """
+        
+        return render_template_string(signature_html, quote=quote)
+        
+    except Exception as e:
+        current_app.logger.error(f'Quote signature page error: {e}')
+        return jsonify({'error': 'Failed to load signature page'}), 500
+
+@quotes_bp.route('/<int:quote_id>/sign', methods=['POST'])
+def sign_quote(quote_id):
+    """Process digital signature"""
+    try:
+        quote = Quote.query.get_or_404(quote_id)
+        
+        if quote.is_signed:
+            return jsonify({'error': 'Quote is already signed'}), 400
+        
+        data = request.get_json()
+        
+        # Validate required fields
+        client_name = data.get('client_name', '').strip()
+        client_email = data.get('client_email', '').strip()
+        signature_data = data.get('signature_data', '').strip()
+        
+        if not all([client_name, client_email, signature_data]):
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        # Validate email format
+        import re
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, client_email):
+            return jsonify({'error': 'Invalid email format'}), 400
+        
+        # Validate signature data
+        if not signature_data.startswith('data:image/png;base64,'):
+            return jsonify({'error': 'Invalid signature format'}), 400
+        
+        # Create signature record
+        verification_token = secrets.token_urlsafe(32)
+
+        from models.quote import QuoteSignature
+        
+        signature = QuoteSignature(
+            quote_id=quote_id,
+            client_name=client_name,
+            client_email=client_email,
+            signature_data=signature_data,
+            ip_address=request.remote_addr,
+            user_agent=request.user_agent.string,
+            verification_token=verification_token,
+            is_verified=True  # Auto-verify for now
+        )
+        
+        # Update quote status
+        quote.is_signed = True
+        quote.signed_at = datetime.utcnow()
+        quote.status = 'accepted'
+        
+        db.session.add(signature)
+        db.session.flush()
+
+        # Generate signed PDF with signature
+        try:
+            from services.quote_generator import QuoteGenerator
+            quote_generator = QuoteGenerator()
+            
+            output_dir = os.path.join(
+                current_app.config.get('RESULTS_FOLDER', 'static/generated'),
+                str(quote.project.company_id),
+                str(quote.project_id)
+            )
+            os.makedirs(output_dir, exist_ok=True)
+            
+            # Generate signed PDF
+            signed_pdf_path = quote_generator.generate_signed_quote_pdf(
+                quote=quote,
+                signature=signature,
+                project=quote.project,
+                company=quote.project.company,
+                output_dir=output_dir
+            )
+            
+            # Update quote with signed PDF path
+            quote.signed_pdf_path = signed_pdf_path
+            current_app.logger.info(f"✅ Signed PDF generated: {signed_pdf_path}")
+            
+        except Exception as pdf_error:
+            current_app.logger.error(f"❌ Failed to generate signed PDF: {pdf_error}")
+            # Continue without failing the signature process
+        
+        db.session.commit()
+        
+        # Send confirmation emails
+        try:
+            from services.email_service import send_signature_confirmation_email, send_quote_signed_notification_email
+            
+            # Email to client
+            send_signature_confirmation_email(
+                client_email=client_email,
+                client_name=client_name,
+                quote=quote
+            )
+            
+            # Email to company
+            if quote.project.company.email:
+                send_quote_signed_notification_email(
+                    company_email=quote.project.company.email,
+                    company_name=quote.project.company.name,
+                    quote=quote,
+                    client_name=client_name
+                )
+                
+        except Exception as email_error:
+            current_app.logger.warning(f'Failed to send signature emails: {email_error}')
+        
+        return jsonify({
+            'message': 'Quote signed successfully',
+            'signature_id': signature.id,
+            'signed_at': signature.signed_at.isoformat()
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Sign quote error: {e}')
+        return jsonify({'error': 'Failed to sign quote'}), 500
+
+@quotes_bp.route('/<int:quote_id>/signed', methods=['GET'])
+def quote_signed_confirmation(quote_id):
+    """Display signed quote confirmation"""
+    try:
+        quote = Quote.query.get_or_404(quote_id)
+        signature = quote.latest_signature
+        
+        confirmation_html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Quote Signed Successfully</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 40px; 
+                    background-color: #f8f9fa;
+                    text-align: center;
+                }
+                .container { 
+                    max-width: 600px; 
+                    margin: 0 auto; 
+                    background: white;
+                    padding: 40px;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                .success-icon {
+                    font-size: 64px;
+                    color: #28a745;
+                    margin-bottom: 20px;
+                }
+                h1 {
+                    color: #28a745;
+                    margin-bottom: 20px;
+                }
+                .details {
+                    background: #e8f5e8;
+                    padding: 20px;
+                    border-radius: 5px;
+                    margin: 20px 0;
+                    text-align: left;
+                }
+                .details p {
+                    margin: 5px 0;
+                    font-size: 14px;
+                }
+                .next-steps {
+                    background: #f0f8ff;
+                    padding: 20px;
+                    border-radius: 5px;
+                    margin: 20px 0;
+                }
+                .btn {
+                    display: inline-block;
+                    padding: 12px 24px;
+                    background-color: #007bff;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    margin: 10px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="success-icon">✅</div>
+                <h1>Quote Signed Successfully!</h1>
+                <p>Thank you for digitally signing the quote. Your signature has been recorded and verified.</p>
+                
+                {% if signature %}
+                <div class="details">
+                    <h3>Signature Details</h3>
+                    <p><strong>Quote Number:</strong> {{ quote.quote_number }}</p>
+                    <p><strong>Signed By:</strong> {{ signature.client_name }}</p>
+                    <p><strong>Email:</strong> {{ signature.client_email }}</p>
+                    <p><strong>Signed On:</strong> {{ signature.signed_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                    <p><strong>Project:</strong> {{ quote.project.name }}</p>
+                    <p><strong>Total Amount:</strong> £{{ "%.2f"|format(quote.total_amount) }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="next-steps">
+                    <h3>What Happens Next?</h3>
+                    <ul style="text-align: left;">
+                        <li>You will receive a confirmation email with the signed quote</li>
+                        <li>{{ quote.project.company.name }} has been notified of your acceptance</li>
+                        <li>A project representative will contact you to schedule the work</li>
+                        <li>All project details and terms remain as specified in the quote</li>
+                    </ul>
+                </div>
+                
+                <a href="/api/quotes/{{ quote.id }}/download" class="btn" target="_blank">
+                    Download Signed Quote PDF
+                </a>
+                
+                <p style="margin-top: 30px; font-size: 12px; color: #666;">
+                    This digital signature has the same legal validity as a handwritten signature.
+                    For questions, contact {{ quote.project.company.name }} at 
+                    {{ quote.project.company.email or quote.project.company.phone or 'your specified contact method' }}.
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        return render_template_string(confirmation_html, quote=quote, signature=signature)
+        
+    except Exception as e:
+        current_app.logger.error(f'Quote signed confirmation error: {e}')
+        return jsonify({'error': 'Failed to load confirmation page'}), 500
+
+# routes/quotes.py - Add public quote endpoint and update signature handling
+
+@quotes_bp.route('/<int:quote_id>/public', methods=['GET'])
+def get_public_quote(quote_id):
+    """Get quote data for public signature page (no authentication required)"""
+    try:
+        quote = Quote.query.get_or_404(quote_id)
+        
+        # Check if already signed
+        if quote.is_signed:
+            return jsonify({
+                'quote': {
+                    'id': quote.id,
+                    'quote_number': quote.quote_number,
+                    'is_signed': True,
+                    'signed_at': quote.signed_at.isoformat() if quote.signed_at else None,
+                    'project_name': quote.project.name,
+                    'total_amount': float(quote.total_amount)
+                },
+                'already_signed': True
+            })
+        
+        # Return limited quote data for signing
+        quote_data = {
+            'id': quote.id,
+            'quote_number': quote.quote_number,
+            'title': quote.title,
+            'description': quote.description,
+            'subtotal': float(quote.subtotal),
+            'vat_amount': float(quote.vat_amount),
+            'total_amount': float(quote.total_amount),
+            'valid_until': quote.valid_until.isoformat() if quote.valid_until else None,
+            'created_at': quote.created_at.isoformat() if quote.created_at else None,
+            'is_signed': quote.is_signed,
+            
+            # Project info
+            'project_name': quote.project.name,
+            'property_address': quote.project.property_address,
+            
+            # Client info (pre-populate form)
+            'client_company_name': quote.project.client_name,
+            'client_email': quote.project.client_email,
+            
+            # Company info
+            'company': {
+                'name': quote.project.company.name,
+                'email': quote.project.company.email,
+                'phone': quote.project.company.phone,
+                'website': quote.project.company.website
+            }
+        }
+        
+        return jsonify({
+            'quote': quote_data,
+            'already_signed': False
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f'Get public quote error: {e}')
+        return jsonify({'error': 'Quote not found'}), 404
+
+# Update the send quote route to use frontend URL
+@quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
+@jwt_required()
+def send_quote_email_frontend(quote_id):
+    """Send quote email to client with PDF attachment and frontend signature link"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        
+        quote = Quote.query.join(Project).filter(
+            Quote.id == quote_id,
+            Project.company_id == user.company_id
+        ).first()
+        
+        if not quote:
+            return jsonify({'error': 'Quote not found'}), 404
+        
+        data = request.get_json()
+        client_email = data.get('client_email') or quote.project.client_email
+        
+        if not client_email:
+            return jsonify({'error': 'Client email is required'}), 400
+        
+        # Generate PDF if it doesn't exist
+        if not quote.pdf_path or not os.path.exists(quote.pdf_path):
+            from services.quote_generator import QuoteGenerator
+            quote_generator = QuoteGenerator()
+            
+            output_dir = os.path.join(
+                current_app.config.get('RESULTS_FOLDER', 'static/generated'),
+                str(user.company_id),
+                str(quote.project_id)
+            )
+            os.makedirs(output_dir, exist_ok=True)
+            
+            try:
+                pdf_path = quote_generator.generate_enhanced_quote_pdf(
+                    quote=quote,
+                    project=quote.project,
+                    company=user.company,
+                    output_dir=output_dir
+                )
+                quote.pdf_path = pdf_path
+                db.session.commit()
+                current_app.logger.info(f"✅ PDF generated successfully: {pdf_path}")
+            except Exception as pdf_error:
+                current_app.logger.error(f"❌ PDF generation failed: {str(pdf_error)}")
+                return jsonify({'error': 'Failed to generate PDF'}), 500
+        
+        # Get frontend URL from config
+        frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:5173')
+        
+        # Send email with frontend signature link
+        try:
+            from services.email_service import send_quote_with_signature_link_frontend
+
+            send_quote_with_signature_link_frontend(
+                client_email=client_email,
+                client_name=quote.project.client_name or 'Valued Client',
+                quote=quote,
+                company=user.company,
+                frontend_url=frontend_url,
+                pdf_path=quote.pdf_path
+            )
+            
+            # Update quote status
+            quote.status = 'sent'
+            quote.sent_at = datetime.utcnow()
+            db.session.commit()
+            
+            return jsonify({
+                'message': f'Quote sent successfully to {client_email}',
+                'signature_url': f"{frontend_url}/quotes/{quote_id}/sign",
+                'pdf_attached': True
+            })
+            
+        except Exception as email_error:
+            current_app.logger.error(f'Email sending failed: {email_error}')
+            return jsonify({'error': 'Failed to send email'}), 500
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Send quote error: {e}')
+        return jsonify({'error': 'Failed to send quote'}), 500
+
+
+@quotes_bp.route('/<int:quote_id>/download-signed', methods=['GET'])
+def download_signed_quote_pdf(quote_id):
+    """Download signed quote PDF (public access)"""
+    try:
+        quote = Quote.query.get_or_404(quote_id)
+        
+        if not quote.is_signed:
+            return jsonify({'error': 'Quote is not signed yet'}), 400
+        
+        if not quote.signed_pdf_path or not os.path.exists(quote.signed_pdf_path):
+            return jsonify({'error': 'Signed PDF not available'}), 404
+        
+        filename = f"signed_quote_{quote.quote_number}.pdf"
+        
+        return send_file(
+            quote.signed_pdf_path,
+            as_attachment=True,
+            download_name=filename,
+            mimetype='application/pdf'
+        )
+        
+    except Exception as e:
+        current_app.logger.error(f'Download signed PDF error: {e}')
+        return jsonify({'error': 'Failed to download signed PDF'}), 500
+
+
+
+
+
+
+

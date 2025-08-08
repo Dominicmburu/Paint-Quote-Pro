@@ -42,4 +42,44 @@
   text-align: left;
 }
 
+/* Google Translate Styling */
+.google-translate-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Hide Google Translate branding */
+.goog-te-gadget {
+  font-family: inherit !important;
+  font-size: 12px !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  margin: 0 !important;
+  padding: 4px 8px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  background: white !important;
+  font-size: 12px !important;
+  color: #374151 !important;
+}
+
+.goog-te-gadget .goog-te-combo:hover {
+  border-color: #9ca3af !important;
+}
+
+/* Hide Google Translate banner */
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+/* Style the translated page indicator */
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
 

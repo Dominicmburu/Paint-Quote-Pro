@@ -29,8 +29,8 @@ const Header = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <Palette className="h-8 w-8 text-teal-600" />
-              <span className="text-2xl font-bold text-slate-800 sm:block hidden">Paint Quote Pro</span>
-              <span className="text-xl font-bold text-slate-800 sm:hidden">PQP</span>
+              <span className="text-2xl font-bold text-slate-800 sm:block hidden">FLOTTO</span>
+              <span className="text-xl font-bold text-slate-800 sm:hidden">FLOTTO</span>
             </Link>
           </div>
 

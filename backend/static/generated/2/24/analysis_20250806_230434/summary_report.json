@@ -1,0 +1,73 @@
+{
+    "analysis_summary": {
+        "timestamp": "2025-08-06T23:04:47.230329",
+        "analysis_method": "GPT-4 Vision with Total Wall Area",
+        "rooms_detected": 10,
+        "total_wall_area_m2": 181.44,
+        "total_ceiling_area_m2": 64.43,
+        "total_paintable_area_m2": 245.87
+    },
+    "room_breakdown": [
+        {
+            "name": "Entree",
+            "type": "entrance",
+            "walls_surface_m2": 12.48,
+            "ceiling_area_m2": 3.26
+        },
+        {
+            "name": "Eetkamer",
+            "type": "dining room",
+            "walls_surface_m2": 23.76,
+            "ceiling_area_m2": 9.28
+        },
+        {
+            "name": "Woonkamer",
+            "type": "living room",
+            "walls_surface_m2": 25.92,
+            "ceiling_area_m2": 11.97
+        },
+        {
+            "name": "Keuken",
+            "type": "kitchen",
+            "walls_surface_m2": 15.84,
+            "ceiling_area_m2": 5.28
+        },
+        {
+            "name": "Zijkamer",
+            "type": "side room",
+            "walls_surface_m2": 21.36,
+            "ceiling_area_m2": 8.42
+        },
+        {
+            "name": "Slaapkamer 1",
+            "type": "bedroom 1",
+            "walls_surface_m2": 21.6,
+            "ceiling_area_m2": 8.1
+        },
+        {
+            "name": "Slaapkamer 2",
+            "type": "bedroom 2",
+            "walls_surface_m2": 20.16,
+            "ceiling_area_m2": 7.56
+        },
+        {
+            "name": "Badkamer",
+            "type": "bathroom",
+            "walls_surface_m2": 14.4,
+            "ceiling_area_m2": 3.6
+        },
+        {
+            "name": "Waskamer",
+            "type": "laundry room",
+            "walls_surface_m2": 15.36,
+            "ceiling_area_m2": 4.32
+        },
+        {
+            "name": "Hal",
+            "type": "hall",
+            "walls_surface_m2": 10.56,
+            "ceiling_area_m2": 2.64
+        }
+    ],
+    "notes": "Total wall area analysis - treatments to be selected by user"
+}

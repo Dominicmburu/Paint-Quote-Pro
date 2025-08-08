@@ -288,6 +288,30 @@ const ProjectDetails = () => {
       console.log('🔄 Starting centralized cost calculation...');
       console.log('💰 Available pricing structure:', pricing);
 
+
+      const parsePrice = (value, fallback = 0) => {
+        const parsed = parseFloat(value);
+        return isNaN(parsed) || parsed === null || parsed === undefined ? fallback : parsed;
+      };
+
+      const parsePricingValue = (path, fallback = 0) => {
+        try {
+          const keys = path.split('.');
+          let value = pricing;
+          for (let key of keys) {
+            if (value && typeof value === 'object') {
+              value = value[key];
+            } else {
+              return fallback;
+            }
+          }
+          return parsePrice(value, fallback);
+        } catch (error) {
+          console.warn(`Failed to parse pricing path: ${path}`, error);
+          return fallback;
+        }
+      };
+
       // 🔧 FIXED: CALCULATE ROOMS COST (Total Wall Area Approach)
       rooms.forEach(room => {
         console.log(`🏠 Calculating costs for room: ${room.name}`);
@@ -301,7 +325,8 @@ const ProjectDetails = () => {
         if (room.wall_treatments && wallArea > 0) {
           // Wall Sanding/Filling
           if (room.wall_treatments.sanding_filling) {
-            const price = pricing.walls?.sanding_filling || pricing.walls?.sanding?.light?.price || 0;
+            const price = parsePricingValue('walls.sanding_filling') ||
+              parsePricingValue('walls.sanding.light.price', 5.00);
             const cost = wallArea * price;
             roomsTotal += cost;
             console.log(`🔨 Wall sanding/filling: ${wallArea}m² × £${price} = £${cost.toFixed(2)}`);
@@ -309,7 +334,9 @@ const ProjectDetails = () => {
 
           // Wall Priming
           if (room.wall_treatments.priming) {
-            const price = pricing.walls?.priming || pricing.walls?.priming?.one_coat?.price || 0;
+            const price = parsePricingValue('walls.priming') ||
+              parsePricingValue('walls.priming.one_coat.price') ||
+              parsePricingValue('walls.priming.price', 4.50);
             const cost = wallArea * price;
             roomsTotal += cost;
             console.log(`🎨 Wall priming: ${wallArea}m² × £${price} = £${cost.toFixed(2)}`);
@@ -1472,22 +1499,6 @@ const ProjectDetails = () => {
                         <dt className="text-sm font-medium text-gray-500">Name</dt>
                         <dd className="text-sm text-gray-900">{project?.name || 'Not provided'}</dd>
                       </div>
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Description</dt>
-                        <dd className="text-sm text-gray-900">{project?.description || 'No description provided'}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Project Type</dt>
-                        <dd className="text-sm text-gray-900 capitalize">{project?.project_type || 'Not provided'}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Property Type</dt>
-                        <dd className="text-sm text-gray-900 capitalize">{project?.property_type || 'Not provided'}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Property Address</dt>
-                        <dd className="text-sm text-gray-900">{project?.property_address || 'Not provided'}</dd>
-                      </div>
                     </dl>
                   </div>
                   <div>
@@ -1634,7 +1645,7 @@ const ProjectDetails = () => {
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-4">Project Notes</h3>
                       <textarea
-                        value={notes}
+                        value={""}
                         onChange={(e) => setNotes(e.target.value)}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         rows={4}
