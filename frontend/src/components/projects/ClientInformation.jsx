@@ -1,124 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Plus, Check, AlertCircle, Eye } from 'lucide-react';
-import api from '../../services/api';
+import React, { useEffect } from 'react';
+import { Users, Check, AlertCircle, Eye } from 'lucide-react';
+import { useClientForm } from '../../hooks/useClient';
 
 const ClientInformation = ({ project, onClientUpdate }) => {
-    const [clients, setClients] = useState([]);
-    const [selectedClientId, setSelectedClientId] = useState(project?.client_id || '');
-    const [selectedClient, setSelectedClient] = useState(null);
-    const [useManualEntry, setUseManualEntry] = useState(!project?.client_id);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const {
+        clients,
+        selectedClientId,
+        selectedClient,
+        useManualEntry,
+        manualClientData,
+        loading,
+        error,
+        success,
+        handleClientSelection,
+        handleManualEntryToggle,
+        handleManualInputChange,
+        handleSubmit,
+        initializeFromProject,
+        hasClients
+    } = useClientForm();
 
-    const [manualClientData, setManualClientData] = useState({
-        company_name: project?.client_name || '',
-        contact_name: '',
-        email: project?.client_email || '', // This is the only required field
-        phone: project?.client_phone || '',
-        address: project?.client_address || '',
-        postcode: '',
-        city: '',
-        btw_number: '',
-        kvk_number: '',
-        iban: '',
-        website: ''
-    });
-
+    // Initialize client data from project on mount
     useEffect(() => {
-        loadClients();
-    }, []);
-
-    // Update selected client when selectedClientId changes
-    useEffect(() => {
-        if (selectedClientId && clients.length > 0) {
-            const client = clients.find(c => c.id === parseInt(selectedClientId));
-            setSelectedClient(client || null);
-        } else {
-            setSelectedClient(null);
+        if (project) {
+            initializeFromProject(project);
         }
-    }, [selectedClientId, clients]);
+    }, [project, initializeFromProject]);
 
-    const loadClients = async () => {
-        try {
-            const response = await api.get('/clients');
-            setClients(response.data.clients || []);
-        } catch (err) {
-            console.error('Failed to load clients:', err);
-        }
-    };
-
-    const handleClientSelection = (clientId) => {
-        setSelectedClientId(clientId);
-        if (clientId) {
-            setUseManualEntry(false);
-        }
-    };
-
-    const handleManualEntryToggle = (useManual) => {
-        setUseManualEntry(useManual);
-        if (useManual) {
-            setSelectedClientId('');
-            setSelectedClient(null);
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        try {
-            // Validate email is provided (only mandatory field)
-            if (useManualEntry && !manualClientData.email) {
-                setError('Email is required');
-                setLoading(false);
-                return;
-            }
-
-            if (!useManualEntry && !selectedClientId) {
-                setError('Please select a client or enter client details manually');
-                setLoading(false);
-                return;
-            }
-
-            const updateData = {
-                client_id: useManualEntry ? null : selectedClientId,
-                client_data: useManualEntry ? manualClientData : null,
-                client_name: useManualEntry ? manualClientData.company_name : '',
-                client_email: useManualEntry ? manualClientData.email : '',
-                client_phone: useManualEntry ? manualClientData.phone : '',
-                client_address: useManualEntry ? manualClientData.address : ''
-            };
-
-            const response = await api.put(`/projects/${project.id}/client`, updateData);
-
-            setSuccess('Client information updated successfully!');
-
-            await loadClients();
-
-            if (useManualEntry && response.data.client_id) {
-                setSelectedClientId(response.data.client_id);
-                setUseManualEntry(false); 
-            }
-
-            if (onClientUpdate) {
-                onClientUpdate(response.data.project);
-            }
-
-            setTimeout(() => setSuccess(''), 3000);
-        } catch (err) {
-            setError(err.response?.data?.error || 'Failed to update client information');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleManualInputChange = (e) => {
-        setManualClientData({
-            ...manualClientData,
-            [e.target.name]: e.target.value
-        });
+    const onSubmit = async (e) => {
+        const success = await handleSubmit(e, project.id, onClientUpdate);
+        return success;
     };
 
     return (
@@ -146,7 +57,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={onSubmit} className="space-y-6">
                 {/* Client Selection Method */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -372,6 +283,52 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 onChange={handleManualInputChange}
                                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                 placeholder="https://www.company.com"
+                            />
+                        </div>
+
+                        {/* Additional fields that were in the original */}
+                        <div>
+                            <label htmlFor="btw_number" className="block text-sm font-medium text-gray-700 mb-2">
+                                BTW Number <span className="text-gray-400">(Optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="btw_number"
+                                name="btw_number"
+                                value={manualClientData.btw_number}
+                                onChange={handleManualInputChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="NL123456789B01"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="kvk_number" className="block text-sm font-medium text-gray-700 mb-2">
+                                KVK Number <span className="text-gray-400">(Optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="kvk_number"
+                                name="kvk_number"
+                                value={manualClientData.kvk_number}
+                                onChange={handleManualInputChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="12345678"
+                            />
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label htmlFor="iban" className="block text-sm font-medium text-gray-700 mb-2">
+                                IBAN <span className="text-gray-400">(Optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="iban"
+                                name="iban"
+                                value={manualClientData.iban}
+                                onChange={handleManualInputChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="NL91ABNA0417164300"
                             />
                         </div>
                     </div>
