@@ -97,20 +97,20 @@ const PublicQuoteSignature = () => {
 
         try {
             console.log('🎨 Initializing signature pad...');
-            
+
             // Set canvas size first
             const canvas = canvasRef.current;
             const rect = canvas.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
-            
+
             // Set the actual size in memory (scaled to account for extra pixel density)
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
-            
+
             // Scale the drawing context so everything will work at the higher resolution
             const ctx = canvas.getContext('2d');
             ctx.scale(dpr, dpr);
-            
+
             // Set the size in CSS pixels
             canvas.style.width = rect.width + 'px';
             canvas.style.height = rect.height + 'px';
@@ -149,19 +149,19 @@ const PublicQuoteSignature = () => {
                 const canvas = canvasRef.current;
                 const rect = canvas.getBoundingClientRect();
                 const dpr = window.devicePixelRatio || 1;
-                
+
                 // Clear the pad and resize
                 const imageData = signaturePad.toData();
-                
+
                 canvas.width = rect.width * dpr;
                 canvas.height = rect.height * dpr;
-                
+
                 const ctx = canvas.getContext('2d');
                 ctx.scale(dpr, dpr);
-                
+
                 canvas.style.width = rect.width + 'px';
                 canvas.style.height = rect.height + 'px';
-                
+
                 signaturePad.clear();
                 if (imageData.length > 0) {
                     signaturePad.fromData(imageData);
@@ -290,8 +290,8 @@ const PublicQuoteSignature = () => {
                         <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
                         <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Quote</h2>
                         <p className="text-gray-600">{error}</p>
-                        <button 
-                            onClick={() => window.location.reload()} 
+                        <button
+                            onClick={() => window.location.reload()}
                             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                         >
                             Refresh Page
@@ -400,7 +400,7 @@ const PublicQuoteSignature = () => {
                                 <p className="text-sm text-gray-600 mb-2">
                                     Please sign in the box below using your mouse, trackpad, or finger on mobile devices.
                                 </p>
-                                
+
                                 {/* Signature Status */}
                                 {!scriptLoaded && (
                                     <div className="mb-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
@@ -414,7 +414,7 @@ const PublicQuoteSignature = () => {
                                         width="600"
                                         height="200"
                                         className="w-full h-48 cursor-crosshair touch-none"
-                                        style={{ 
+                                        style={{
                                             touchAction: 'none',
                                             maxWidth: '100%',
                                             height: '200px'
@@ -426,7 +426,7 @@ const PublicQuoteSignature = () => {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 <div className="mt-2 flex space-x-2">
                                     <button
                                         type="button"
@@ -482,10 +482,10 @@ const PublicQuoteSignature = () => {
                                     disabled={signing || !signaturePad || !scriptLoaded}
                                     className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                                 >
-                                    {signing ? 'Signing...' : 
-                                     !scriptLoaded ? 'Loading...' :
-                                     !signaturePad ? 'Initializing...' :
-                                     'Sign Quote Digitally'}
+                                    {signing ? 'Signing...' :
+                                        !scriptLoaded ? 'Loading...' :
+                                            !signaturePad ? 'Initializing...' :
+                                                'Sign Quote Digitally'}
                                 </button>
                             </div>
                         </div>
