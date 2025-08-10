@@ -141,7 +141,6 @@ def create_project():
         current_app.logger.error(f'Create project error: {str(e)}\n{traceback.format_exc()}')
         return jsonify({'error': f'Failed to create project: {str(e)}'}), 500
 
-# Add a new route for updating client information
 @projects_bp.route('/<int:project_id>/client', methods=['PUT'])
 @jwt_required()
 def update_project_client(project_id):
@@ -178,7 +177,9 @@ def update_project_client(project_id):
         else:
             # Creating new client or using manual entry
             client_data = data.get('client_data', {})
-            if client_data and client_data.get('company_name') and client_data.get('email'):
+            
+            # ✅ FIXED: Only require email, not company_name
+            if client_data and client_data.get('email'):
                 # Check if client already exists
                 existing_client = Client.query.filter_by(
                     company_id=user.company_id,
@@ -187,12 +188,13 @@ def update_project_client(project_id):
                 
                 if existing_client:
                     client = existing_client
+                    current_app.logger.info(f'Found existing client: {existing_client.id}')
                 else:
-                    # Create new client
+                    # ✅ Create new client with proper default handling
                     client = Client(
-                        company_name=client_data['company_name'],
+                        company_name=client_data.get('company_name', ''),  # Default to empty string
                         contact_name=client_data.get('contact_name', ''),
-                        email=client_data['email'],
+                        email=client_data['email'],  # Required field
                         phone=client_data.get('phone', ''),
                         address=client_data.get('address', ''),
                         postcode=client_data.get('postcode', ''),
@@ -205,17 +207,19 @@ def update_project_client(project_id):
                         created_by=user.id
                     )
                     db.session.add(client)
-                    db.session.flush()
+                    db.session.flush()  # Get ID without committing yet
+                    current_app.logger.info(f'Created new client: {client.id}')
         
         # Update project with client information
         if client:
             project.client_id = client.id
-            project.client_name = client.company_name
+            project.client_name = client.company_name or client.email  # Use email as fallback
             project.client_email = client.email
             project.client_phone = client.phone
             project.client_address = client.address
         else:
             # Manual client entry without creating a client record
+            project.client_id = None  # Clear client_id
             project.client_name = data.get('client_name', '')
             project.client_email = data.get('client_email', '')
             project.client_phone = data.get('client_phone', '')
@@ -224,15 +228,17 @@ def update_project_client(project_id):
         project.updated_at = datetime.utcnow()
         db.session.commit()
         
+        # ✅ Return client_id for frontend to update its state
         return jsonify({
             'message': 'Client information updated successfully',
-            'project': project.to_dict()
+            'project': project.to_dict(),
+            'client_id': client.id if client else None
         })
         
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Update project client error: {str(e)}\n{traceback.format_exc()}')
-        return jsonify({'error': 'Failed to update client information'}), 500
+        return jsonify({'error': f'Failed to update client information: {str(e)}'}), 500
 
 
 @projects_bp.route('/<int:project_id>', methods=['GET'])

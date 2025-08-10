@@ -92,7 +92,7 @@ def create_client():
         
         # Create client
         client = Client(
-            company_name=data['company_name'],
+            company_name=data.get('company_name', ''),
             contact_name=data.get('contact_name', ''),
             email=data['email'],
             phone=data.get('phone', ''),

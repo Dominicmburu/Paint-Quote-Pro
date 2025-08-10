@@ -94,6 +94,14 @@ const ClientInformation = ({ project, onClientUpdate }) => {
             const response = await api.put(`/projects/${project.id}/client`, updateData);
 
             setSuccess('Client information updated successfully!');
+
+            await loadClients();
+
+            if (useManualEntry && response.data.client_id) {
+                setSelectedClientId(response.data.client_id);
+                setUseManualEntry(false); 
+            }
+
             if (onClientUpdate) {
                 onClientUpdate(response.data.project);
             }
