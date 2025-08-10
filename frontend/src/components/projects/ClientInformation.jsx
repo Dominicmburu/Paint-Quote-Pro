@@ -1,6 +1,7 @@
+// components/project/ClientInformation.jsx
 import React, { useEffect } from 'react';
 import { Users, Check, AlertCircle, Eye } from 'lucide-react';
-import { useClientForm } from '../../hooks/useClient';
+import { useClientForm } from '../../hooks/ClientContext';
 
 const ClientInformation = ({ project, onClientUpdate }) => {
     const {
