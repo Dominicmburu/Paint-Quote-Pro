@@ -6,7 +6,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import Loading from './components/common/Loading';
-import GoogleTranslate from './components/common/GoogleTranslate';
+// import GoogleTranslate from './components/common/GoogleTranslate';
 
 // Page Components
 import Home from './pages/Home';
@@ -92,7 +92,7 @@ function App() {
                   <Header />
                   <main className="flex-1">
                     <Home />
-                    <GoogleTranslate />
+                    {/* <GoogleTranslate /> */}
                   </main>
                   <Footer />
                 </>
