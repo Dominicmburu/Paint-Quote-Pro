@@ -1,5 +1,8 @@
 import axios from 'axios';
-import { API_BASE_URL } from './api';
+// import { API_BASE_URL } from './api';
+
+const API_BASE_URL = 'https://paint-quote-pro.onrender.com/api';
+
 
 class ClientService {
   constructor() {
