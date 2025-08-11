@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Plus, Check, AlertCircle, Eye } from 'lucide-react';
-import api from '../../services/api';
+import clientService from '../../services/clientService';
 
 const ClientInformation = ({ project, onClientUpdate }) => {
     const [clients, setClients] = useState([]);
@@ -8,6 +8,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
     const [selectedClient, setSelectedClient] = useState(null);
     const [useManualEntry, setUseManualEntry] = useState(!project?.client_id);
     const [loading, setLoading] = useState(false);
+    const [clientsLoading, setClientsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -27,6 +28,13 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
     useEffect(() => {
         loadClients();
+
+        // Subscribe to client updates from the service
+        const unsubscribe = clientService.subscribe((updatedClients) => {
+            setClients(updatedClients);
+        });
+
+        return unsubscribe;
     }, []);
 
     // Update selected client when selectedClientId changes
@@ -40,11 +48,17 @@ const ClientInformation = ({ project, onClientUpdate }) => {
     }, [selectedClientId, clients]);
 
     const loadClients = async () => {
+        setClientsLoading(true);
         try {
-            const response = await api.get('/clients');
-            setClients(response.data.clients || []);
+            const clientsData = await clientService.getClients();
+            setClients(clientsData);
         } catch (err) {
             console.error('Failed to load clients:', err);
+            setError('Failed to load existing clients');
+            // Set empty array to allow manual entry
+            setClients([]);
+        } finally {
+            setClientsLoading(false);
         }
     };
 
@@ -82,6 +96,17 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 return;
             }
 
+            // Validate manual client data if using manual entry
+            if (useManualEntry) {
+                const validation = clientService.validateClientData(manualClientData);
+                if (!validation.isValid) {
+                    const firstError = Object.values(validation.errors)[0];
+                    setError(firstError);
+                    setLoading(false);
+                    return;
+                }
+            }
+
             const updateData = {
                 client_id: useManualEntry ? null : selectedClientId,
                 client_data: useManualEntry ? manualClientData : null,
@@ -91,23 +116,23 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 client_address: useManualEntry ? manualClientData.address : ''
             };
 
-            const response = await api.put(`/projects/${project.id}/client`, updateData);
+            const response = await clientService.updateProjectClient(project.id, updateData);
 
             setSuccess('Client information updated successfully!');
 
-            await loadClients();
-
-            if (useManualEntry && response.data.client_id) {
-                setSelectedClientId(response.data.client_id);
-                setUseManualEntry(false); 
+            // If a new client was created, update the UI
+            if (useManualEntry && response.client_id) {
+                setSelectedClientId(response.client_id);
+                setUseManualEntry(false);
             }
 
             if (onClientUpdate) {
-                onClientUpdate(response.data.project);
+                onClientUpdate(response.project);
             }
 
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
+            console.error('Failed to update client information:', err);
             setError(err.response?.data?.error || 'Failed to update client information');
         } finally {
             setLoading(false);
@@ -119,6 +144,23 @@ const ClientInformation = ({ project, onClientUpdate }) => {
             ...manualClientData,
             [e.target.name]: e.target.value
         });
+        // Clear any validation errors when user starts typing
+        if (error) {
+            setError('');
+        }
+    };
+
+    const refreshClients = async () => {
+        setClientsLoading(true);
+        try {
+            await clientService.refreshClients();
+            // The subscription will automatically update our state
+        } catch (err) {
+            console.error('Failed to refresh clients:', err);
+            setError('Failed to refresh client list');
+        } finally {
+            setClientsLoading(false);
+        }
     };
 
     return (
@@ -159,10 +201,26 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 name="clientMethod"
                                 checked={!useManualEntry}
                                 onChange={() => handleManualEntryToggle(false)}
+                                disabled={clientsLoading}
                                 className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
                             />
                             <span className="ml-3 text-sm text-gray-700">
-                                Select from existing clients ({clients.length} available)
+                                Select from existing clients 
+                                {clientsLoading ? (
+                                    <span className="ml-2 text-gray-500">(Loading...)</span>
+                                ) : (
+                                    <span className="ml-1">({clients.length} available)</span>
+                                )}
+                                {!clientsLoading && clients.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={refreshClients}
+                                        className="ml-2 text-purple-600 hover:text-purple-700 text-xs underline"
+                                        disabled={clientsLoading}
+                                    >
+                                        Refresh
+                                    </button>
+                                )}
                             </span>
                         </label>
                         <label className="flex items-center">
@@ -191,10 +249,13 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 id="client_select"
                                 value={selectedClientId}
                                 onChange={(e) => handleClientSelection(e.target.value)}
-                                className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                disabled={clientsLoading}
+                                className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50"
                                 required={!useManualEntry}
                             >
-                                <option value="">Select a client...</option>
+                                <option value="">
+                                    {clientsLoading ? 'Loading clients...' : 'Select a client...'}
+                                </option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
                                         {client.company_name ? `${client.company_name} - ${client.email}` : client.email}
@@ -202,6 +263,15 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 ))}
                             </select>
                         </div>
+
+                        {/* No clients message */}
+                        {!clientsLoading && clients.length === 0 && (
+                            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p className="text-sm text-yellow-800">
+                                    No existing clients found. You can create a new client by selecting "Enter client details manually" above.
+                                </p>
+                            </div>
+                        )}
 
                         {/* Selected Client Preview */}
                         {selectedClient && (
@@ -233,10 +303,25 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                             <p className="text-gray-900">{selectedClient.phone}</p>
                                         </div>
                                     )}
-                                    {selectedClient.full_address && (
+                                    {selectedClient.address && (
                                         <div className="md:col-span-2">
                                             <span className="font-medium text-gray-600">Address:</span>
-                                            <p className="text-gray-900">{selectedClient.full_address}</p>
+                                            <p className="text-gray-900">{selectedClient.address}</p>
+                                        </div>
+                                    )}
+                                    {selectedClient.website && (
+                                        <div className="md:col-span-2">
+                                            <span className="font-medium text-gray-600">Website:</span>
+                                            <p className="text-gray-900">
+                                                <a 
+                                                    href={selectedClient.website} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:text-blue-700 underline"
+                                                >
+                                                    {selectedClient.website}
+                                                </a>
+                                            </p>
                                         </div>
                                     )}
                                 </div>
@@ -374,6 +459,52 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 placeholder="https://www.company.com"
                             />
                         </div>
+
+                        {/* Additional Business Fields */}
+                        <div>
+                            <label htmlFor="btw_number" className="block text-sm font-medium text-gray-700 mb-2">
+                                BTW Number <span className="text-gray-400">(Optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="btw_number"
+                                name="btw_number"
+                                value={manualClientData.btw_number}
+                                onChange={handleManualInputChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="NL123456789B01"
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="kvk_number" className="block text-sm font-medium text-gray-700 mb-2">
+                                KVK Number <span className="text-gray-400">(Optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="kvk_number"
+                                name="kvk_number"
+                                value={manualClientData.kvk_number}
+                                onChange={handleManualInputChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="12345678"
+                            />
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label htmlFor="iban" className="block text-sm font-medium text-gray-700 mb-2">
+                                IBAN <span className="text-gray-400">(Optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="iban"
+                                name="iban"
+                                value={manualClientData.iban}
+                                onChange={handleManualInputChange}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="NL91 ABNA 0417 1643 00"
+                            />
+                        </div>
                     </div>
                 )}
 
@@ -381,7 +512,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 <div className="flex justify-end pt-6 border-t border-gray-200">
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || clientsLoading}
                         className="inline-flex items-center px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-md font-medium transition-colors"
                     >
                         {loading ? (
