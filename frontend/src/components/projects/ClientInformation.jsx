@@ -1,146 +1,174 @@
-// components/project/ClientInformation.jsx
-import React, { useEffect } from 'react';
-import { Users, Check, AlertCircle, Eye } from 'lucide-react';
-import { useClientForm } from '../../hooks/ClientContext'; 
+import React, { useState, useEffect } from 'react';
+import { Users, Plus, Check, AlertCircle, Eye } from 'lucide-react';
+import clientService from '../../services/clientService';
 
 const ClientInformation = ({ project, onClientUpdate }) => {
-    console.log('🔄 ClientInformation: Component rendering with project:', project);
+    const [clients, setClients] = useState([]);
+    const [selectedClientId, setSelectedClientId] = useState(project?.client_id || '');
+    const [selectedClient, setSelectedClient] = useState(null);
+    const [useManualEntry, setUseManualEntry] = useState(!project?.client_id);
+    const [loading, setLoading] = useState(false);
+    const [clientsLoading, setClientsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
-    const {
-        clients,
-        selectedClientId,
-        selectedClient,
-        useManualEntry,
-        manualClientData,
-        loading,
-        error,
-        success,
-        handleClientSelection,
-        handleManualEntryToggle,
-        handleManualInputChange,
-        handleSubmit,
-        initializeFromProject,
-        hasClients
-    } = useClientForm();
-
-    // 🔍 Log all context values
-    console.log('📊 ClientInformation: Context state:', {
-        clientsCount: clients?.length || 0,
-        clients: clients,
-        selectedClientId,
-        selectedClient,
-        useManualEntry,
-        manualClientData,
-        loading,
-        error,
-        success,
-        hasClients
+    const [manualClientData, setManualClientData] = useState({
+        company_name: project?.client_name || '',
+        contact_name: '',
+        email: project?.client_email || '',
+        phone: project?.client_phone || '',
+        address: project?.client_address || '',
+        postcode: '',
+        city: '',
+        btw_number: '',
+        kvk_number: '',
+        iban: '',
+        website: ''
     });
 
-    // Initialize client data from project on mount
     useEffect(() => {
-        console.log('🚀 ClientInformation: useEffect triggered with project:', project);
-        console.log('🚀 ClientInformation: initializeFromProject function:', initializeFromProject);
-        
-        if (project) {
-            console.log('✅ ClientInformation: Initializing from project:', {
-                projectId: project.id,
-                clientId: project.client_id,
-                clientName: project.client_name,
-                clientEmail: project.client_email,
-                clientPhone: project.client_phone,
-                clientAddress: project.client_address
-            });
-            initializeFromProject(project);
+        loadClients();
+
+        // Subscribe to client updates from the service
+        const unsubscribe = clientService.subscribe((updatedClients) => {
+            setClients(updatedClients);
+        });
+
+        return unsubscribe;
+    }, []);
+
+    // Update selected client when selectedClientId changes
+    useEffect(() => {
+        if (selectedClientId && clients.length > 0) {
+            const client = clients.find(c => c.id === parseInt(selectedClientId));
+            setSelectedClient(client || null);
         } else {
-            console.log('❌ ClientInformation: No project provided to initialize from');
+            setSelectedClient(null);
         }
-    }, [project, initializeFromProject]);
+    }, [selectedClientId, clients]);
 
-    // 🔍 Log when clients data changes
-    useEffect(() => {
-        console.log('📈 ClientInformation: Clients data updated:', {
-            count: clients?.length || 0,
-            clients: clients,
-            hasClients: hasClients
-        });
-    }, [clients, hasClients]);
-
-    // 🔍 Log when selection changes
-    useEffect(() => {
-        console.log('🎯 ClientInformation: Selection changed:', {
-            selectedClientId,
-            selectedClient,
-            useManualEntry
-        });
-    }, [selectedClientId, selectedClient, useManualEntry]);
-
-    // 🔍 Log when manual data changes
-    useEffect(() => {
-        console.log('✏️ ClientInformation: Manual data changed:', manualClientData);
-    }, [manualClientData]);
-
-    // 🔍 Log loading/error states
-    useEffect(() => {
-        if (loading) console.log('⏳ ClientInformation: Loading state activated');
-        if (error) console.log('❌ ClientInformation: Error occurred:', error);
-        if (success) console.log('✅ ClientInformation: Success message:', success);
-    }, [loading, error, success]);
-
-    const onSubmit = async (e) => {
-        console.log('📤 ClientInformation: Form submission started');
-        console.log('📤 ClientInformation: Project ID:', project?.id);
-        console.log('📤 ClientInformation: Current form state:', {
-            useManualEntry,
-            selectedClientId,
-            manualClientData: manualClientData
-        });
-
+    const loadClients = async () => {
+        setClientsLoading(true);
         try {
-            const success = await handleSubmit(e, project.id, onClientUpdate);
-            console.log('📤 ClientInformation: Form submission result:', success);
-            return success;
-        } catch (error) {
-            console.error('💥 ClientInformation: Form submission error:', error);
-            throw error;
+            const clientsData = await clientService.getClients();
+            setClients(clientsData);
+        } catch (err) {
+            console.error('Failed to load clients:', err);
+            setError('Failed to load existing clients');
+            // Set empty array to allow manual entry
+            setClients([]);
+        } finally {
+            setClientsLoading(false);
         }
     };
 
-    // 🔍 Log render decisions
-    console.log('🎨 ClientInformation: Render decisions:', {
-        showClientSelection: !useManualEntry,
-        showManualEntry: useManualEntry,
-        showSelectedClientPreview: !useManualEntry && selectedClient,
-        clientsAvailable: clients?.length > 0
-    });
+    const handleClientSelection = (clientId) => {
+        setSelectedClientId(clientId);
+        if (clientId) {
+            setUseManualEntry(false);
+        }
+    };
+
+    const handleManualEntryToggle = (useManual) => {
+        setUseManualEntry(useManual);
+        if (useManual) {
+            setSelectedClientId('');
+            setSelectedClient(null);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
+        try {
+            // Validate email is provided (only mandatory field)
+            if (useManualEntry && !manualClientData.email) {
+                setError('Email is required');
+                setLoading(false);
+                return;
+            }
+
+            if (!useManualEntry && !selectedClientId) {
+                setError('Please select a client or enter client details manually');
+                setLoading(false);
+                return;
+            }
+
+            // Validate manual client data if using manual entry
+            if (useManualEntry) {
+                const validation = clientService.validateClientData(manualClientData);
+                if (!validation.isValid) {
+                    const firstError = Object.values(validation.errors)[0];
+                    setError(firstError);
+                    setLoading(false);
+                    return;
+                }
+            }
+
+            const updateData = {
+                client_id: useManualEntry ? null : selectedClientId,
+                client_data: useManualEntry ? manualClientData : null,
+                client_name: useManualEntry ? manualClientData.company_name : '',
+                client_email: useManualEntry ? manualClientData.email : '',
+                client_phone: useManualEntry ? manualClientData.phone : '',
+                client_address: useManualEntry ? manualClientData.address : ''
+            };
+
+            const response = await clientService.updateProjectClient(project.id, updateData);
+
+            setSuccess('Client information updated successfully!');
+
+            // If a new client was created, update the UI
+            if (useManualEntry && response.client_id) {
+                setSelectedClientId(response.client_id);
+                setUseManualEntry(false);
+            }
+
+            if (onClientUpdate) {
+                onClientUpdate(response.project);
+            }
+
+            setTimeout(() => setSuccess(''), 3000);
+        } catch (err) {
+            console.error('Failed to update client information:', err);
+            setError(err.response?.data?.error || 'Failed to update client information');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleManualInputChange = (e) => {
+        setManualClientData({
+            ...manualClientData,
+            [e.target.name]: e.target.value
+        });
+        // Clear any validation errors when user starts typing
+        if (error) {
+            setError('');
+        }
+    };
+
+    const refreshClients = async () => {
+        setClientsLoading(true);
+        try {
+            await clientService.refreshClients();
+            // The subscription will automatically update our state
+        } catch (err) {
+            console.error('Failed to refresh clients:', err);
+            setError('Failed to refresh client list');
+        } finally {
+            setClientsLoading(false);
+        }
+    };
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
                 <Users className="h-6 w-6 mr-3 text-purple-600" />
                 Client Information
-                {/* 🔍 Debug info in dev mode */}
-                {process.env.NODE_ENV === 'development' && (
-                    <span className="ml-4 text-xs bg-gray-100 px-2 py-1 rounded">
-                        Clients: {clients?.length || 0} | Mode: {useManualEntry ? 'Manual' : 'Select'} | Loading: {loading ? 'Yes' : 'No'}
-                    </span>
-                )}
             </h3>
-
-            {/* 🔍 Debug panel in development */}
-            {process.env.NODE_ENV === 'development' && (
-                <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg text-xs">
-                    <h4 className="font-bold mb-2">🔍 Debug Info</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                        <div><strong>Clients loaded:</strong> {clients?.length || 0}</div>
-                        <div><strong>Has clients:</strong> {hasClients ? 'Yes' : 'No'}</div>
-                        <div><strong>Selected ID:</strong> {selectedClientId || 'None'}</div>
-                        <div><strong>Manual mode:</strong> {useManualEntry ? 'Yes' : 'No'}</div>
-                        <div><strong>Loading:</strong> {loading ? 'Yes' : 'No'}</div>
-                        <div><strong>Error:</strong> {error || 'None'}</div>
-                    </div>
-                </div>
-            )}
 
             {error && (
                 <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
@@ -160,7 +188,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 </div>
             )}
 
-            <form onSubmit={onSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Client Selection Method */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -172,14 +200,27 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 type="radio"
                                 name="clientMethod"
                                 checked={!useManualEntry}
-                                onChange={() => {
-                                    console.log('🔄 ClientInformation: Switching to existing client selection');
-                                    handleManualEntryToggle(false);
-                                }}
+                                onChange={() => handleManualEntryToggle(false)}
+                                disabled={clientsLoading}
                                 className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
                             />
                             <span className="ml-3 text-sm text-gray-700">
-                                Select from existing clients ({clients?.length || 0} available)
+                                Select from existing clients 
+                                {clientsLoading ? (
+                                    <span className="ml-2 text-gray-500">(Loading...)</span>
+                                ) : (
+                                    <span className="ml-1">({clients.length} available)</span>
+                                )}
+                                {!clientsLoading && clients.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={refreshClients}
+                                        className="ml-2 text-purple-600 hover:text-purple-700 text-xs underline"
+                                        disabled={clientsLoading}
+                                    >
+                                        Refresh
+                                    </button>
+                                )}
                             </span>
                         </label>
                         <label className="flex items-center">
@@ -187,10 +228,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 type="radio"
                                 name="clientMethod"
                                 checked={useManualEntry}
-                                onChange={() => {
-                                    console.log('🔄 ClientInformation: Switching to manual entry');
-                                    handleManualEntryToggle(true);
-                                }}
+                                onChange={() => handleManualEntryToggle(true)}
                                 className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
                             />
                             <span className="ml-3 text-sm text-gray-700">
@@ -210,24 +248,30 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                             <select
                                 id="client_select"
                                 value={selectedClientId}
-                                onChange={(e) => {
-                                    console.log('🎯 ClientInformation: Client selection changed to:', e.target.value);
-                                    handleClientSelection(e.target.value);
-                                }}
-                                className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                onChange={(e) => handleClientSelection(e.target.value)}
+                                disabled={clientsLoading}
+                                className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50"
                                 required={!useManualEntry}
                             >
-                                <option value="">Select a client...</option>
-                                {clients?.map((client) => {
-                                    console.log('🔍 ClientInformation: Rendering client option:', client);
-                                    return (
-                                        <option key={client.id} value={client.id}>
-                                            {client.company_name ? `${client.company_name} - ${client.email}` : client.email}
-                                        </option>
-                                    );
-                                })}
+                                <option value="">
+                                    {clientsLoading ? 'Loading clients...' : 'Select a client...'}
+                                </option>
+                                {clients.map((client) => (
+                                    <option key={client.id} value={client.id}>
+                                        {client.company_name ? `${client.company_name} - ${client.email}` : client.email}
+                                    </option>
+                                ))}
                             </select>
                         </div>
+
+                        {/* No clients message */}
+                        {!clientsLoading && clients.length === 0 && (
+                            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p className="text-sm text-yellow-800">
+                                    No existing clients found. You can create a new client by selecting "Enter client details manually" above.
+                                </p>
+                            </div>
+                        )}
 
                         {/* Selected Client Preview */}
                         {selectedClient && (
@@ -259,10 +303,25 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                             <p className="text-gray-900">{selectedClient.phone}</p>
                                         </div>
                                     )}
-                                    {selectedClient.full_address && (
+                                    {selectedClient.address && (
                                         <div className="md:col-span-2">
                                             <span className="font-medium text-gray-600">Address:</span>
-                                            <p className="text-gray-900">{selectedClient.full_address}</p>
+                                            <p className="text-gray-900">{selectedClient.address}</p>
+                                        </div>
+                                    )}
+                                    {selectedClient.website && (
+                                        <div className="md:col-span-2">
+                                            <span className="font-medium text-gray-600">Website:</span>
+                                            <p className="text-gray-900">
+                                                <a 
+                                                    href={selectedClient.website} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:text-blue-700 underline"
+                                                >
+                                                    {selectedClient.website}
+                                                </a>
+                                            </p>
                                         </div>
                                     )}
                                 </div>
@@ -286,10 +345,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 name="email"
                                 required={useManualEntry}
                                 value={manualClientData.email}
-                                onChange={(e) => {
-                                    console.log('✏️ ClientInformation: Email changed to:', e.target.value);
-                                    handleManualInputChange(e);
-                                }}
+                                onChange={handleManualInputChange}
                                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                 placeholder="client@example.com"
                             />
@@ -404,7 +460,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                             />
                         </div>
 
-                        {/* Additional fields that were in the original */}
+                        {/* Additional Business Fields */}
                         <div>
                             <label htmlFor="btw_number" className="block text-sm font-medium text-gray-700 mb-2">
                                 BTW Number <span className="text-gray-400">(Optional)</span>
@@ -446,7 +502,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 value={manualClientData.iban}
                                 onChange={handleManualInputChange}
                                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                placeholder="NL91ABNA0417164300"
+                                placeholder="NL91 ABNA 0417 1643 00"
                             />
                         </div>
                     </div>
@@ -456,8 +512,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 <div className="flex justify-end pt-6 border-t border-gray-200">
                     <button
                         type="submit"
-                        disabled={loading}
-                        onClick={() => console.log('🔘 ClientInformation: Submit button clicked')}
+                        disabled={loading || clientsLoading}
                         className="inline-flex items-center px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-md font-medium transition-colors"
                     >
                         {loading ? (
