@@ -15,7 +15,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
     const [manualClientData, setManualClientData] = useState({
         company_name: project?.client_name || '',
         contact_name: '',
-        email: project?.client_email || '', // This is the only required field
+        email: project?.client_email || '',
         phone: project?.client_phone || '',
         address: project?.client_address || '',
         postcode: '',
