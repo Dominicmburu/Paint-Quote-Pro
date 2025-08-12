@@ -9,6 +9,8 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sqlalchemy import text
 from werkzeug.exceptions import NotFound
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 
 # Import configuration
 from config import get_config
@@ -41,11 +43,13 @@ def create_app(config_name=None):
         )
     
     app = Flask(__name__)
-    application = app
+
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2, x_proto=2, x_host=2, x_port=2, x_prefix=2)
 
     @app.before_request
     def enforce_https():
-        if request.scheme == 'http' and not app.debug:
+        if not app.debug and not request.is_secure:
+        # Build HTTPS url without hardcoding http/https manually
             url = request.url.replace('http://', 'https://', 1)
             return redirect(url, code=301)
     

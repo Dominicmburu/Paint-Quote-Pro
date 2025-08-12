@@ -5,6 +5,8 @@ from urllib.parse import urlparse
 from werkzeug.utils import secure_filename
 import uuid
 
+
+
 def get_fallback_database_uri():
     """Fallback database URI for development"""
     return "postgresql://postgres:1234@localhost:5432/paint_quote_pro_db"
