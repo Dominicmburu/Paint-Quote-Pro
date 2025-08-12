@@ -44,7 +44,10 @@ def create_app(config_name=None):
     
     app = Flask(__name__)
 
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2, x_proto=2, x_host=2, x_port=2, x_prefix=2)
+    # app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2, x_proto=2, x_host=2, x_port=2, x_prefix=2)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
+    app.url_map.strict_slashes = False
+
 
     @app.before_request
     def enforce_https():
@@ -868,4 +871,4 @@ if __name__ == '__main__':
     print("   🔗 Server will be available at: http://localhost:5000")
     print("=" * 50)
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
