@@ -194,7 +194,7 @@ class Config:
     }
     
     # ENHANCED CORS Configuration for static files
-    CORS_ORIGINS = [origin.strip() for origin in os.environ.get('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5173').split(',')]
+    CORS_ORIGINS = [origin.strip() for origin in os.environ.get('CORS_ORIGINS', 'https://localhost:5173, https://paint-quote-pro.vercel.app').split(',')]
     CORS_ALLOW_HEADERS = [
         'Content-Type', 'Authorization', 'X-Requested-With', 
         'Accept', 'Origin', 'Cache-Control', 'X-File-Name'
@@ -234,8 +234,8 @@ class Config:
     DEBUG = ENVIRONMENT == 'development'
     
     # Application URLs
-    FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
-    BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:5000')
+    FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')
+    BACKEND_URL = os.environ.get('BACKEND_URL', 'https://paint-quote-pro.onrender.com')
     
     # Cache Configuration
     CACHE_TYPE = os.environ.get('CACHE_TYPE', 'simple')
@@ -298,7 +298,7 @@ class DevelopmentConfig(Config):
     EXPLAIN_TEMPLATE_LOADING = True
     
     # Development CORS - allow all origins
-    CORS_ORIGINS = ['*']
+    CORS_ORIGINS = ['https://paint-quote-pro.vercel.app']
     
     # Shorter cache times for development
     CACHE_CONTROL = {
@@ -344,7 +344,7 @@ class ProductionConfig(Config):
     
     # Stricter CORS for production
     CORS_ORIGINS = [
-        os.environ.get('FRONTEND_URL', 'https://yourdomain.com'),
+        os.environ.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app'),
         'https://www.yourdomain.com'
     ]
 

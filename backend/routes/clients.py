@@ -10,24 +10,72 @@ from models.client import Client
 
 clients_bp = Blueprint('clients', __name__)
 
+def log_request_details(endpoint_name):
+    """Log detailed request information"""
+    try:
+        # Log the full URL and protocol
+        current_app.logger.info(f"=== {endpoint_name} REQUEST ===")
+        current_app.logger.info(f"Full URL: {request.url}")
+        current_app.logger.info(f"Base URL: {request.base_url}")
+        current_app.logger.info(f"URL Root: {request.url_root}")
+        current_app.logger.info(f"Scheme: {request.scheme}")
+        current_app.logger.info(f"Host: {request.host}")
+        current_app.logger.info(f"Method: {request.method}")
+        current_app.logger.info(f"Path: {request.path}")
+        current_app.logger.info(f"Query String: {request.query_string.decode()}")
+        
+        # Log headers (excluding sensitive ones)
+        headers_to_log = {}
+        for key, value in request.headers:
+            if key.lower() not in ['authorization', 'cookie']:
+                headers_to_log[key] = value
+            else:
+                headers_to_log[key] = '[HIDDEN]'
+        
+        current_app.logger.info(f"Headers: {headers_to_log}")
+        
+        # Log if request is secure
+        current_app.logger.info(f"Is Secure (HTTPS): {request.is_secure}")
+        current_app.logger.info(f"Environment URL: {request.environ.get('HTTP_HOST', 'Not set')}")
+        current_app.logger.info(f"X-Forwarded-Proto: {request.headers.get('X-Forwarded-Proto', 'Not set')}")
+        current_app.logger.info(f"X-Forwarded-For: {request.headers.get('X-Forwarded-For', 'Not set')}")
+        current_app.logger.info("========================")
+        
+    except Exception as e:
+        current_app.logger.error(f"Error logging request details: {e}")
+
 @clients_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_clients():
     """Get all clients for the user's company"""
+    log_request_details("GET CLIENTS")
+
     try:
         current_user_id = get_jwt_identity()
-        user = db.session.get(User, int(current_user_id))
+        current_app.logger.info(f"Current user ID from JWT: {current_user_id}")
+        
+        user = db.session.get(User, int(current_user_id))        
         
         if not user or not user.company:
+            current_app.logger.warning("User or company not found")
+            
             return jsonify({'error': 'User or company not found'}), 404
+        
+        current_app.logger.info(f"User company: {user.company.name if user.company else 'None'}")
+        current_app.logger.info(f"Company ID: {user.company_id}")
         
         # Get pagination and search parameters
         page = request.args.get('page', 1, type=int)
         per_page = min(request.args.get('per_page', 50, type=int), 100)
         search = request.args.get('search', '')
+
+        current_app.logger.info(f"Query params - Page: {page}, Per page: {per_page}, Search: '{search}'")
+        
         
         # Build query
         query = Client.query.filter_by(company_id=user.company_id)
+        
+        current_app.logger.info(f"Base query built for company_id: {user.company_id}")
         
         if search:
             search_pattern = f'%{search}%'
@@ -38,6 +86,8 @@ def get_clients():
                     Client.email.ilike(search_pattern)
                 )
             )
+            current_app.logger.info(f"Applied search filter: {search_pattern}")
+        
         
         # Order by most recent
         query = query.order_by(Client.updated_at.desc())
@@ -124,8 +174,12 @@ def create_client():
 @jwt_required()
 def get_client(client_id):
     """Get a specific client"""
+    log_request_details(f"GET CLIENT {client_id}")
+    
     try:
         current_user_id = get_jwt_identity()
+        current_app.logger.info(f"Getting client {client_id} for user {current_user_id}")
+        
         user = db.session.get(User, int(current_user_id))
         
         client = Client.query.filter_by(

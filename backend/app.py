@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask import Flask, redirect, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 from flask_mail import Mail
@@ -42,6 +42,12 @@ def create_app(config_name=None):
     
     app = Flask(__name__)
     application = app
+
+    @app.before_request
+    def enforce_https():
+        if request.scheme == 'http' and not app.debug:
+            url = request.url.replace('http://', 'https://', 1)
+            return redirect(url, code=301)
     
     # Load configuration using the new config system
     config_class = get_config(config_name)
