@@ -120,7 +120,7 @@
 //   // Get client by ID
 //   async getClientById(clientId) {
 //     const makeRequest = async () => {
-//       return await axios.get(`${API_BASE_URL}/clients/${clientId}`, {
+//       return await axios.get(`${API_BASE_URL}//${clientId}`, {
 //         headers: this.getAuthHeaders()
 //       });
 //     };
@@ -435,7 +435,7 @@ class ClientService {
   async getClients() {
     try {
       console.log('🔄 Fetching clients...');
-      const response = await axios.get(`${API_BASE_URL}/clients`, {
+      const response = await axios.get(`${API_BASE_URL}/custm`, {
         headers: this.getAuthHeaders()
       });
       this.clients = response.data.clients || [];
@@ -452,7 +452,7 @@ class ClientService {
   async getClientById(clientId) {
     try {
       console.log(`🔄 Fetching client ${clientId}...`);
-      const response = await axios.get(`${API_BASE_URL}/clients/${clientId}`, {
+      const response = await axios.get(`${API_BASE_URL}/custm/${clientId}`, {
         headers: this.getAuthHeaders()
       });
       console.log('✅ Client loaded:', response.data.client);
@@ -467,7 +467,7 @@ class ClientService {
   async createClient(clientData) {
     try {
       console.log('🔄 Creating new client...');
-      const response = await axios.post(`${API_BASE_URL}/clients`, clientData, {
+      const response = await axios.post(`${API_BASE_URL}/custm`, clientData, {
         headers: this.getAuthHeaders()
       });
       const newClient = response.data.client;
@@ -488,7 +488,7 @@ class ClientService {
   async updateClient(clientId, clientData) {
     try {
       console.log(`🔄 Updating client ${clientId}...`);
-      const response = await axios.put(`${API_BASE_URL}/clients/${clientId}`, clientData, {
+      const response = await axios.put(`${API_BASE_URL}/custm/${clientId}`, clientData, {
         headers: this.getAuthHeaders()
       });
       const updatedClient = response.data.client;
@@ -512,7 +512,7 @@ class ClientService {
   async deleteClient(clientId) {
     try {
       console.log(`🔄 Deleting client ${clientId}...`);
-      await axios.delete(`${API_BASE_URL}/clients/${clientId}`, {
+      await axios.delete(`${API_BASE_URL}/custm/${clientId}`, {
         headers: this.getAuthHeaders()
       });
       

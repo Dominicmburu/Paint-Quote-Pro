@@ -15,7 +15,7 @@ const ClientSelector = ({ selectedClient, onClientSelect, onClientChange, showCl
   const loadClients = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/clients');
+      const response = await api.get('/custm');
       setClients(response.data.clients || []);
     } catch (error) {
       console.error('Failed to load clients:', error);

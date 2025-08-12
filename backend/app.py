@@ -416,7 +416,7 @@ def create_app(config_name=None):
     app.register_blueprint(quotes_bp, url_prefix='/api/quotes')
     app.register_blueprint(subscriptions_bp, url_prefix='/api/subscriptions')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
-    app.register_blueprint(clients_bp, url_prefix='/api/clients')
+    app.register_blueprint(clients_bp, url_prefix='/api/custm')
     app.register_blueprint(settings_bp, url_prefix='/api/settings')
     
     # TEST/DEBUG ENDPOINTS
