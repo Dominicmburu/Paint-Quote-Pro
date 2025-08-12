@@ -114,6 +114,7 @@ def get_clients():
         current_app.logger.error(f'Get clients error: {e}')
         return jsonify({'error': 'Failed to get clients'}), 500
 
+@clients_bp.route('', methods=['POST'])
 @clients_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_client():
