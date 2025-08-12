@@ -44,6 +44,7 @@ def log_request_details(endpoint_name):
     except Exception as e:
         current_app.logger.error(f"Error logging request details: {e}")
 
+@clients_bp.route('', methods=['GET'])
 @clients_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_clients():
