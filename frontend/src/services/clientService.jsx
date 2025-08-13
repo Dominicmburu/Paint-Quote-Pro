@@ -435,7 +435,7 @@ class ClientService {
   async getClients() {
     try {
       console.log('🔄 Fetching clients...');
-      const response = await axios.get(`${API_BASE_URL}/custm`, {
+      const response = await axios.get(`${API_BASE_URL}/projects/clients/proj`, {
         headers: this.getAuthHeaders()
       });
       this.clients = response.data.clients || [];

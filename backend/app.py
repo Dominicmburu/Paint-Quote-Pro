@@ -49,12 +49,28 @@ def create_app(config_name=None):
     app.url_map.strict_slashes = False
 
 
+    # @app.before_request
+    # def enforce_https():
+    #     if not app.debug and not request.is_secure:
+    #     # Build HTTPS url without hardcoding http/https manually
+    #         url = request.url.replace('http://', 'https://', 1)
+    #         return redirect(url, code=301)
+
+
     @app.before_request
     def enforce_https():
-        if not app.debug and not request.is_secure:
-        # Build HTTPS url without hardcoding http/https manually
-            url = request.url.replace('http://', 'https://', 1)
-            return redirect(url, code=301)
+        # 1) NEVER redirect preflight
+        if request.method == 'OPTIONS':
+            return  # let your CORS handler add headers
+
+        # 2) Only force HTTPS when explicitly configured (e.g., production)
+        if app.config.get('FORCE_HTTPS', False):
+            # Respect proxy headers if present
+            xf_proto = request.headers.get('X-Forwarded-Proto', '')
+            if not request.is_secure and xf_proto != 'https':
+                # Use 308 to preserve method, though we still skip for OPTIONS above
+                url = request.url.replace('http://', 'https://', 1)
+                return redirect(url, code=308)
     
     # Load configuration using the new config system
     config_class = get_config(config_name)
@@ -871,4 +887,4 @@ if __name__ == '__main__':
     print("   🔗 Server will be available at: http://localhost:5000")
     print("=" * 50)
     
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=app.config['DEBUG'])

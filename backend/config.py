@@ -300,7 +300,7 @@ class DevelopmentConfig(Config):
     EXPLAIN_TEMPLATE_LOADING = True
     
     # Development CORS - allow all origins
-    CORS_ORIGINS = ['https://paint-quote-pro.vercel.app']
+    CORS_ORIGINS = ['https://paint-quote-pro.vercel.app', 'http://localhost:5173']
     
     # Shorter cache times for development
     CACHE_CONTROL = {
@@ -347,7 +347,7 @@ class ProductionConfig(Config):
     # Stricter CORS for production
     CORS_ORIGINS = [
         os.environ.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app'),
-        'https://www.yourdomain.com'
+        'https://www.yourdomain.com', 'http://localhost:5173'
     ]
 
 class TestingConfig(Config):
