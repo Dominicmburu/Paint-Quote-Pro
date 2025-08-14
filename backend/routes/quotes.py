@@ -1648,10 +1648,95 @@ def get_public_quote(quote_id):
         return jsonify({'error': 'Quote not found'}), 404
 
 # Update the send quote route to use frontend URL
+# @quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
+# @jwt_required()
+# def send_quote_email_frontend(quote_id):
+#     """Send quote email to client with PDF attachment and frontend signature link"""
+#     try:
+#         current_user_id = get_jwt_identity()
+#         user = User.query.get(current_user_id)
+        
+#         quote = Quote.query.join(Project).filter(
+#             Quote.id == quote_id,
+#             Project.company_id == user.company_id
+#         ).first()
+        
+#         if not quote:
+#             return jsonify({'error': 'Quote not found'}), 404
+        
+#         data = request.get_json()
+#         client_email = data.get('client_email') or quote.project.client_email
+        
+#         if not client_email:
+#             return jsonify({'error': 'Client email is required'}), 400
+        
+#         # Generate PDF if it doesn't exist
+#         if not quote.pdf_path or not os.path.exists(quote.pdf_path):
+#             from services.quote_generator import QuoteGenerator
+#             quote_generator = QuoteGenerator()
+            
+#             output_dir = os.path.join(
+#                 current_app.config.get('RESULTS_FOLDER', 'static/generated'),
+#                 str(user.company_id),
+#                 str(quote.project_id)
+#             )
+#             os.makedirs(output_dir, exist_ok=True)
+            
+#             try:
+#                 pdf_path = quote_generator.generate_enhanced_quote_pdf(
+#                     quote=quote,
+#                     project=quote.project,
+#                     company=user.company,
+#                     output_dir=output_dir
+#                 )
+#                 quote.pdf_path = pdf_path
+#                 db.session.commit()
+#                 current_app.logger.info(f"✅ PDF generated successfully: {pdf_path}")
+#             except Exception as pdf_error:
+#                 current_app.logger.error(f"❌ PDF generation failed: {str(pdf_error)}")
+#                 return jsonify({'error': 'Failed to generate PDF'}), 500
+        
+#         # Get frontend URL from config
+#         frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:5173')
+        
+#         # Send email with frontend signature link
+#         try:
+#             from services.email_service import send_quote_with_signature_link_frontend
+
+#             send_quote_with_signature_link_frontend(
+#                 client_email=client_email,
+#                 client_name=quote.project.client_name or 'Valued Client',
+#                 quote=quote,
+#                 company=user.company,
+#                 frontend_url=frontend_url,
+#                 pdf_path=quote.pdf_path
+#             )
+            
+#             # Update quote status
+#             quote.status = 'sent'
+#             quote.sent_at = datetime.utcnow()
+#             db.session.commit()
+            
+#             return jsonify({
+#                 'message': f'Quote sent successfully to {client_email}',
+#                 'signature_url': f"{frontend_url}/quotes/{quote_id}/sign",
+#                 'pdf_attached': True
+#             })
+            
+#         except Exception as email_error:
+#             current_app.logger.error(f'Email sending failed: {email_error}')
+#             return jsonify({'error': 'Failed to send email'}), 500
+        
+#     except Exception as e:
+#         db.session.rollback()
+#         current_app.logger.error(f'Send quote error: {e}')
+#         return jsonify({'error': 'Failed to send quote'}), 500
+
+
 @quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
 @jwt_required()
-def send_quote_email_frontend(quote_id):
-    """Send quote email to client with PDF attachment and frontend signature link"""
+def send_quote_email_manual(quote_id):
+    """Send quote email manually with PDF attachment and frontend signature link"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -1666,12 +1751,17 @@ def send_quote_email_frontend(quote_id):
         
         data = request.get_json()
         client_email = data.get('client_email') or quote.project.client_email
+        client_name = data.get('client_name') or quote.project.client_name or 'Valued Client'
         
         if not client_email:
             return jsonify({'error': 'Client email is required'}), 400
         
+        current_app.logger.info(f"📧 Starting manual email send to {client_email}")
+        
         # Generate PDF if it doesn't exist
         if not quote.pdf_path or not os.path.exists(quote.pdf_path):
+            current_app.logger.info(f"📄 PDF not found, generating new PDF for quote {quote_id}")
+            
             from services.quote_generator import QuoteGenerator
             quote_generator = QuoteGenerator()
             
@@ -1698,40 +1788,276 @@ def send_quote_email_frontend(quote_id):
         
         # Get frontend URL from config
         frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:5173')
+        signature_url = f"{frontend_url}/quotes/{quote_id}/sign"
         
-        # Send email with frontend signature link
+        current_app.logger.info(f"🔗 Signature URL: {signature_url}")
+        
+        # Manual email sending with Flask-Mail
         try:
-            from services.email_service import send_quote_with_signature_link_frontend
-
-            send_quote_with_signature_link_frontend(
-                client_email=client_email,
-                client_name=quote.project.client_name or 'Valued Client',
-                quote=quote,
-                company=user.company,
-                frontend_url=frontend_url,
-                pdf_path=quote.pdf_path
+            from flask_mail import Mail, Message
+            
+            mail = Mail(current_app)
+            
+            subject = f"Quote #{quote.quote_number} Ready for Digital Signature - {user.company.name}"
+            
+            # Create the HTML email content manually
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Quote Ready for Signature</title>
+            </head>
+            <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc;">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 28px; font-weight: 600;">Quote Ready for Digital Signature</h1>
+                    <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">
+                        From {user.company.name}
+                    </p>
+                </div>
+                
+                <!-- Main Content -->
+                <div style="max-width: 600px; margin: 0 auto; background: white;">
+                    
+                    <!-- Welcome Section -->
+                    <div style="padding: 30px;">
+                        <h2 style="color: #2d3748; margin: 0 0 20px 0; font-size: 24px;">Dear {client_name},</h2>
+                        
+                        <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+                            Thank you for your interest in our services. We have prepared a comprehensive quote for your project 
+                            and made it easy for you to review and sign digitally.
+                        </p>
+                    </div>
+                    
+                    <!-- Quote Summary Card -->
+                    <div style="margin: 0 30px 30px 30px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                        <div style="background: #edf2f7; padding: 20px; border-bottom: 1px solid #e2e8f0;">
+                            <h3 style="color: #2d3748; margin: 0; font-size: 18px;">
+                                📄 Quote Summary
+                            </h3>
+                        </div>
+                        <div style="padding: 20px;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 8px 0; color: #718096; font-weight: 500; width: 40%;">Quote Number:</td>
+                                    <td style="padding: 8px 0; color: #2d3748; font-weight: 600;">#{quote.quote_number}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #718096; font-weight: 500;">Project:</td>
+                                    <td style="padding: 8px 0; color: #2d3748; font-weight: 600;">{quote.project.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #718096; font-weight: 500;">Property:</td>
+                                    <td style="padding: 8px 0; color: #2d3748; font-weight: 600;">{quote.project.property_address}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #718096; font-weight: 500;">Line Items:</td>
+                                    <td style="padding: 8px 0; color: #2d3748; font-weight: 600;">{len(quote.line_items)} items</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #718096; font-weight: 500;">Subtotal:</td>
+                                    <td style="padding: 8px 0; color: #2d3748; font-weight: 600;">£{quote.subtotal:,.2f}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #718096; font-weight: 500;">VAT (20%):</td>
+                                    <td style="padding: 8px 0; color: #2d3748; font-weight: 600;">£{quote.vat_amount:,.2f}</td>
+                                </tr>
+                                <tr style="border-top: 2px solid #e2e8f0;">
+                                    <td style="padding: 12px 0 8px 0; color: #718096; font-weight: 600;">Total Amount:</td>
+                                    <td style="padding: 12px 0 8px 0; color: #38a169; font-weight: 700; font-size: 20px;">£{quote.total_amount:,.2f}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #718096; font-weight: 500;">Valid Until:</td>
+                                    <td style="padding: 8px 0; color: #e53e3e; font-weight: 600;">{quote.valid_until.strftime('%B %d, %Y')}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Digital Signature CTA -->
+                    <div style="text-align: center; margin: 40px 30px;">
+                        <div style="background: linear-gradient(135deg, #48bb78, #38a169); border-radius: 12px; padding: 25px; color: white; margin-bottom: 20px;">
+                            <h3 style="margin: 0 0 15px 0; font-size: 20px;">✍️ Ready to Sign?</h3>
+                            <p style="margin: 0 0 20px 0; opacity: 0.9; font-size: 14px;">
+                                Click the button below to review the complete quote and sign digitally
+                            </p>
+                            <a href="{signature_url}" 
+                               style="display: inline-block; background: white; color: #38a169; padding: 15px 35px; 
+                                      text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 16px;
+                                      box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                📝 SIGN QUOTE ONLINE
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Features Section -->
+                    <div style="background: #f0fff4; border: 1px solid #9ae6b4; border-radius: 8px; padding: 20px; margin: 0 30px 30px 30px;">
+                        <h4 style="color: #276749; margin: 0 0 15px 0; font-size: 16px;">🔒 Quick & Secure Digital Signing</h4>
+                        <div style="color: #2f855a; font-size: 14px; line-height: 1.6;">
+                            <div style="margin-bottom: 8px;">✓ Review complete quote details instantly</div>
+                            <div style="margin-bottom: 8px;">✓ Sign with your mouse, trackpad, or finger on mobile</div>
+                            <div style="margin-bottom: 8px;">✓ Legally binding electronic signature</div>
+                            <div style="margin-bottom: 8px;">✓ Instant confirmation and email receipt</div>
+                            <div>✓ Secure and compliant with digital signature laws</div>
+                        </div>
+                    </div>
+                    
+                    <!-- PDF Attachment Notice -->
+                    <div style="background: #fffaf0; border: 1px solid #f6ad55; border-radius: 8px; padding: 15px; margin: 0 30px 30px 30px;">
+                        <p style="color: #c05621; margin: 0; font-size: 14px;">
+                            <span style="margin-right: 8px;">📎</span>
+                            <strong>Complete Quote PDF attached</strong> for your records. You can also download it from the signing page.
+                        </p>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div style="padding: 0 30px 30px 30px;">
+                        <h4 style="color: #2d3748; margin: 0 0 15px 0; font-size: 16px;">Need to discuss the quote?</h4>
+                        <p style="color: #4a5568; font-size: 14px; line-height: 1.6; margin: 0 0 20px 0;">
+                            If you have any questions about this quote or need modifications, please don't hesitate to contact us.
+                        </p>
+                        
+                        <div style="text-align: center;">
+                            {f'<a href="tel:{user.company.phone}" style="display: inline-block; background: #4299e1; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-size: 14px; margin: 5px;">📞 Call Us</a>' if user.company.phone else ''}
+                            {f'<a href="mailto:{user.company.email}" style="display: inline-block; background: #38b2ac; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-size: 14px; margin: 5px;">✉️ Email Us</a>' if user.company.email else ''}
+                            {f'<a href="{user.company.website}" target="_blank" style="display: inline-block; background: #805ad5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-size: 14px; margin: 5px;">🌐 Visit Website</a>' if user.company.website else ''}
+                        </div>
+                    </div>
+                    
+                    <!-- Company Details -->
+                    <div style="border-top: 1px solid #e2e8f0; padding: 25px 30px; background: #f7fafc;">
+                        <p style="color: #4a5568; margin: 0; font-size: 14px; text-align: center;">
+                            <strong style="color: #2d3748;">Best regards,</strong><br>
+                            <strong style="color: #2d3748; font-size: 16px;">{user.company.name}</strong><br>
+                            {user.company.phone or ''}<br>
+                            {user.company.email or ''}<br>
+                            {user.company.website or ''}
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="text-align: center; padding: 30px 20px; color: #a0aec0; font-size: 12px; background: #f8fafc;">
+                    <p style="margin: 0 0 10px 0;">
+                        This is an automated message from {user.company.name}.<br>
+                        Quote generated on {datetime.utcnow().strftime('%B %d, %Y')}
+                    </p>
+                    <p style="margin: 0; font-size: 11px;">
+                        Digital signatures are legally binding and secure. Your information is protected.
+                    </p>
+                </div>
+            </body>
+            </html>
+            """
+            
+            current_app.logger.info(f"📝 Creating email message for {client_email}")
+            
+            # Create the message
+            msg = Message(
+                subject=subject,
+                recipients=[client_email],
+                html=html_content
             )
             
-            # Update quote status
+            # Attach PDF if available
+            pdf_attached = False
+            if quote.pdf_path and os.path.exists(quote.pdf_path):
+                try:
+                    with open(quote.pdf_path, "rb") as attachment:
+                        msg.attach(
+                            filename=f"quote_{quote.quote_number}.pdf",
+                            content_type="application/pdf",
+                            data=attachment.read()
+                        )
+                    current_app.logger.info(f"📎 PDF attached to email: {quote.pdf_path}")
+                    pdf_attached = True
+                except Exception as e:
+                    current_app.logger.warning(f"⚠️ Failed to attach PDF: {e}")
+            else:
+                current_app.logger.warning(f"⚠️ PDF not found at path: {quote.pdf_path}")
+            
+            # Send the email
+            current_app.logger.info(f"📤 Sending email to {client_email}")
+            mail.send(msg)
+            current_app.logger.info(f"✅ Email sent successfully to {client_email}")
+            
+            # Update quote status only after successful email send
             quote.status = 'sent'
             quote.sent_at = datetime.utcnow()
             db.session.commit()
             
+            current_app.logger.info(f"📊 Quote status updated to 'sent'")
+            
             return jsonify({
                 'message': f'Quote sent successfully to {client_email}',
-                'signature_url': f"{frontend_url}/quotes/{quote_id}/sign",
-                'pdf_attached': True
+                'signature_url': signature_url,
+                'pdf_attached': pdf_attached,
+                'email_details': {
+                    'to': client_email,
+                    'subject': subject,
+                    'client_name': client_name,
+                    'sent_at': datetime.utcnow().isoformat()
+                }
             })
             
+        except ImportError as e:
+            current_app.logger.error(f'❌ Flask-Mail import failed: {e}')
+            return jsonify({
+                'error': 'Email service not available',
+                'details': 'Flask-Mail is not properly configured'
+            }), 500
+            
         except Exception as email_error:
-            current_app.logger.error(f'Email sending failed: {email_error}')
-            return jsonify({'error': 'Failed to send email'}), 500
+            current_app.logger.error(f'❌ Manual email sending failed: {str(email_error)}')
+            current_app.logger.error(f'❌ Email error traceback: {traceback.format_exc()}')
+            
+            # Provide specific error messages
+            error_message = str(email_error).lower()
+            
+            if 'authentication' in error_message or 'auth' in error_message:
+                return jsonify({
+                    'error': 'Email authentication failed',
+                    'details': 'SMTP authentication error. Please check email credentials.',
+                    'debug_info': {
+                        'smtp_server': current_app.config.get('MAIL_SERVER'),
+                        'smtp_port': current_app.config.get('MAIL_PORT'),
+                        'smtp_user': current_app.config.get('MAIL_USERNAME'),
+                        'error': str(email_error)
+                    }
+                }), 500
+                
+            elif 'connection' in error_message or 'connect' in error_message:
+                return jsonify({
+                    'error': 'Email server connection failed',
+                    'details': 'Could not connect to SMTP server',
+                    'debug_info': {
+                        'smtp_server': current_app.config.get('MAIL_SERVER'),
+                        'smtp_port': current_app.config.get('MAIL_PORT'),
+                        'error': str(email_error)
+                    }
+                }), 500
+                
+            else:
+                return jsonify({
+                    'error': 'Failed to send email',
+                    'details': str(email_error),
+                    'debug_info': {
+                        'smtp_configured': bool(current_app.config.get('MAIL_SERVER')),
+                        'mail_username_configured': bool(current_app.config.get('MAIL_USERNAME')),
+                        'mail_password_configured': bool(current_app.config.get('MAIL_PASSWORD'))
+                    }
+                }), 500
         
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f'Send quote error: {e}')
-        return jsonify({'error': 'Failed to send quote'}), 500
-
+        current_app.logger.error(f'❌ Send quote route error: {str(e)}')
+        current_app.logger.error(f'❌ Full traceback: {traceback.format_exc()}')
+        return jsonify({
+            'error': 'Failed to process quote sending',
+            'details': str(e)
+        }), 500
 
 @quotes_bp.route('/<int:quote_id>/download-signed', methods=['GET'])
 def download_signed_quote_pdf(quote_id):
