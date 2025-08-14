@@ -792,10 +792,10 @@ def email_quote(project_id):
             current_app.logger.warning(f"⚠️ No PDF path set for project {project_id}")
 
         # Check SMTP configuration
-        smtp_server = current_app.config.get('SMTP_SERVER')
-        smtp_port = current_app.config.get('SMTP_PORT', 587)
-        smtp_user = current_app.config.get('SMTP_USER')
-        smtp_password = current_app.config.get('SMTP_PASSWORD')
+        smtp_server = current_app.config.get('MAIL_SERVER')
+        smtp_port = current_app.config.get('MAIL_PORT', 587)
+        smtp_user = current_app.config.get('MAIL_USERNAME')
+        smtp_password = current_app.config.get('MAIL_PASSWORD')
         
         # Handle development environment gracefully
         if not smtp_server or not smtp_user or not smtp_password:
