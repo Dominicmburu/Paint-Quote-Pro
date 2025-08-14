@@ -2011,7 +2011,7 @@ def send_quote_email_manual(quote_id):
             
         except Exception as email_error:
             current_app.logger.error(f'❌ Manual email sending failed: {str(email_error)}')
-            current_app.logger.error(f'❌ Email error traceback: {traceback.format_exc()}')
+            # current_app.logger.error(f'❌ Email error traceback: {traceback.format_exc()}')
             
             # Provide specific error messages
             error_message = str(email_error).lower()
@@ -2053,7 +2053,7 @@ def send_quote_email_manual(quote_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'❌ Send quote route error: {str(e)}')
-        current_app.logger.error(f'❌ Full traceback: {traceback.format_exc()}')
+        # current_app.logger.error(f'❌ Full traceback: {traceback.format_exc()}')
         return jsonify({
             'error': 'Failed to process quote sending',
             'details': str(e)
