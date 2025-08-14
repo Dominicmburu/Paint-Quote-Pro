@@ -1088,7 +1088,7 @@ def email_quote(project_id):
             # Send enhanced email with signature link
             send_quote_with_signature_link_frontend(
                 client_email=client_email,
-                client_name=client_name,
+                client_name=client_name or "Valued Client",
                 quote=quote_obj,
                 company=user.company,
                 frontend_url=frontend_url,
