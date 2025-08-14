@@ -2024,6 +2024,35 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                     for price_key in ['price', 'value', 'amount', 'cost']:
                         if price_key in value:
                             return float(value[price_key])
+                        
+
+
+                    
+                    
+                    
+                    
+                    pricing_options = ['one_coat', 'single', 'basic', 'standard', 'default']
+            
+                    for option in pricing_options:
+                        if option in value and isinstance(value[option], dict):
+                            if 'price' in value[option]:
+                                current_app.logger.info(f"💰 Using {option} price for {key}: {value[option]['price']}")
+                                return float(value[option]['price'])
+            
+                    # If no standard options found, use the first available price
+                    for nested_key, nested_value in value.items():
+                        if isinstance(nested_value, dict) and 'price' in nested_value:
+                            current_app.logger.info(f"💰 Using {nested_key} price for {key}: {nested_value['price']}")
+                            return float(nested_value['price'])
+                        elif isinstance(nested_value, (int, float)):
+                            current_app.logger.info(f"💰 Using {nested_key} price for {key}: {nested_value}")
+                            return float(nested_value)
+
+
+
+
+
+
                     # If no price field found, use the default
                     current_app.logger.warning(f"⚠️ Price {key} is dict but no price field found: {value}")
                     return float(default_value)

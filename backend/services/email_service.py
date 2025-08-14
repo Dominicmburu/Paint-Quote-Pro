@@ -530,6 +530,10 @@ def send_quote_email(client_email: str, quote, project, company):
 def send_quote_with_signature_link_frontend(client_email: str, client_name: str, quote, company, frontend_url: str, pdf_path: str = None):
     """Send quote email with PDF attachment and frontend signature link"""
     try:
+
+        current_app.logger.info(f"Sending quote email to {client_email}, {client_name}, {quote}, {company}, {frontend_url}, {pdf_path} for quote #{quote.quote_number}")
+
+
         from flask_mail import Mail, Message
         
         mail = Mail(current_app)
