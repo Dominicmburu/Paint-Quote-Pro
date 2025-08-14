@@ -539,7 +539,7 @@ def send_quote_with_signature_link_frontend(client_email: str, client_name: str,
         
         subject = f"Quote #{quote.quote_number} - {company.name}"
         
-        # ... rest of email content same as before but with frontend signature_url
+        
         
         html_body = f"""
         <html>
@@ -630,7 +630,7 @@ def send_quote_with_signature_link_frontend(client_email: str, client_name: str,
             subject=subject,
             recipients=[client_email],
             html=html_body,
-            sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+            # sender=current_app.config.get('MAIL_DEFAULT_SENDER')
         )
         
         # Attach PDF if available

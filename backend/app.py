@@ -887,4 +887,4 @@ if __name__ == '__main__':
     print("   🔗 Server will be available at: http://localhost:5000")
     print("=" * 50)
     
-    app.run(host='0.0.0.0', port=5000, debug=app.config['DEBUG'])
+    app.run(host='0.0.0.0', port=5000, debug=os.environ.get('FLASK_DEBUG'))

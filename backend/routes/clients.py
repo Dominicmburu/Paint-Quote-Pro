@@ -44,75 +44,75 @@ def log_request_details(endpoint_name):
     except Exception as e:
         current_app.logger.error(f"Error logging request details: {e}")
 
-@clients_bp.route('', methods=['GET'])
-@clients_bp.route('/', methods=['GET'])
-@jwt_required()
-def get_clients():
-    """Get all clients for the user's company"""
-    log_request_details("GET CLIENTS")
+# @clients_bp.route('', methods=['GET'])
+# @clients_bp.route('/', methods=['GET'])
+# @jwt_required()
+# def get_clients():
+#     """Get all clients for the user's company"""
+#     log_request_details("GET CLIENTS")
 
-    try:
-        current_user_id = get_jwt_identity()
-        current_app.logger.info(f"Current user ID from JWT: {current_user_id}")
+#     try:
+#         current_user_id = get_jwt_identity()
+#         current_app.logger.info(f"Current user ID from JWT: {current_user_id}")
         
-        user = db.session.get(User, int(current_user_id))        
+#         user = db.session.get(User, int(current_user_id))        
         
-        if not user or not user.company:
-            current_app.logger.warning("User or company not found")
+#         if not user or not user.company:
+#             current_app.logger.warning("User or company not found")
             
-            return jsonify({'error': 'User or company not found'}), 404
+#             return jsonify({'error': 'User or company not found'}), 404
         
-        current_app.logger.info(f"User company: {user.company.name if user.company else 'None'}")
-        current_app.logger.info(f"Company ID: {user.company_id}")
+#         current_app.logger.info(f"User company: {user.company.name if user.company else 'None'}")
+#         current_app.logger.info(f"Company ID: {user.company_id}")
         
-        # Get pagination and search parameters
-        page = request.args.get('page', 1, type=int)
-        per_page = min(request.args.get('per_page', 50, type=int), 100)
-        search = request.args.get('search', '')
+#         # Get pagination and search parameters
+#         page = request.args.get('page', 1, type=int)
+#         per_page = min(request.args.get('per_page', 50, type=int), 100)
+#         search = request.args.get('search', '')
 
-        current_app.logger.info(f"Query params - Page: {page}, Per page: {per_page}, Search: '{search}'")
+#         current_app.logger.info(f"Query params - Page: {page}, Per page: {per_page}, Search: '{search}'")
         
         
-        # Build query
-        query = Client.query.filter_by(company_id=user.company_id)
+#         # Build query
+#         query = Client.query.filter_by(company_id=user.company_id)
         
-        current_app.logger.info(f"Base query built for company_id: {user.company_id}")
+#         current_app.logger.info(f"Base query built for company_id: {user.company_id}")
         
-        if search:
-            search_pattern = f'%{search}%'
-            query = query.filter(
-                db.or_(
-                    Client.company_name.ilike(search_pattern),
-                    Client.contact_name.ilike(search_pattern),
-                    Client.email.ilike(search_pattern)
-                )
-            )
-            current_app.logger.info(f"Applied search filter: {search_pattern}")
+#         if search:
+#             search_pattern = f'%{search}%'
+#             query = query.filter(
+#                 db.or_(
+#                     Client.company_name.ilike(search_pattern),
+#                     Client.contact_name.ilike(search_pattern),
+#                     Client.email.ilike(search_pattern)
+#                 )
+#             )
+#             current_app.logger.info(f"Applied search filter: {search_pattern}")
         
         
-        # Order by most recent
-        query = query.order_by(Client.updated_at.desc())
+#         # Order by most recent
+#         query = query.order_by(Client.updated_at.desc())
         
-        # Paginate
-        clients_paginated = query.paginate(
-            page=page, per_page=per_page, error_out=False
-        )
+#         # Paginate
+#         clients_paginated = query.paginate(
+#             page=page, per_page=per_page, error_out=False
+#         )
         
-        return jsonify({
-            'clients': [client.to_dict() for client in clients_paginated.items],
-            'pagination': {
-                'page': page,
-                'pages': clients_paginated.pages,
-                'per_page': per_page,
-                'total': clients_paginated.total,
-                'has_next': clients_paginated.has_next,
-                'has_prev': clients_paginated.has_prev
-            }
-        })
+#         return jsonify({
+#             'clients': [client.to_dict() for client in clients_paginated.items],
+#             'pagination': {
+#                 'page': page,
+#                 'pages': clients_paginated.pages,
+#                 'per_page': per_page,
+#                 'total': clients_paginated.total,
+#                 'has_next': clients_paginated.has_next,
+#                 'has_prev': clients_paginated.has_prev
+#             }
+#         })
         
-    except Exception as e:
-        current_app.logger.error(f'Get clients error: {e}')
-        return jsonify({'error': 'Failed to get clients'}), 500
+#     except Exception as e:
+#         current_app.logger.error(f'Get clients error: {e}')
+#         return jsonify({'error': 'Failed to get clients'}), 500
 
 @clients_bp.route('', methods=['POST'])
 @clients_bp.route('/', methods=['POST'])
