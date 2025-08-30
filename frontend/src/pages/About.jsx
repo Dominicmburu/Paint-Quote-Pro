@@ -40,7 +40,7 @@ const About = () => {
 
   const values = [
     {
-      icon: <Heart className="h-12 w-12 text-emerald-600" />,
+      icon: <Heart className="h-12 w-12 text-[#4bb4f5]" />,
       title: "Customer First",
       description: "Every feature we build is designed with our customers' success in mind. Your feedback drives our product development and shapes our roadmap."
     },
@@ -180,7 +180,7 @@ const About = () => {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-[#4bb4f5] rounded-full flex items-center justify-center mx-auto mb-4">
                     <Zap className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-800 mb-2">Speed</h3>
@@ -225,7 +225,7 @@ const About = () => {
                   className="w-32 h-32 rounded-full mx-auto mb-6 object-cover border-4 border-white shadow-lg"
                 />
                 <h3 className="text-xl font-bold text-slate-800 mb-2">{member.name}</h3>
-                <p className="text-emerald-600 font-semibold mb-4">{member.role}</p>
+                <p className="text-[#4bb4f5] font-semibold mb-4">{member.role}</p>
                 <p className="text-slate-600 leading-relaxed">{member.bio}</p>
               </div>
             ))}
@@ -247,7 +247,7 @@ const About = () => {
             <div className="space-y-8">
               <div className="flex items-start">
                 <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                  <CheckCircle className="h-6 w-6 text-emerald-600" />
+                  <CheckCircle className="h-6 w-6 text-[#4bb4f5]" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 mb-2">Built by Industry Experts</h3>
@@ -267,7 +267,7 @@ const About = () => {
 
               <div className="flex items-start">
                 <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                  <CheckCircle className="h-6 w-6 text-blue-600" />
+                  <CheckCircle className="h-6 w-6 text-slate-800" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 mb-2">Continuous Innovation</h3>

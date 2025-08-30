@@ -77,6 +77,10 @@ import './styles/globals.css';
 import PricingSettings from './components/settings/PricingSettings';
 import QuoteSignedConfirmation from './components/quotes/QuoteSignedConfirmation';
 import QuotePDFViewer from './components/quotes/QuotePDFViewer';
+import CookiePolicy from './pages/CookiePolicy';
+import TermsOfService from './pages/TermsofService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TestimonialsPage from './pages/Testimonials';
 
 function App() {
   return (
@@ -117,6 +121,16 @@ function App() {
                   </>
                 } />
 
+                <Route path="/testimonials" element={
+                  <>
+                    <Header />
+                    <main className="flex-1">
+                      <TestimonialsPage/>
+                    </main>
+                    <Footer />
+                  </>
+                } />
+
                 <Route path="/about" element={
                   <>
                     <Header />
@@ -132,6 +146,36 @@ function App() {
                     <Header />
                     <main className="flex-1">
                       <Contact />
+                    </main>
+                    <Footer />
+                  </>
+                } />
+
+                <Route path="/privacy-policy" element={
+                  <>
+                    <Header />
+                    <main className="flex-1">
+                      <PrivacyPolicy/>
+                    </main>
+                    <Footer />
+                  </>
+                } />
+
+                <Route path="/terms-of-service" element={
+                  <>
+                    <Header />
+                    <main className="flex-1">
+                      <TermsOfService/>
+                    </main>
+                    <Footer />
+                  </>
+                } />
+
+                <Route path="/cookie-policy" element={
+                  <>
+                    <Header />
+                    <main className="flex-1">
+                      <CookiePolicy/>
                     </main>
                     <Footer />
                   </>

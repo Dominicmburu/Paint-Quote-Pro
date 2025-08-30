@@ -71,7 +71,7 @@ const Register = () => {
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
+            <Link to="/login" className="font-medium text-[#4bb4f5] hover:text-[#4bb4f5]">
               Sign in
             </Link>
           </p>
@@ -106,7 +106,7 @@ const Register = () => {
                       required
                       value={formData.first_name}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="John"
                     />
                   </div>
@@ -127,7 +127,7 @@ const Register = () => {
                       required
                       value={formData.last_name}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="Smith"
                     />
                   </div>
@@ -149,7 +149,7 @@ const Register = () => {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -169,7 +169,7 @@ const Register = () => {
                       type="tel"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="+44 7700 900123"
                     />
                   </div>
@@ -190,7 +190,7 @@ const Register = () => {
                       required
                       value={formData.password}
                       onChange={handleChange}
-                      className="pl-10 pr-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 pr-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="••••••••"
                     />
                     <button
@@ -222,7 +222,7 @@ const Register = () => {
                       required
                       value={formData.confirm_password}
                       onChange={handleChange}
-                      className="pl-10 pr-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 pr-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="••••••••"
                     />
                     <button
@@ -262,7 +262,7 @@ const Register = () => {
                       required
                       value={formData.company_name}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="Smith Painting Services"
                     />
                   </div>
@@ -282,7 +282,7 @@ const Register = () => {
                       type="email"
                       value={formData.company_email}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="info@smithpainting.com"
                     />
                   </div>
@@ -303,7 +303,7 @@ const Register = () => {
                       type="tel"
                       value={formData.company_phone}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="+44 20 7123 4567"
                     />
                   </div>
@@ -323,7 +323,7 @@ const Register = () => {
                       type="url"
                       value={formData.company_website}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="https://www.smithpainting.com"
                     />
                   </div>
@@ -338,7 +338,7 @@ const Register = () => {
                     name="preferred_paint_brand"
                     value={formData.preferred_paint_brand}
                     onChange={handleChange}
-                    className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                   >
                     <option value="Dulux">Dulux</option>
                     <option value="Farrow & Ball">Farrow & Ball</option>
@@ -360,7 +360,7 @@ const Register = () => {
                     rows={3}
                     value={formData.company_address}
                     onChange={handleChange}
-                    className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                     placeholder="123 High Street, London, SW1A 1AA"
                   />
                 </div>
@@ -387,7 +387,7 @@ const Register = () => {
                       type="text"
                       value={formData.vat_number}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="GB123456789"
                     />
                   </div>
@@ -411,7 +411,7 @@ const Register = () => {
                       step="0.01"
                       value={formData.vat_rate}
                       onChange={handleChange}
-                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                       placeholder="0.20"
                     />
                   </div>
@@ -424,7 +424,7 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4bb4f5] hover:bg-[#4bb4f5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4bb4f5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Start Free Trial
@@ -434,9 +434,9 @@ const Register = () => {
             <div className="text-center">
               <p className="text-xs text-gray-500">
                 By creating an account, you agree to our{' '}
-                <a href="#" className="text-green-600 hover:text-green-500">Terms of Service</a>
+                <Link to="/terms-of-service" className="text-[#4bb4f5] hover:text-green-200">Terms of Service</Link>
                 {' '}and{' '}
-                <a href="#" className="text-green-600 hover:text-green-500">Privacy Policy</a>
+                <Link to="/privacy-policy" className="text-[#4bb4f5] hover:text-green-200">Privacy Policy</Link>
               </p>
             </div>
           </form>

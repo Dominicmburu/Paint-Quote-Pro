@@ -50,7 +50,7 @@ const Login = () => {
           </h2>
           <p className="mt-2 text-center text-sm text-slate-600">
             Don't have an account?{' '}
-            <Link to="/register" className="font-medium text-teal-600 hover:text-teal-500">
+            <Link to="/register" className="font-medium text-[#4bb4f5] hover:[#4bb4f5]">
               Get started free
             </Link>
           </p>
@@ -122,7 +122,7 @@ const Login = () => {
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <Link to="/forgot-password" className="font-medium text-teal-600 hover:text-teal-500">
+              <Link to="/forgot-password" className="font-medium text-[#4bb4f5] hover:text-teal-200">
                 Forgot your password?
               </Link>
             </div>
@@ -132,7 +132,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#4bb4f5] hover:bg-[#4bb4f5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Sign in
@@ -142,9 +142,9 @@ const Login = () => {
           <div className="text-center">
             <p className="text-xs text-slate-500">
               By signing in, you agree to our{' '}
-              <a href="#" className="text-teal-600 hover:text-teal-500">Terms of Service</a>
+              <Link to="/terms-of-service" className="text-[#4bb4f5] hover:text-teal-200">Terms of Service</Link>
               {' '}and{' '}
-              <a href="#" className="text-teal-600 hover:text-teal-500">Privacy Policy</a>
+              <Link to="/privacy-policy" className="text-[#4bb4f5] hover:text-teal-200">Privacy Policy</Link>
             </p>
           </div>
         </form>

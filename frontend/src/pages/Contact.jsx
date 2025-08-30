@@ -50,7 +50,7 @@ const Contact = () => {
         <div className="max-w-lg mx-auto text-center px-4">
           <div className="bg-white rounded-2xl shadow-xl p-12 border border-gray-100">
             <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="h-10 w-10 text-emerald-500" />
+              <CheckCircle className="h-10 w-10 text-[#4bb4f5]" />
             </div>
             <h2 className="text-3xl font-bold text-slate-800 mb-4">Thank you for your message!</h2>
             <p className="text-lg text-slate-600 mb-8 leading-relaxed">
@@ -59,7 +59,7 @@ const Contact = () => {
             </p>
             <button
               onClick={() => setSent(false)}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-xl font-semibold transition-all transform hover:scale-105"
+              className="mybtn"
             >
               Send Another Message
             </button>
@@ -84,15 +84,15 @@ const Contact = () => {
           </p>
           <div className="flex items-center justify-center space-x-6 text-slate-600">
             <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-emerald-600" />
+              <CheckCircle className="h-5 w-5 text-[#4bb4f5]" />
               <span className="font-medium">Expert support team</span>
             </div>
             <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-emerald-600" />
+              <CheckCircle className="h-5 w-5 text-[#4bb4f5]" />
               <span className="font-medium">24-hour response time</span>
             </div>
             <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-emerald-600" />
+              <CheckCircle className="h-5 w-5 text-[#4bb4f5]" />
               <span className="font-medium">Free consultation</span>
             </div>
           </div>
@@ -114,7 +114,7 @@ const Contact = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 group">
               <div className="w-16 h-16 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-100 transition-colors">
-                <Mail className="h-8 w-8 text-emerald-600" />
+                <Mail className="h-8 w-8 text-[#4bb4f5]" />
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-3 text-center">Email Support</h3>
               <p className="text-slate-600 mb-6 text-center">Perfect for detailed questions and technical support</p>
@@ -264,7 +264,7 @@ const Contact = () => {
                   <button
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-semibold py-4 px-6 rounded-xl transition-all flex items-center justify-center transform hover:scale-105 disabled:transform-none shadow-lg"
+                    className="w-full bg-[#4bb4f5] hover:bg-[#4bb4f5] disabled:opacity-50 text-white font-semibold py-4 px-6 rounded-xl transition-all flex items-center justify-center transform hover:scale-105 disabled:transform-none shadow-lg"
                   >
                     {loading ? (
                       <>
@@ -294,7 +294,7 @@ const Contact = () => {
                 <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                   <div className="flex items-start mb-6">
                     <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                      <MapPin className="h-6 w-6 text-emerald-600" />
+                      <MapPin className="h-6 w-6 text-[#4bb4f5]" />
                     </div>
                     <div>
                       <h3 className="font-bold text-slate-800 text-lg mb-2">Paint Quote Pro Ltd</h3>
@@ -327,7 +327,7 @@ const Contact = () => {
                 <div className="space-y-4">
                   <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <div className="flex items-start">
-                      <HelpCircle className="h-5 w-5 text-emerald-600 mt-1 mr-3 flex-shrink-0" />
+                      <HelpCircle className="h-5 w-5 text-[#4bb4f5] mt-1 mr-3 flex-shrink-0" />
                       <div>
                         <h4 className="font-bold text-slate-800 mb-2">How quickly can I get started?</h4>
                         <p className="text-slate-600 leading-relaxed">You can sign up and start creating professional quotes within minutes. Our simple onboarding process guides you through everything you need to know.</p>
@@ -357,7 +357,7 @@ const Contact = () => {
 
                   <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <div className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-emerald-600 mt-1 mr-3 flex-shrink-0" />
+                      <CheckCircle className="h-5 w-5 text-[#4bb4f5] mt-1 mr-3 flex-shrink-0" />
                       <div>
                         <h4 className="font-bold text-slate-800 mb-2">Is there a free trial?</h4>
                         <p className="text-slate-600 leading-relaxed">Yes! Every plan comes with a 14-day free trial. No credit card required to start exploring all the features.</p>

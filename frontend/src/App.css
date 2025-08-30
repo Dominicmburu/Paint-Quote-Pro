@@ -82,4 +82,19 @@ body {
   display: none !important;
 }
 
+.mybtn {
+  @apply bg-[#4bb4f5] hover:bg-[#3aa0e0] text-white px-8 py-3 rounded-lg font-semibold transition-colors;
+}
+
+.mybtn-sm {
+  @apply bg-[#4bb4f5] hover:bg-[#3aa0e0] text-white px-6 py-2 rounded-lg font-semibold transition-colors;
+}
+
+.text-color {
+  color: #4bb4f5;
+}
+
+.cardBg {
+  background: #4bb4f5;
+}
 

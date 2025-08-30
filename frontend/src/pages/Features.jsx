@@ -29,7 +29,7 @@ const Features = () => {
 
   const mainFeatures = [
     {
-      icon: <Brain className="h-12 w-12 text-emerald-600" />,
+      icon: <Brain className="h-12 w-12 text-[#4bb4f5]" />,
       title: "AI Floor Plan Analysis",
       subtitle: "Revolutionary AI Technology",
       description: "Upload any floor plan and watch our AI automatically identify rooms, calculate surface areas, and provide detailed measurements with 95% accuracy. Our advanced computer vision technology can handle everything from hand-drawn sketches to complex architectural drawings.",
@@ -41,7 +41,7 @@ const Features = () => {
         "95% accuracy guarantee",
         "Processes plans in under 30 seconds"
       ],
-      image: "ai-analysis"
+      image: "images/AI.jpg"
     },
     {
       icon: <FileText className="h-12 w-12 text-amber-600" />,
@@ -56,7 +56,7 @@ const Features = () => {
         "Automatic terms and conditions",
         "Email delivery with tracking"
       ],
-      image: "quote-generation"
+      image: "images/Quotation.png"
     },
     {
       icon: <Clock className="h-12 w-12 text-blue-600" />,
@@ -71,13 +71,13 @@ const Features = () => {
         "Automated follow-up reminders",
         "Mobile app for on-site quoting"
       ],
-      image: "automation"
+      image: "images/image.png"
     }
   ];
 
   const businessFeatures = [
     {
-      icon: <BarChart3 className="h-8 w-8 text-emerald-600" />,
+      icon: <BarChart3 className="h-8 w-8 text-[#4bb4f5]" />,
       title: "Project Management",
       description: "Track your painting projects from quote to completion with built-in project management tools."
     },
@@ -92,7 +92,7 @@ const Features = () => {
       description: "Document your work with before/after photos that automatically attach to project files."
     },
     {
-      icon: <Users className="h-8 w-8 text-emerald-600" />,
+      icon: <Users className="h-8 w-8 text-[#4bb4f5]" />,
       title: "Team Collaboration",
       description: "Add team members and collaborate on projects with role-based permissions and real-time updates."
     },
@@ -110,7 +110,7 @@ const Features = () => {
 
   const integrationFeatures = [
     {
-      icon: <PaintBucket className="h-8 w-8 text-emerald-600" />,
+      icon: <PaintBucket className="h-8 w-8 text-[#4bb4f5]" />,
       title: "Paint Brand Integration",
       description: "Support for all major paint brands with accurate pricing and coverage data."
     },
@@ -125,7 +125,7 @@ const Features = () => {
       description: "Accept deposits and payments directly through your quotes with integrated payment processing."
     },
     {
-      icon: <Target className="h-8 w-8 text-emerald-600" />,
+      icon: <Target className="h-8 w-8 text-[#4bb4f5]" />,
       title: "Lead Management",
       description: "Track leads, follow up automatically, and convert more prospects into paying customers."
     },
@@ -149,7 +149,7 @@ const Features = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
             Powerful Features for
-            <span className="block text-emerald-700">Professional Painters</span>
+            <span className="block text-[#4bb4f5]">Professional Painters</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto leading-relaxed">
             Everything you need to create accurate, professional paint quotes faster than ever before. 
@@ -175,7 +175,7 @@ const Features = () => {
                       {feature.icon}
                     </div>
                     <div className="ml-6">
-                      <div className="text-sm font-semibold text-emerald-600 uppercase tracking-wide">
+                      <div className="text-sm font-semibold text-[#4bb4f5] uppercase tracking-wide">
                         {feature.subtitle}
                       </div>
                       <h2 className="text-3xl md:text-4xl font-bold text-slate-800">
@@ -189,7 +189,7 @@ const Features = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {feature.benefits.map((benefit, benefitIndex) => (
                       <div key={benefitIndex} className="flex items-center">
-                        <CheckCircle className="h-5 w-5 text-emerald-500 mr-3 flex-shrink-0" />
+                        <CheckCircle className="h-5 w-5 text-[#4bb4f5] mr-3 flex-shrink-0" />
                         <span className="text-slate-700">{benefit}</span>
                       </div>
                     ))}
@@ -199,9 +199,8 @@ const Features = () => {
                   <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
                     <div className="aspect-video bg-gradient-to-br from-amber-50 to-emerald-50 rounded-xl flex items-center justify-center border border-gray-100">
                       <div className="text-center">
-                        {feature.icon}
                         <div className="mt-4 text-slate-600 font-medium">
-                          {feature.title} Demo
+                          <img src={feature.image} alt={feature.title} />
                         </div>
                       </div>
                     </div>
@@ -308,7 +307,7 @@ const Features = () => {
               }
             ].map((item, index) => (
               <div key={index} className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-[#4bb4f5] to-emerald-200 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <span className="text-3xl font-bold text-white">{item.step}</span>
                 </div>
                 <h3 className="text-2xl font-bold text-slate-800 mb-4">{item.title}</h3>
@@ -358,65 +357,29 @@ const Features = () => {
             </div>
 
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-emerald-700 mb-6">Paint Quote Pro</h3>
+              <h3 className="text-2xl font-bold text-[#4bb4f5] mb-6">Paint Quote Pro</h3>
               <ul className="space-y-4">
-                <li className="flex items-center text-emerald-600">
+                <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
                   <span>15-30 minutes per quote</span>
                 </li>
-                <li className="flex items-center text-emerald-600">
+                <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
                   <span>95% measurement accuracy</span>
                 </li>
-                <li className="flex items-center text-emerald-600">
+                <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
                   <span>Consistent, competitive pricing</span>
                 </li>
-                <li className="flex items-center text-emerald-600">
+                <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
                   <span>Professional, branded quotes</span>
                 </li>
-                <li className="flex items-center text-emerald-600">
+                <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
                   <span>Complete project management</span>
                 </li>
               </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-400">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-            Ready to Experience These Features?
-          </h2>
-          <p className="text-xl text-slate-700 mb-8 leading-relaxed">
-            Start your free trial today and see how Paint Quote Pro can transform your painting business. 
-            No credit card required, cancel anytime.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center justify-center space-x-2 shadow-lg">
-              <span>Start Free Trial</span>
-              <ArrowRight className="h-5 w-5" />
-            </button>
-            <button className="border-2 border-slate-700 text-slate-700 hover:bg-slate-700 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all">
-              View Pricing
-            </button>
-          </div>
-          <div className="flex items-center justify-center space-x-6 text-slate-600 text-sm">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="h-4 w-4 text-emerald-600" />
-              <span>14-day free trial</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="h-4 w-4 text-emerald-600" />
-              <span>No credit card required</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="h-4 w-4 text-emerald-600" />
-              <span>Cancel anytime</span>
             </div>
           </div>
         </div>

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import {
   ArrowRight,
   Zap,
@@ -33,6 +35,40 @@ import {
 
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleTryForFree = () => {
+    if (loading) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleExperienceBenefits = () => {
+    if (loading) return;
+
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/register');
+    }
+  };
+
+  const handleStartQuoting = () => {
+    if (loading) return;
+
+    if (isAuthenticated) {
+      navigate('/quotes');
+    } else {
+      navigate('/login');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -76,7 +112,7 @@ const Home = () => {
 
             {/* Right side - Content */}
             <div className="order-1 lg:order-2">
-              <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-6 leading-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 leading-tight">
                 Quotes That Took Hours
                 <span className="block">Now Done in Minutes</span>
               </h1>
@@ -86,8 +122,10 @@ const Home = () => {
                 sacrificing your evenings.
               </p>
 
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold mb-8 transition-colors">
-                Try it for free!
+              <button className="mybtn"
+                onClick={handleTryForFree}
+                disabled={loading}>
+                {loading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Try it for free!'}
               </button>
             </div>
           </div>
@@ -105,24 +143,34 @@ const Home = () => {
               <p className="text-lg text-slate-600 mb-8 leading-relaxed">
                 Find out how other contractors get started with Flotto and be convinced.
               </p>
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                Experience the benefits yourself
+              <button
+                onClick={handleExperienceBenefits}
+                disabled={loading}
+                className="mybtn"
+              >
+                {loading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Experience the benefits yourself'}
               </button>
+
             </div>
             <div className="relative">
-              {/* Video placeholder */}
-              <div className="bg-gray-800 rounded-xl aspect-video flex items-center justify-center relative overflow-hidden">
-                <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                  <span className="text-gray-600">VIDEO PLACEHOLDER</span>
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-emerald-400 rounded-full flex items-center justify-center">
-                    <Play className="h-8 w-8 text-white ml-1" />
+              <div className="flex justify-center">
+                <div className="relative group">
+                  <div className="relative overflow-hidden rounded-xl">
+                    <img
+                      src="./images/image2.png"
+                      alt="Red tape"
+                      className="w-full max-w-lg h-auto transform hover:scale-105 transition-transform duration-500 ease-in-out filter"
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300"></div>
                   </div>
-                </div>
-                {/* Video overlay text */}
-                <div className="absolute bottom-4 left-4 bg-yellow-400 text-slate-800 px-4 py-2 rounded-lg font-bold text-sm">
-                  "As a painter, I work about 5 hours a day on quotes. I'm done in 30 minutes now!"
+
+                  <div className="absolute -top-4 -right-4 w-8 h-8 bg-[#4bb4f5] rounded-full animate-bounce"></div>
+                  <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <div className="absolute top-1/2 -right-6 w-4 h-4 bg-blue-400 rounded-full opacity-70"></div>
+                  <div className="absolute bottom-4 left-4 bg-yellow-400 text-slate-800 px-4 py-2 rounded-lg font-bold text-sm">
+                    "As a painter, I work about 5 hours a day on quotes. I'm done in 30 minutes now!"
+                  </div>
                 </div>
               </div>
             </div>
@@ -135,8 +183,8 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">Red tape:</h2>
-                <h3 className="text-3xl font-bold text-blue-900 mb-6">Super simple AI quoting!</h3>
+                <h2 className="text-2xl font-bold text-slate-500 mb-2">Red tape:</h2>
+                <h3 className="text-3xl font-bold text-slate-900 mb-6">Super simple AI quoting!</h3>
               </div>
 
               <p className="text-lg text-slate-600 leading-relaxed">
@@ -158,25 +206,22 @@ const Home = () => {
                 Use Flotto on your laptop, tablet, or right from your phone while you're still on-site.
                 By the time you leave the client's house, the quote is already in their inbox.
               </p>
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                Start quoting right away
-              </button>
             </div>
-            <div class="flex justify-center">
-              <div class="relative group">
-                <div class="relative overflow-hidden rounded-xl">
+            <div className="flex justify-center">
+              <div className="relative group">
+                <div className="relative overflow-hidden rounded-xl">
                   <img
                     src="./images/image1.png"
                     alt="Red tape"
                     className="w-full max-w-lg h-auto transform hover:scale-105 transition-transform duration-500 ease-in-out filter"
                   />
 
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300"></div>
                 </div>
 
-                <div class="absolute -top-4 -right-4 w-8 h-8 bg-emerald-400 rounded-full animate-bounce"></div>
-                <div class="absolute -bottom-2 -left-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
-                <div class="absolute top-1/2 -right-6 w-4 h-4 bg-blue-400 rounded-full opacity-70"></div>
+                <div className="absolute -top-4 -right-4 w-8 h-8 bg-[#4bb4f5] rounded-full animate-bounce"></div>
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
+                <div className="absolute top-1/2 -right-6 w-4 h-4 bg-blue-400 rounded-full opacity-70"></div>
               </div>
             </div>
           </div>
@@ -193,7 +238,7 @@ const Home = () => {
                 <div className="relative">
                   <div className="w-80 h-48 bg-slate-800 rounded-lg p-2">
                     <div className="w-full h-full bg-white rounded flex items-center justify-center">
-                      <span className="text-gray-600 text-sm">LAPTOP SCREEN PLACEHOLDER</span>
+                      <img src="./images/image.png" alt="Invoice illustration" />
                     </div>
                   </div>
                 </div>
@@ -206,8 +251,19 @@ const Home = () => {
                   With Flotto's accounting software, creating invoices and managing your online bookkeeping is a breeze!
                   Discover for yourself how easy Flotto's accounting software is for freelancers, entrepreneurs, and freelancers.
                 </p>
-                <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                  Create your first invoice now
+                <button
+                  onClick={() => {
+                    if (loading) return;
+                    if (isAuthenticated) {
+                      navigate('/dashboard');
+                    } else {
+                      navigate('/login');
+                    }
+                  }}
+                  disabled={loading}
+                  className="mybtn"
+                >
+                  {loading ? 'Loading...' : isAuthenticated ? 'Create Invoice' : 'Create your first invoice now'}
                 </button>
               </div>
             </div>
@@ -239,9 +295,6 @@ const Home = () => {
                 Send professional quotes your clients can sign digitally with ease. Generate and send invoices
                 instantly, complete with secure payment links for fast and simple transactions.
               </p>
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors">
-                Create quotes
-              </button>
             </div>
 
             {/* Feature 2 */}
@@ -258,15 +311,12 @@ const Home = () => {
                 Upload a floor plan and let our AI do the rest. It automatically calculates wall and ceiling
                 dimensions in seconds—no measuring or manual input required.
               </p>
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors">
-                Try AI analysis
-              </button>
             </div>
 
             {/* Feature 3 */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-emerald-400 rounded-lg flex items-center justify-center">
+                <div className="w-16 h-16 bg-[#4bb4f5] rounded-lg flex items-center justify-center">
                   <BarChart3 className="h-8 w-8 text-white" />
                 </div>
               </div>
@@ -277,9 +327,6 @@ const Home = () => {
                 Easily build accurate quotes with our intuitive calculator. Select interior and exterior
                 surfaces, woodwork types, and preparation steps—we handle the rest.
               </p>
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors">
-                Calculate costs
-              </button>
             </div>
           </div>
 
@@ -288,7 +335,7 @@ const Home = () => {
             {/* Feature 4 */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-emerald-400 rounded-lg flex items-center justify-center">
+                <div className="w-16 h-16 bg-[#4bb4f5] rounded-lg flex items-center justify-center">
                   <Camera className="h-8 w-8 text-white" />
                 </div>
               </div>
@@ -299,9 +346,6 @@ const Home = () => {
                 Just take a picture of your job site. You put it directly in the Flotto app via your phone,
                 after which documenting your work becomes a piece of cake.
               </p>
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors">
-                The Photo tool
-              </button>
             </div>
 
             {/* Feature 5 */}
@@ -318,9 +362,6 @@ const Home = () => {
                 As a painting contractor, you regularly track down hours for your projects. With Flotto,
                 you can easily keep track of your hours and convert them into an invoice.
               </p>
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors">
-                Register hours
-              </button>
             </div>
 
             {/* Feature 6 */}
@@ -337,16 +378,15 @@ const Home = () => {
                 You want to be able to do your project management anywhere, that's why it's handy that
                 Flotto works on any device. Download our Android or iPhone app.
               </p>
-              <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors">
-                Our mobile app
-              </button>
             </div>
           </div>
 
           <div className="text-center">
-            <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-              View all options
-            </button>
+            <Link to="/features">
+              <button className="mybtn">
+                View all options
+              </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -420,9 +460,11 @@ const Home = () => {
           </div>
 
           <div className="text-center">
-            <button className="bg-emerald-400 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-              Read more experiences
-            </button>
+            <Link to="/testimonials">
+              <button className="mybtn">
+                Read more experiences
+              </button>
+            </Link>
           </div>
         </div>
       </section>

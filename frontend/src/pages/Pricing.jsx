@@ -13,7 +13,10 @@ import {
   Clock,
   Calculator,
   Target,
-  Zap
+  Zap,
+  Brain,
+  PaintBucket,
+  Award
 } from 'lucide-react';
 
 const Pricing = () => {
@@ -59,8 +62,8 @@ const Pricing = () => {
         'White-label options'
       ],
       popular: true,
-      color: 'border-emerald-500',
-      bgColor: 'bg-emerald-50'
+      color: 'border-[#4bb4f5]',
+      bgColor: 'bg-blue-50'
     },
     {
       name: 'Professional',
@@ -154,146 +157,50 @@ const Pricing = () => {
     }
   ];
 
+  const whyChooseFeatures = [
+    {
+      icon: <Brain className="h-12 w-12 text-[#4bb4f5]" />,
+      title: "AI-Powered Floor Plan Analysis",
+      description: "Upload any floor plan and get instant room identification, measurements, and surface area calculations with 95% accuracy."
+    },
+    {
+      icon: <Clock className="h-8 w-8 text-amber-600" />,
+      title: "5x Faster Quote Creation",
+      description: "Reduce quote creation time from hours to minutes with automated calculations and professional templates."
+    },
+    {
+      icon: <PaintBucket className="h-8 w-8 text-blue-600" />,
+      title: "Professional Branded Quotes",
+      description: "Impress clients with stunning PDF quotes featuring your company branding and detailed breakdowns."
+    },
+    {
+      icon: <Award className="h-8 w-8 text-[#4bb4f5]" />,
+      title: "Complete Business Management",
+      description: "Track projects, manage teams, process payments, and grow your painting business all in one platform."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      {/* <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      {/* Hero Section with Why Choose Paint Quote Pro */}
+      <section className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-400 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
-                <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">PQ</span>
-                </div>
-                <span className="ml-2 text-xl font-semibold text-slate-800">Paint Quote Pro</span>
-              </div>
-            </div>
-            
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-8">
-                <a href="#features" className="text-slate-600 hover:text-slate-900 px-3 py-2 text-sm font-medium transition-colors">Features</a>
-                <a href="#pricing" className="text-emerald-600 px-3 py-2 text-sm font-medium">Pricing</a>
-                <a href="#support" className="text-slate-600 hover:text-slate-900 px-3 py-2 text-sm font-medium transition-colors">Support</a>
-                <a href="#contact" className="text-slate-600 hover:text-slate-900 px-3 py-2 text-sm font-medium transition-colors">Contact</a>
-              </div>
-            </div>
-
-            <div className="hidden md:flex items-center space-x-4">
-              <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium text-sm transition-colors">
-                Try it for free
-              </button>
-            </div>
-
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-slate-600 hover:text-slate-900"
-              >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav> */}
-
-      {/* Package Selection Helper */}
-      <section className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-400 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
-              Which quoting package suits you?
+              Why Choose Paint Quote Pro?
             </h1>
+            <p className="text-xl text-slate-600 max-w-4xl mx-auto">
+              Transform your painting business with AI-powered quoting, professional project management, and tools that help you win more jobs faster.
+            </p>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="text-slate-700 space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-6 w-6 text-emerald-600" />
-                  <span className="text-lg font-medium">8 short questions</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-6 w-6 text-emerald-600" />
-                  <span className="text-lg font-medium">Quickly find the package that suits you</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-6 w-6 text-emerald-600" />
-                  <span className="text-lg font-medium">All features and prices are clearly indicated</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-6 w-6 text-emerald-600" />
-                  <span className="text-lg font-medium">Want to compare for yourself? Take a look at our comparison table ↓</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-xl">
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-3">
-                    How many quotes do you send per month?*
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="radio" name="quotes" className="mr-3" />
-                      <span className="text-slate-600">Less than 5 quotes</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="radio" name="quotes" className="mr-3" />
-                      <span className="text-slate-600">Between 5 and 10</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="radio" name="quotes" className="mr-3" />
-                      <span className="text-slate-600">More than 10</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-3">
-                    Do you want iDEAL payment links with your quotes so customers can pay easily?*
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="radio" name="ideal" className="mr-3" />
-                      <span className="text-slate-600">Yes</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input type="radio" name="ideal" className="mr-3" />
-                      <span className="text-slate-600">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                    <div className="bg-amber-400 h-2 rounded-full" style={{ width: '25%' }}></div>
-                  </div>
-                  <button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-                    Continue
-                  </button>
-                </div>
-              </div>
+          <div className="text-center mt-12">
+            <div className="inline-flex items-center bg-white rounded-full px-6 py-3 shadow-lg">
+              <CheckCircle className="h-5 w-5 text-[#4bb4f5] mr-2" />
+              <span className="text-slate-700 font-medium">14-day free trial • No credit card required • Cancel anytime</span>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Starter Package Banner */}
-      {/* <section className="bg-slate-700 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Just getting started? Get the free Starter package!
-          </h2>
-          <p className="text-xl text-gray-300 mb-6 max-w-4xl mx-auto">
-            The Paint Quote Pro Starter package contains everything you need for a flying start. Send 5 quotes monthly including iDEAL 
-            payment link and manage your first expenses. Do your own VAT return with the handy VAT overview. Free of charge.
-          </p>
-          <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-            Read more about Starter
-          </button>
-        </div>
-      </section> */}
 
       {/* Pricing Plans */}
       <section className="py-20 bg-gray-50">
@@ -313,8 +220,8 @@ const Pricing = () => {
               </span>
               <button
                 onClick={() => setIsYearly(!isYearly)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
-                  isYearly ? 'bg-emerald-500' : 'bg-gray-300'
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:ring-offset-2 ${
+                  isYearly ? 'bg-[#4bb4f5]' : 'bg-gray-300'
                 }`}
               >
                 <span
@@ -342,7 +249,7 @@ const Pricing = () => {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="inline-flex items-center px-4 py-2 rounded-full bg-emerald-500 text-white text-sm font-medium shadow-lg">
+                    <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#4bb4f5] text-white text-sm font-medium shadow-lg">
                       <Star className="h-4 w-4 mr-1 fill-current" />
                       Most Popular
                     </div>
@@ -361,7 +268,7 @@ const Pricing = () => {
                       </span>
                     </div>
                     {isYearly && (
-                      <p className="text-sm text-emerald-600 mt-1">
+                      <p className="text-sm text-[#4bb4f5] mt-1">
                         Save £{(plan.price * 12) - plan.yearlyPrice} per year
                       </p>
                     )}
@@ -370,25 +277,12 @@ const Pricing = () => {
 
                 <div className="p-8">
                   <p className="text-slate-600 mb-6 leading-relaxed">{plan.description}</p>
-
-                  <button
-                    className={`w-full py-3 px-4 rounded-xl shadow-sm text-sm font-semibold transition-all ${
-                      plan.popular
-                        ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 text-slate-700'
-                    }`}
-                  >
-                    {index === 0 ? 'Read more about Pure Invoice' : 
-                     index === 1 ? 'Read more about Basic' : 
-                     'Read more about Professional'}
-                  </button>
-
                   <div className="mt-8">
                     <h4 className="text-sm font-semibold text-slate-800 mb-4 uppercase tracking-wide">Main features</h4>
                     <ul className="space-y-3">
                       {plan.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-start">
-                          <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                          <CheckCircle className="h-5 w-5 text-[#4bb4f5] flex-shrink-0 mt-0.5" />
                           <span className="ml-3 text-sm text-slate-700 leading-relaxed">{feature}</span>
                         </li>
                       ))}
@@ -419,7 +313,7 @@ const Pricing = () => {
                 <tr className="bg-gray-50">
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-800 w-1/2">Features</th>
                   <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800">Pure Invoice</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800 bg-emerald-50">Basic</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800 bg-blue-50">Basic</th>
                   <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800">Professional</th>
                 </tr>
               </thead>
@@ -427,7 +321,7 @@ const Pricing = () => {
                 <tr className="bg-amber-50">
                   <td className="px-6 py-4 text-sm font-semibold text-slate-800">Price</td>
                   <td className="px-6 py-4 text-center text-sm text-slate-600">£7.50 p/m excl. VAT</td>
-                  <td className="px-6 py-4 text-center text-sm text-slate-600 bg-emerald-50">£12.50 p/m excl. VAT</td>
+                  <td className="px-6 py-4 text-center text-sm text-slate-600 bg-blue-50">£12.50 p/m excl. VAT</td>
                   <td className="px-6 py-4 text-center text-sm text-slate-600">£25.- p/m excl. VAT</td>
                 </tr>
                 {featureComparison.map((category, categoryIndex) => (
@@ -443,7 +337,7 @@ const Pricing = () => {
                         <td className="px-6 py-4 text-center">
                           {typeof feature.pure === 'boolean' ? (
                             feature.pure ? (
-                              <CheckCircle className="h-5 w-5 text-emerald-500 mx-auto" />
+                              <CheckCircle className="h-5 w-5 text-[#4bb4f5] mx-auto" />
                             ) : (
                               <X className="h-5 w-5 text-gray-400 mx-auto" />
                             )
@@ -451,10 +345,10 @@ const Pricing = () => {
                             <span className="text-sm text-slate-600">{feature.pure}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-center bg-emerald-50">
+                        <td className="px-6 py-4 text-center bg-blue-50">
                           {typeof feature.basic === 'boolean' ? (
                             feature.basic ? (
-                              <CheckCircle className="h-5 w-5 text-emerald-500 mx-auto" />
+                              <CheckCircle className="h-5 w-5 text-[#4bb4f5] mx-auto" />
                             ) : (
                               <X className="h-5 w-5 text-gray-400 mx-auto" />
                             )
@@ -465,7 +359,7 @@ const Pricing = () => {
                         <td className="px-6 py-4 text-center">
                           {typeof feature.professional === 'boolean' ? (
                             feature.professional ? (
-                              <CheckCircle className="h-5 w-5 text-emerald-500 mx-auto" />
+                              <CheckCircle className="h-5 w-5 text-[#4bb4f5] mx-auto" />
                             ) : (
                               <X className="h-5 w-5 text-gray-400 mx-auto" />
                             )
