@@ -144,9 +144,9 @@ const Home = () => {
                   </div>
 
                   <div className="absolute -top-4 -right-4 w-8 h-8 bg-[#4bb4f5] rounded-full animate-bounce"></div>
-                  <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-[#4bb4f5] rounded-full animate-pulse"></div>
                   <div className="absolute top-1/2 -right-6 w-4 h-4 bg-blue-400 rounded-full opacity-70"></div>
-                  <div className="absolute bottom-4 left-4 bg-yellow-400 text-slate-800 px-4 py-2 rounded-lg font-bold text-sm">
+                  <div className="absolute bottom-4 left-4 bg-[#4bb4f5] text-slate-800 px-4 py-2 rounded-lg font-bold text-sm">
                     "As a painter, I work about 5 hours a day on quotes. I'm done in 30 minutes now!"
                   </div>
                 </div>
@@ -211,7 +211,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-              <div className="p-12 flex items-center justify-center bg-gradient-to-br from-yellow-300 to-yellow-400">
+              <div className="p-12 flex items-center justify-center bg-gradient-to-br from-[#4bb4f5] to-[#4bb4f5]">
                 {/* Laptop illustration placeholder */}
                 <div className="relative">
                   <div className="w-80 h-48 bg-slate-800 rounded-lg p-2">
@@ -262,7 +262,7 @@ const Home = () => {
             {/* Feature 1 */}
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-yellow-400 rounded-lg flex items-center justify-center">
+                <div className="w-16 h-16 bg-[#4bb4f5] rounded-lg flex items-center justify-center">
                   <FileText className="h-8 w-8 text-slate-800" />
                 </div>
               </div>
