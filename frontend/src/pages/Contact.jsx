@@ -73,7 +73,7 @@ const Contact = () => {
     <div className="min-h-screen bg-white">
 
       {/* Header */}
-      <section className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-400 py-20">
+      <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
             Get in Touch with Paint Quote Pro
@@ -84,15 +84,15 @@ const Contact = () => {
           </p>
           <div className="flex items-center justify-center space-x-6 text-slate-600">
             <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-[#4bb4f5]" />
+              <CheckCircle className="h-5 w-5 text-slate-700" />
               <span className="font-medium">Expert support team</span>
             </div>
             <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-[#4bb4f5]" />
+              <CheckCircle className="h-5 w-5 text-slate-700" />
               <span className="font-medium">24-hour response time</span>
             </div>
             <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-[#4bb4f5]" />
+              <CheckCircle className="h-5 w-5 text-slate-700" />
               <span className="font-medium">Free consultation</span>
             </div>
           </div>

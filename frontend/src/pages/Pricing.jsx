@@ -183,7 +183,7 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section with Why Choose Paint Quote Pro */}
-      <section className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-400 py-20">
+      <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">

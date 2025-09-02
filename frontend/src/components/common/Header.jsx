@@ -37,8 +37,8 @@ const Header = () => {
                   e.target.nextSibling.style.display = 'inline';
                 }}
               />
-              <span className="text-2xl font-bold text-slate-800 sm:block hidden">FLOTTO</span>
-              <span className="text-xl font-bold text-slate-800 sm:hidden">FLOTTO</span>
+              {/* <span className="text-2xl font-bold text-slate-800 sm:block hidden">FLOTTO</span> */}
+              {/* <span className="text-xl font-bold text-slate-800 sm:hidden">FLOTTO</span> */}
             </Link>
           </div>
 

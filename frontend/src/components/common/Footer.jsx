@@ -32,22 +32,22 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4 text-[#4bb4f5]">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/features" className="text-gray-300 hover:text-yellow-400 transition-colors">
+                <a href="/features" className="text-gray-300 hover:text-[#4bb4f5] transition-colors">
                   Features
                 </a>
               </li>
               <li>
-                <a href="/pricing" className="text-gray-300 hover:text-yellow-400 transition-colors">
+                <a href="/pricing" className="text-gray-300 hover:text-[#4bb4f5] transition-colors">
                   Pricing
                 </a>
               </li>
               <li>
-                <a href="/about" className="text-gray-300 hover:text-yellow-400 transition-colors">
+                <a href="/about" className="text-gray-300 hover:text-[#4bb4f5] transition-colors">
                   About Us
                 </a>
               </li>
               <li>
-                <a href="/contact" className="text-gray-300 hover:text-yellow-400 transition-colors">
+                <a href="/contact" className="text-gray-300 hover:text-[#4bb4f5] transition-colors">
                   Contact
                 </a>
               </li>
@@ -82,19 +82,19 @@ const Footer = () => {
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a
                 href="/privacy-policy"
-                className="text-gray-400 hover:text-yellow-400 text-sm transition-colors"
+                className="text-gray-400 hover:text-[#4bb4f5] text-sm transition-colors"
               >
                 Privacy Policy
               </a>
               <a
                 href="/terms-of-service"
-                className="text-gray-400 hover:text-yellow-400 text-sm transition-colors"
+                className="text-gray-400 hover:text-[#4bb4f5] text-sm transition-colors"
               >
                 Terms of Service
               </a>
               <a
                 href="/cookie-policy"
-                className="text-gray-400 hover:text-yellow-400 text-sm transition-colors"
+                className="text-gray-400 hover:text-[#4bb4f5] text-sm transition-colors"
               >
                 Cookie Policy
               </a>

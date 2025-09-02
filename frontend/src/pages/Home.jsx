@@ -74,7 +74,7 @@ const Home = () => {
     <div className="min-h-screen bg-white">
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-yellow-400 via-yellow-300 to-amber-400 py-20">
+      <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Character */}
@@ -84,28 +84,6 @@ const Home = () => {
                 <div className="rounded-lg flex items-center justify-center">
                   {/* <span className="text-gray-600">CHARACTER IMAGE PLACEHOLDER</span> */}
                   <img src="./images/hero.png" alt="hero image" />
-                </div>
-
-                {/* Speech bubble */}
-                {/* <div className="transform -translate-x-1/2"> */}
-                <div className='bg-slate-800' style={
-                  {
-                    position: 'absolute',
-                    top: -50,
-                    right: 10,
-                    padding: '12px 16px',
-                    borderRadius: '10px',
-                    maxWidth: '200px',
-                    fontWeight: 'bold',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  }
-                }>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-white mb-1">YOU HAVE TO GET USED TO</div>
-                    <div className="text-2xl font-bold text-white">QUOTING!</div>
-                  </div>
-                  {/* Speech bubble arrow */}
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-l-transparent border-r-transparent border-t-slate-800"></div>
                 </div>
               </div>
             </div>

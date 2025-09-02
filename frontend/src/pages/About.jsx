@@ -67,7 +67,7 @@ const About = () => {
     <div className="min-h-screen bg-white">
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-400 py-16">
+      <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
             About Paint Quote Pro
@@ -85,7 +85,7 @@ const About = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-amber-400 mb-2">
+                <div className="text-3xl md:text-4xl font-bold text-[#4bb4f5] mb-2">
                   {stat.number}
                 </div>
                 <div className="text-gray-300 text-sm md:text-base font-medium">
