@@ -4,8 +4,13 @@ from flask_mail import Mail, Message
 import logging
 from datetime import datetime
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 logger = logging.getLogger(__name__)
+
 
 def send_welcome_email(email: str, first_name: str, company_name: str):
     """Send welcome email to new user"""
@@ -657,65 +662,224 @@ def send_quote_with_signature_link_frontend(client_email: str, client_name: str,
         current_app.logger.error(f"Failed to send quote email: {e}")
         raise
 
-def send_email(to_email, subject, html_content, from_name=None):
-    """Send email using Flask-Mail"""
-    try:
-        # Initialize Flask-Mail
-        mail = Mail(current_app)
+# def send_email(to_email, subject, html_content, from_name=None):
+#     """Send email using Flask-Mail"""
+#     try:
+#         # Initialize Flask-Mail
+#         mail = Mail(current_app)
         
-        # Set sender
-        sender = current_app.config.get('MAIL_USERNAME')
-        if from_name:
-            sender = f"{from_name} <{sender}>"
+#         # Set sender
+#         sender = current_app.config.get('MAIL_USERNAME')
+#         if from_name:
+#             sender = f"{from_name} <{sender}>"
         
-        # Create message
-        msg = Message(
-            subject=subject,
-            sender=sender,
-            recipients=[to_email]
-        )
+#         # Create message
+#         msg = Message(
+#             subject=subject,
+#             sender=sender,
+#             recipients=[to_email]
+#         )
         
-        msg.html = html_content
+#         msg.html = html_content
         
-        # Send email
-        mail.send(msg)
-        logger.info(f"Email sent successfully to {to_email}")
+#         # Send email
+#         mail.send(msg)
+#         logger.info(f"Email sent successfully to {to_email}")
         
-    except Exception as e:
-        logger.error(f"Failed to send email to {to_email}: {str(e)}")
-        raise e
+#     except Exception as e:
+#         logger.error(f"Failed to send email to {to_email}: {str(e)}")
+#         raise e
+
+
+# def send_simple_test_email(client_email, company):
+#     """Send a simple test email"""
+    
+#     # Email content
+#     subject = "Testing Email"
+    
+#     html_content = f"""
+#     <html>
+#     <body>
+#         <h2>Testing Email</h2>
+#         <p>Hello!</p>
+#         <p>This is a test email from {company.name}.</p>
+#         <p>If you received this, the email system is working.</p>
+#         <hr>
+#         <p>Best regards,<br>{company.name}</p>
+#     </body>
+#     </html>
+#     """
+    
+#     # Send email using your existing email setup
+#     send_email(
+#         to_email=client_email,
+#         subject=subject,
+#         html_content=html_content,
+#         from_name=company.name
+#     )
+
+
+# Replace your email service function with this direct SMTP version
+
 
 
 def send_simple_test_email(client_email, company):
-    """Send a simple test email"""
+    """Send a simple test email using direct SMTP connection"""
     
-    # Email content
-    subject = "Testing Email"
+    # Get SMTP configuration
+    smtp_server = current_app.config.get('MAIL_SERVER')
+    smtp_port = current_app.config.get('MAIL_PORT', 587)
+    smtp_user = current_app.config.get('MAIL_USERNAME')
+    smtp_password = current_app.config.get('MAIL_PASSWORD')
+    use_tls = current_app.config.get('MAIL_USE_TLS', True)
     
-    html_content = f"""
-    <html>
-    <body>
-        <h2>Testing Email</h2>
-        <p>Hello!</p>
-        <p>This is a test email from {company.name}.</p>
-        <p>If you received this, the email system is working.</p>
-        <hr>
-        <p>Best regards,<br>{company.name}</p>
-    </body>
-    </html>
-    """
+    logger.info(f"📧 Direct SMTP - Server: {smtp_server}:{smtp_port}, User: {smtp_user}, TLS: {use_tls}")
     
-    # Send email using your existing email setup
-    send_email(
-        to_email=client_email,
-        subject=subject,
-        html_content=html_content,
-        from_name=company.name
-    )
+    try:
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = client_email
+        msg['Subject'] = "Testing Email - Direct SMTP"
+        
+        # Email body
+        html_body = f"""
+        <html>
+        <body>
+            <h2>🧪 Testing Email (Direct SMTP)</h2>
+            <p>Hello!</p>
+            <p>This is a test email from <strong>{company.name}</strong>.</p>
+            <p>✅ If you received this, the email system is working with direct SMTP!</p>
+            <hr>
+            <p>Sent at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
+            <p>From: {smtp_user}</p>
+            <p>Best regards,<br>{company.name}</p>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_body, 'html'))
+        
+        # Connect to server and send email
+        logger.info(f"📧 Connecting to {smtp_server}:{smtp_port}")
+        
+        # Create SMTP connection
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        
+        # Enable debug output
+        server.set_debuglevel(1)
+        
+        logger.info("📧 Starting TLS...")
+        server.starttls()
+        
+        logger.info("📧 Attempting login...")
+        server.login(smtp_user, smtp_password)
+        
+        logger.info(f"📧 Sending email to {client_email}...")
+        text = msg.as_string()
+        server.sendmail(smtp_user, client_email, text)
+        
+        server.quit()
+        
+        logger.info(f"✅ Direct SMTP email sent successfully to {client_email}")
+        
+    except smtplib.SMTPAuthenticationError as e:
+        logger.error(f"❌ SMTP Authentication Error: {e}")
+        raise Exception(f"Email authentication failed: {e}")
+        
+    except smtplib.SMTPRecipientsRefused as e:
+        logger.error(f"❌ SMTP Recipients Refused: {e}")
+        raise Exception(f"Email recipient refused: {e}")
+        
+    except smtplib.SMTPServerDisconnected as e:
+        logger.error(f"❌ SMTP Server Disconnected: {e}")
+        raise Exception(f"Email server disconnected: {e}")
+        
+    except smtplib.SMTPConnectError as e:
+        logger.error(f"❌ SMTP Connection Error: {e}")
+        raise Exception(f"Cannot connect to email server: {e}")
+        
+    except Exception as e:
+        logger.error(f"❌ Direct SMTP Error: {e}")
+        raise Exception(f"Email sending failed: {e}")
 
 
-
-
+# Fixed version with proper TLS handling
+def send_simple_test_email_debug(client_email, company):
+    """Send test email with proper TLS configuration"""
+    
+    smtp_server = current_app.config.get('MAIL_SERVER')
+    smtp_port = current_app.config.get('MAIL_PORT', 587)
+    smtp_user = current_app.config.get('MAIL_USERNAME')
+    smtp_password = current_app.config.get('MAIL_PASSWORD')
+    
+    logger.info(f"🔍 EMAIL DEBUG INFO:")
+    logger.info(f"   SMTP Server: {smtp_server}")
+    logger.info(f"   SMTP Port: {smtp_port}")
+    logger.info(f"   SMTP User: {smtp_user}")
+    logger.info(f"   SMTP Password Length: {len(smtp_password) if smtp_password else 0}")
+    logger.info(f"   To Email: {client_email}")
+    logger.info(f"   Company: {company.name}")
+    
+    try:
+        # Create message first
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = client_email
+        msg['Subject'] = "Testing Email - Paint Quote Pro"
+        
+        html_body = f"""
+        <html>
+        <body>
+            <h2>🧪 Testing Email</h2>
+            <p>Hello!</p>
+            <p>This is a test email from <strong>{company.name}</strong>.</p>
+            <p>✅ If you received this, the email system is working!</p>
+            <hr>
+            <p>Sent at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
+            <p>Best regards,<br>{company.name}</p>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_body, 'html'))
+        
+        # Connect with proper TLS context
+        import ssl
+        
+        logger.info("🔍 Creating SMTP connection with TLS...")
+        
+        # Create secure SSL context
+        context = ssl.create_default_context()
+        
+        # Connect to server
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.set_debuglevel(1)  # Reduce debug level
+        
+        # Start TLS with proper context and server name
+        logger.info("🔍 Starting TLS with proper context...")
+        server.starttls(context=context)
+        
+        logger.info("🔍 Attempting login...")
+        server.login(smtp_user, smtp_password)
+        
+        logger.info("🔍 Sending email...")
+        server.send_message(msg)
+        
+        server.quit()
+        logger.info("✅ Email sent successfully!")
+        
+    except smtplib.SMTPAuthenticationError as e:
+        logger.error(f"❌ SMTP Auth Error: {e}")
+        raise Exception(f"Gmail authentication failed. Check your App Password: {e}")
+        
+    except smtplib.SMTPRecipientsRefused as e:
+        logger.error(f"❌ Recipients Refused: {e}")
+        raise Exception(f"Email recipient refused: {e}")
+        
+    except Exception as e:
+        logger.error(f"❌ Email failed: {e}")
+        raise Exception(f"Email sending failed: {e}")
 
 
 # def send_signature_confirmation_email(client_email: str, client_name: str, quote):

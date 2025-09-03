@@ -1149,6 +1149,63 @@ def duplicate_project(project_id):
 
 
 
+# @projects_bp.route('/<int:project_id>/email-quote', methods=['POST'])
+# @jwt_required()
+# def email_quote(project_id):
+#     """Simple test email - temporarily replacing the main function"""
+#     try:
+#         current_user_id = get_jwt_identity()
+#         user = db.session.get(User, int(current_user_id))
+        
+#         if not user or not user.company:
+#             return jsonify({'error': 'User or company not found'}), 400
+
+#         data = request.get_json()
+#         if not data or not data.get('client_email'):
+#             return jsonify({'error': 'client_email is required'}), 400
+
+#         client_email = data['client_email']
+
+#         # Check SMTP configuration
+#         smtp_server = current_app.config.get('MAIL_SERVER')
+#         smtp_user = current_app.config.get('MAIL_USERNAME')
+#         smtp_password = current_app.config.get('MAIL_PASSWORD')
+        
+#         current_app.logger.info(f"📧 SMTP Config - Server: {smtp_server}, User: {smtp_user}")
+        
+#         if not all([smtp_server, smtp_user, smtp_password]):
+#             return jsonify({'error': 'SMTP not configured'}), 500
+
+#         # Use your existing email service
+#         try:
+#             from services.email_service import send_simple_test_email
+            
+#             send_simple_test_email(
+#                 client_email=client_email,
+#                 company=user.company
+#             )
+            
+#             current_app.logger.info(f"✅ Test email sent successfully to {client_email}")
+            
+#             return jsonify({
+#                 'message': f'Test email sent successfully to {client_email}',
+#                 'timestamp': datetime.utcnow().isoformat()
+#             })
+
+#         except Exception as email_error:
+#             current_app.logger.error(f'❌ Test email failed: {str(email_error)}')
+#             return jsonify({
+#                 'error': 'Failed to send test email',
+#                 'details': str(email_error)
+#             }), 500
+
+#     except Exception as e:
+#         current_app.logger.error(f'❌ Test email error: {str(e)}')
+#         return jsonify({
+#             'error': 'Failed to process test email request',
+#             'details': str(e)
+#         }), 500
+
 @projects_bp.route('/<int:project_id>/email-quote', methods=['POST'])
 @jwt_required()
 def email_quote(project_id):
@@ -1178,9 +1235,9 @@ def email_quote(project_id):
 
         # Use your existing email service
         try:
-            from services.email_service import send_simple_test_email
+            from services.email_service import send_simple_test_email_debug
             
-            send_simple_test_email(
+            send_simple_test_email_debug(
                 client_email=client_email,
                 company=user.company
             )
@@ -1205,8 +1262,6 @@ def email_quote(project_id):
             'error': 'Failed to process test email request',
             'details': str(e)
         }), 500
-
-
 
 
 
