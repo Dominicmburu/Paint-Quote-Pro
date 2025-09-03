@@ -62,7 +62,7 @@ const CreateProject = () => {
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </button>
-                    <h1 className="text-3xl font-bold text-purple-700">Create New Project</h1>
+                    <h1 className="text-3xl font-bold text-slate-800">Create New Project</h1>
                 </div>
 
                 {/* Subscription Warning */}
@@ -85,7 +85,7 @@ const CreateProject = () => {
                 {/* Projects Remaining */}
                 {canCreateProject() && subscription?.max_projects > 0 && (
                     <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
-                        <p className="text-sm text-blue-700">
+                        <p className="text-sm text-[#4bb4f5]">
                             <span className="font-medium">{getProjectsRemaining()}</span> projects remaining this month
                         </p>
                     </div>
@@ -102,7 +102,7 @@ const CreateProject = () => {
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Project Information */}
                     <div>
-                        <h3 className="text-xl font-semibold text-purple-700 mb-6">Project Information</h3>
+                        <h3 className="text-xl font-semibold text-slate-800 mb-6">Project Information</h3>
                         <p className="text-sm text-gray-600 mb-6">
                             Start by entering basic project details. You'll add client information and other details on the next step.
                         </p>
@@ -203,7 +203,7 @@ const CreateProject = () => {
                         <button
                             type="submit"
                             disabled={loading || !canCreateProject()}
-                            className="inline-flex items-center px-6 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
+                            className="inline-flex items-center px-6 py-2 bg-[#4bb4f5] hover:bg-[#4bb4f5] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
                         >
                             {loading ? (
                                 <>
@@ -223,12 +223,13 @@ const CreateProject = () => {
 
             {/* Next Steps */}
             <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h4 className="text-sm font-medium text-blue-900 mb-3">📋 What happens next:</h4>
-                <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+                <h4 className="text-sm font-medium text-[#4bb4f5] mb-3">📋 What happens next:</h4>
+                <ol className="text-sm text-slate-700 space-y-2 list-decimal list-inside">
                     <li>Create your project with basic information</li>
                     <li>Add client information and contact details</li>
                     <li>Upload floor plans and images</li>
                     <li>Run AI analysis or add measurements manually</li>
+                    <li>Add Interior, Exterior, Special Jobs</li>
                     <li>Generate and send quotes to clients</li>
                 </ol>
             </div>

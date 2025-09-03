@@ -1493,13 +1493,13 @@ const ProjectDetails = () => {
       console.log('✅ Complete quote generated with all process steps:', response.data);
 
       // Send email
-      await api.post(`/projects/${id}/email-quote`, {
-        client_email: project.client_email,
-        client_name: project.client_name,
-        project_name: project.name,
-        total_cost: totalCosts.total,
-        quote_id: response.data.quote_id
-      });
+      // await api.post(`/projects/${id}/email-quote`, {
+      //   client_email: project.client_email,
+      //   client_name: project.client_name,
+      //   project_name: project.name,
+      //   total_cost: totalCosts.total,
+      //   quote_id: response.data.quote_id
+      // });
 
       // Redirect to quote preview
       navigate(`/quotes/${response.data.quote_id}`, {
