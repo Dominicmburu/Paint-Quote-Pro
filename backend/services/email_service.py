@@ -504,7 +504,7 @@ def send_quote_with_signature_link_frontend(client_email: str, client_name: str,
                 </div>
                 
                 <p style="color: #475569; font-size: 14px; line-height: 1.6;">
-                    📎 <strong>Quote PDF is attached</strong> for your records. You can also download it from the signing page.
+                    📎 <strong>Quote PDF is attached</strong> for your records.
                 </p>
                 
                 <p style="color: #475569; font-size: 16px; line-height: 1.6;">
@@ -663,7 +663,6 @@ def send_quote_signed_notification_email(company_email: str, company_name: str, 
                     <p><strong>Total Amount:</strong> £{quote.total_amount:.2f}</p>
                     <p><strong>Property:</strong> {quote.project.property_address}</p>
                     <p><strong>Client Email:</strong> {quote.project.client_email}</p>
-                    <p><strong>Client Phone:</strong> {quote.project.client_phone or 'Not provided'}</p>
                 </div>
                 
                 <h3>Next Steps:</h3>

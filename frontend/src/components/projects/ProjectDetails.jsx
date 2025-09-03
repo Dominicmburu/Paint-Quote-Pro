@@ -636,6 +636,644 @@ const ProjectDetails = () => {
   };
 
 
+  // const generateQuoteAndEmail = async () => {
+  //   if (!project) {
+  //     setError('Please save the project first');
+  //     return;
+  //   }
+
+  //   if (!project.client_email) {
+  //     setError('Client email is required to send the quote');
+  //     return;
+  //   }
+
+  //   setGenerating(true);
+  //   setError('');
+
+  //   try {
+  //     // Save measurements first
+  //     await saveMeasurements();
+
+  //     const hasRoomMeasurements = rooms.length > 0;
+  //     const hasInteriorItems = Object.values(interiorItems).some(items => items.length > 0);
+  //     const hasExteriorItems = Object.values(exteriorItems).some(items => items.length > 0);
+  //     const hasSpecialJobs = specialJobs.length > 0;
+
+  //     if (!hasRoomMeasurements && !hasInteriorItems && !hasExteriorItems && !hasSpecialJobs) {
+  //       setError('Please add some measurements before generating a quote');
+  //       return;
+  //     }
+
+  //     console.log('🔄 Generating quote with actual project data (Total Wall Area approach)...');
+
+  //     // 🔥 FIXED: Quote data for the new Total Wall Area approach
+  //     const quoteData = {
+  //       title: `Comprehensive Paint Quote - ${project.name}`,
+  //       description: `Detailed painting quote for ${project.name} including room-by-room breakdown with total wall area measurements and treatment selections`,
+  //       valid_days: 30,
+
+  //       // 🔥 CRITICAL FIX: Updated for Total Wall Area approach
+  //       measurement_details: {
+  //         // 🏠 Process rooms with Total Wall Area approach
+  //         rooms: rooms.map(room => {
+  //           console.log(`Processing room: ${room.name}`, room);
+
+  //           const wallArea = parseFloat(room.walls_surface_m2) || 0;
+  //           const ceilingArea = parseFloat(room.area_m2) || 0;
+
+  //           return {
+  //             id: room.id,
+  //             name: room.name,
+  //             type: room.type || 'general',
+
+  //             // 🔥 NEW: Total area approach (replaces individual walls)
+  //             total_wall_area: wallArea,
+  //             total_ceiling_area: ceilingArea,
+
+  //             // 🔥 Process wall treatments with actual selected treatments
+  //             wall_treatments: {
+  //               sanding_filling: Boolean(room.wall_treatments?.sanding_filling),
+  //               priming: Boolean(room.wall_treatments?.priming),
+  //               one_coat: Boolean(room.wall_treatments?.one_coat),
+  //               two_coats: Boolean(room.wall_treatments?.two_coats)
+  //             },
+
+  //             // 🔥 Calculate wall costs for selected treatments only
+  //             wall_costs: {
+  //               sanding_filling: room.wall_treatments?.sanding_filling ?
+  //                 wallArea * (pricing?.walls?.sanding_filling || pricing?.walls?.sanding?.light?.price || 0) : 0,
+  //               priming: room.wall_treatments?.priming ?
+  //                 wallArea * (pricing?.walls?.priming || pricing?.walls?.priming?.one_coat?.price || 0) : 0,
+  //               one_coat: room.wall_treatments?.one_coat ?
+  //                 wallArea * (pricing?.walls?.one_coat || pricing?.walls?.painting?.one_coat?.price || 0) : 0,
+  //               two_coats: room.wall_treatments?.two_coats ?
+  //                 wallArea * (pricing?.walls?.two_coats || pricing?.walls?.painting?.two_coat?.price || 0) : 0
+  //             },
+
+  //             // 🔥 Process ceiling treatments with actual selected treatments
+  //             ceiling_treatments: {
+  //               sanding_filling: Boolean(room.ceiling_treatments?.sanding_filling),
+  //               priming: Boolean(room.ceiling_treatments?.priming),
+  //               one_coat: Boolean(room.ceiling_treatments?.one_coat),
+  //               two_coats: Boolean(room.ceiling_treatments?.two_coats)
+  //             },
+
+  //             // 🔥 Calculate ceiling costs for selected treatments only
+  //             ceiling_costs: {
+  //               sanding_filling: room.ceiling_treatments?.sanding_filling ?
+  //                 ceilingArea * (pricing?.ceiling?.sanding_filling || pricing?.ceiling?.preparation?.light?.price || 0) : 0,
+  //               priming: room.ceiling_treatments?.priming ?
+  //                 ceilingArea * (pricing?.ceiling?.priming || pricing?.ceiling?.preparation?.light?.price || 0) : 0,
+  //               one_coat: room.ceiling_treatments?.one_coat ?
+  //                 ceilingArea * (pricing?.ceiling?.one_coat || pricing?.ceiling?.painting?.one_coat?.price || 0) : 0,
+  //               two_coats: room.ceiling_treatments?.two_coats ?
+  //                 ceilingArea * (pricing?.ceiling?.two_coats || pricing?.ceiling?.painting?.two_coat?.price || 0) : 0
+  //             },
+
+  //             // 🔥 Room totals
+  //             totals: {
+  //               total_wall_area: wallArea,
+  //               total_ceiling_area: ceilingArea,
+  //               wall_total: Object.values({
+  //                 sanding_filling: room.wall_treatments?.sanding_filling ?
+  //                   wallArea * (pricing?.walls?.sanding_filling || pricing?.walls?.sanding?.light?.price || 0) : 0,
+  //                 priming: room.wall_treatments?.priming ?
+  //                   wallArea * (pricing?.walls?.priming || pricing?.walls?.priming?.one_coat?.price || 0) : 0,
+  //                 one_coat: room.wall_treatments?.one_coat ?
+  //                   wallArea * (pricing?.walls?.one_coat || pricing?.walls?.painting?.one_coat?.price || 0) : 0,
+  //                 two_coats: room.wall_treatments?.two_coats ?
+  //                   wallArea * (pricing?.walls?.two_coats || pricing?.walls?.painting?.two_coat?.price || 0) : 0
+  //               }).reduce((sum, cost) => sum + cost, 0),
+  //               ceiling_total: Object.values({
+  //                 sanding_filling: room.ceiling_treatments?.sanding_filling ?
+  //                   ceilingArea * (pricing?.ceiling?.sanding_filling || pricing?.ceiling?.preparation?.light?.price || 0) : 0,
+  //                 priming: room.ceiling_treatments?.priming ?
+  //                   ceilingArea * (pricing?.ceiling?.priming || pricing?.ceiling?.preparation?.light?.price || 0) : 0,
+  //                 one_coat: room.ceiling_treatments?.one_coat ?
+  //                   ceilingArea * (pricing?.ceiling?.one_coat || pricing?.ceiling?.painting?.one_coat?.price || 0) : 0,
+  //                 two_coats: room.ceiling_treatments?.two_coats ?
+  //                   ceilingArea * (pricing?.ceiling?.two_coats || pricing?.ceiling?.painting?.two_coat?.price || 0) : 0
+  //               }).reduce((sum, cost) => sum + cost, 0)
+  //             }
+  //           };
+  //         }),
+
+  //         // 🔥 FIXED: Process interior items with complete details from your project
+  //         interior_items: Object.entries(interiorItems).reduce((acc, [type, items]) => {
+  //           if (items.length > 0) {
+  //             acc[type] = items.map(item => {
+  //               console.log(`Processing interior ${type}:`, item);
+
+  //               return {
+  //                 id: item.id,
+  //                 type: type,
+  //                 description: item.description || '',
+  //                 quantity: parseFloat(item.quantity) || 1,
+
+  //                 // Include actual item specifications from your project
+  //                 ...(type === 'doors' && {
+  //                   door_type: item.doorType || 'inside',
+  //                   condition: item.condition || 'level_1',
+  //                   condition_name: getConditionName(item.condition || 'level_1')
+  //                 }),
+
+  //                 ...(type.includes('Windows') && {
+  //                   size: item.size || 'medium',
+  //                   condition: item.condition || 'level_1',
+  //                   condition_name: getConditionName(item.condition || 'level_1')
+  //                 }),
+
+  //                 ...(['stairs', 'radiators', 'skirtingBoards', 'otherItems'].includes(type) && {
+  //                   condition: item.condition || 'level_1',
+  //                   condition_name: getConditionName(item.condition || 'level_1')
+  //                 }),
+
+  //                 // Calculate actual pricing
+  //                 unit_price: getInteriorPrice(type, item),
+  //                 total_cost: (parseFloat(item.quantity) || 1) * getInteriorPrice(type, item),
+
+  //                 // Include all item details from your project
+  //                 notes: item.notes || '',
+  //                 location: item.location || '',
+  //                 material: item.material || '',
+  //                 finish: item.finish || ''
+  //               };
+  //             });
+  //           }
+  //           return acc;
+  //         }, {}),
+
+  //         // 🔥 FIXED: Process exterior items with complete details from your project
+  //         exterior_items: Object.entries(exteriorItems).reduce((acc, [type, items]) => {
+  //           if (items.length > 0) {
+  //             acc[type] = items.map(item => {
+  //               console.log(`Processing exterior ${type}:`, item);
+
+  //               return {
+  //                 id: item.id,
+  //                 type: type,
+  //                 description: item.description || '',
+  //                 quantity: parseFloat(item.quantity) || 1,
+
+  //                 // Include actual item specifications from your project
+  //                 ...(type === 'doors' && {
+  //                   door_type: item.doorType || 'front',
+  //                   condition: item.condition || 'level_1',
+  //                   condition_name: getConditionName(item.condition || 'level_1')
+  //                 }),
+
+  //                 ...(type.includes('Windows') && {
+  //                   size: item.size || 'medium',
+  //                   condition: item.condition || 'level_1',
+  //                   condition_name: getConditionName(item.condition || 'level_1')
+  //                 }),
+
+  //                 ...(['fasciaBoards', 'rainPipe', 'otherItems'].includes(type) && {
+  //                   condition: item.condition || 'level_1',
+  //                   condition_name: getConditionName(item.condition || 'level_1')
+  //                 }),
+
+  //                 // Calculate actual pricing
+  //                 unit_price: getExteriorPrice(type, item),
+  //                 total_cost: (parseFloat(item.quantity) || 1) * getExteriorPrice(type, item),
+
+  //                 // Include all item details from your project
+  //                 notes: item.notes || '',
+  //                 location: item.location || '',
+  //                 material: item.material || '',
+  //                 finish: item.finish || '',
+  //                 weatherproof: item.weatherproof || false
+  //               };
+  //             });
+  //           }
+  //           return acc;
+  //         }, {}),
+
+  //         // 🔥 FIXED: Process special jobs with actual steps and details from your project
+  //         special_jobs: specialJobs.map(job => {
+  //           console.log('Processing special job:', job);
+
+  //           return {
+  //             id: job.id,
+  //             type: job.type || 'custom',
+  //             name: job.name || 'Custom Work',
+  //             description: job.description || '',
+  //             category: job.category || 'General',
+
+  //             // Quantity and pricing
+  //             quantity: parseFloat(job.quantity) || 1,
+  //             unit: job.unit || 'job',
+  //             unit_price: parseFloat(job.unitPrice) || 0,
+  //             total_cost: (parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0),
+
+  //             // Include all job details from your project
+  //             location: job.location || '',
+  //             materials_included: job.materialsIncluded !== false,
+  //             estimated_hours: parseFloat(job.estimatedHours) || 0,
+  //             difficulty: job.difficulty || 'Standard',
+  //             notes: job.notes || '',
+
+  //             // 🔥 CRITICAL FIX: Include the actual process steps for special jobs
+  //             steps: job.steps || []
+  //           };
+  //         }),
+
+  //         // 🔥 Project summary with updated data for Total Wall Area approach
+  //         summary: {
+  //           total_rooms: rooms.length,
+  //           // 🔥 Updated: Calculate total wall area from walls_surface_m2
+  //           total_wall_area: rooms.reduce((sum, room) => sum + (parseFloat(room.walls_surface_m2) || 0), 0),
+  //           // 🔥 Updated: Calculate total ceiling area from area_m2
+  //           total_ceiling_area: rooms.reduce((sum, room) => sum + (parseFloat(room.area_m2) || 0), 0),
+  //           total_interior_items: Object.values(interiorItems).reduce((sum, items) => sum + items.length, 0),
+  //           total_exterior_items: Object.values(exteriorItems).reduce((sum, items) => sum + items.length, 0),
+  //           total_special_jobs: specialJobs.length,
+  //           project_notes: notes || ''
+  //         }
+  //       },
+
+  //       // 🔥 FIXED: Use actual pricing from your pricing system with fallbacks
+  //       wall_sanding_price: pricing?.walls?.sanding_filling || pricing?.walls?.sanding?.light?.price || 5.00,
+  //       wall_priming_price: pricing?.walls?.priming || pricing?.walls?.priming?.one_coat?.price || 4.50,
+  //       wall_one_coat_price: pricing?.walls?.one_coat || pricing?.walls?.painting?.one_coat?.price || 6.00,
+  //       wall_two_coats_price: pricing?.walls?.two_coats || pricing?.walls?.painting?.two_coat?.price || 9.50,
+
+  //       ceiling_prep_price: pricing?.ceiling?.sanding_filling || pricing?.ceiling?.preparation?.light?.price || 4.00,
+  //       ceiling_priming_price: pricing?.ceiling?.priming || pricing?.ceiling?.preparation?.light?.price || 4.00,
+  //       ceiling_one_coat_price: pricing?.ceiling?.one_coat || pricing?.ceiling?.painting?.one_coat?.price || 5.50,
+  //       ceiling_two_coats_price: pricing?.ceiling?.two_coats || pricing?.ceiling?.painting?.two_coat?.price || 8.50,
+
+  //       cleanup_fee: 150.00
+  //     };
+
+  //     console.log('🔄 Sending quote data to backend (Total Wall Area approach):', quoteData);
+
+  //     // Generate quote with comprehensive data
+  //     const response = await api.post(`/projects/${id}/quote`, quoteData);
+
+  //     console.log('✅ Comprehensive quote generated:', response.data);
+
+  //     // Send email
+  //     await api.post(`/projects/${id}/email-quote`, {
+  //       client_email: project.client_email,
+  //       client_name: project.client_name,
+  //       project_name: project.name,
+  //       total_cost: totalCosts.total,
+  //       quote_id: response.data.quote_id
+  //     });
+
+
+  //     // Redirect to quote preview
+  //     navigate(`/quotes/${response.data.quote_id}`, {
+  //       replace: true
+  //     });
+
+  //     showSuccessMessage('Comprehensive quote with Total Wall Area approach generated and emailed successfully!');
+
+  //   } catch (err) {
+  //     const errorMessage = err.response?.data?.error || err.message || 'Failed to generate quote or send email';
+  //     console.error('❌ Comprehensive Quote Generation Error:', err);
+  //     setError(`Quote generation failed: ${errorMessage}`);
+  //   } finally {
+  //     setGenerating(false);
+  //   }
+  // };
+
+  // Helper functions for quote generation
+
+  const woodworkConditions = {
+    level_1: {
+      name: 'New/Pre-primed',
+      steps: [
+        'Clean surface (dust and degrease with sugar soap)',
+        'Light sanding to key the surface',
+        'Prime if bare wood (skip if factory-primed and in good condition)',
+        'Apply topcoat'
+      ]
+    },
+    level_2: {
+      name: 'Good Condition',
+      steps: [
+        'Clean with sugar soap',
+        'Light sand to dull surface',
+        'Fill small dents or imperfections (if needed)',
+        'Spot prime glossy or bare areas',
+        'Apply topcoat'
+      ]
+    },
+    level_3: {
+      name: 'Moderate Wear',
+      steps: [
+        'Scrape away all loose/flaking paint',
+        'Sand surface to smooth out rough areas',
+        'Fill cracks or gouges with appropriate filler',
+        'Spot prime exposed wood',
+        'Final sand before painting',
+        'Apply topcoat'
+      ]
+    },
+    level_4: {
+      name: 'Heavy Damage',
+      steps: [
+        'Cut out or remove rotten areas (if applicable)',
+        'Apply wood hardener to soft sections',
+        'Fill deep damage with 2-part wood filler',
+        'Sand thoroughly to level surface',
+        'Apply full primer coat to all areas',
+        'Apply topcoat'
+      ]
+    }
+  };
+
+  const specialJobTypes = {
+    water_damage: {
+      name: 'Water Damage/Leak Repair',
+      steps: [
+        'Identify and dry affected area completely (use moisture meter if needed)',
+        'Scrape off bubbling/loose paint',
+        'Treat any mold/mildew with anti-fungal wash',
+        'Fill any damaged plaster',
+        'Sand smooth and apply stain-block primer'
+      ]
+    },
+    fire_smoke_damage: {
+      name: 'Fire/Smoke Damage',
+      steps: [
+        'Wash all surfaces with degreaser/sugar soap',
+        'Remove soot and smoke residue',
+        'Sand walls if surface is uneven',
+        'Apply stain- and odour-blocking primer',
+        'Repaint with high-opacity paint'
+      ]
+    },
+    mold_remediation: {
+      name: 'Mold Remediation',
+      steps: [
+        'Kill mold using specialist anti-mold treatment',
+        'Scrape and remove affected surface area',
+        'Fill any surface damage',
+        'Sand and apply mold-resistant primer',
+        'Use anti-mold paint where necessary'
+      ]
+    },
+    nicotine_stained_walls: {
+      name: 'Nicotine Stained Walls',
+      steps: [
+        'Degrease walls using sugar soap',
+        'Rinse thoroughly and allow to dry',
+        'Apply a stain-blocking primer',
+        'Use at least two coats of emulsion for coverage'
+      ]
+    },
+    uneven_wall_surfaces: {
+      name: 'Uneven Wall Surfaces',
+      steps: [
+        'Assess whether skimming is needed or just filler',
+        'Fill deep imperfections',
+        'Sand smooth',
+        '(Optional) Apply bonding agent',
+        'If badly uneven, apply full skim coat and allow to dry before painting'
+      ]
+    }
+  };
+
+  // const generateQuoteAndEmail = async () => {
+  //   if (!project) {
+  //     setError('Please save the project first');
+  //     return;
+  //   }
+
+  //   if (!project.client_email) {
+  //     setError('Client email is required to send the quote');
+  //     return;
+  //   }
+
+  //   setGenerating(true);
+  //   setError('');
+
+  //   try {
+  //     // Save measurements first
+  //     await saveMeasurements();
+
+  //     const hasRoomMeasurements = rooms.length > 0;
+  //     const hasInteriorItems = Object.values(interiorItems).some(items => items.length > 0);
+  //     const hasExteriorItems = Object.values(exteriorItems).some(items => items.length > 0);
+  //     const hasSpecialJobs = specialJobs.length > 0;
+
+  //     if (!hasRoomMeasurements && !hasInteriorItems && !hasExteriorItems && !hasSpecialJobs) {
+  //       setError('Please add some measurements before generating a quote');
+  //       return;
+  //     }
+
+  //     console.log('🔄 Generating quote with complete interior/exterior details and preparation steps...');
+
+  //     // 🔥 FIXED: Quote data with complete preparation steps
+  //     const quoteData = {
+  //       title: `Comprehensive Paint Quote - ${project.name}`,
+  //       description: `Detailed painting quote for ${project.name} including room-by-room breakdown with complete preparation steps`,
+  //       valid_days: 30,
+
+  //       // Room measurements (same as before)
+  //       measurement_details: {
+  //         rooms: rooms.map(room => {
+  //           const wallArea = parseFloat(room.walls_surface_m2) || 0;
+  //           const ceilingArea = parseFloat(room.area_m2) || 0;
+
+  //           return {
+  //             id: room.id,
+  //             name: room.name,
+  //             type: room.type || 'general',
+  //             total_wall_area: wallArea,
+  //             total_ceiling_area: ceilingArea,
+  //             wall_treatments: {
+  //               sanding_filling: Boolean(room.wall_treatments?.sanding_filling),
+  //               priming: Boolean(room.wall_treatments?.priming),
+  //               one_coat: Boolean(room.wall_treatments?.one_coat),
+  //               two_coats: Boolean(room.wall_treatments?.two_coats)
+  //             },
+  //             ceiling_treatments: {
+  //               sanding_filling: Boolean(room.ceiling_treatments?.sanding_filling),
+  //               priming: Boolean(room.ceiling_treatments?.priming),
+  //               one_coat: Boolean(room.ceiling_treatments?.one_coat),
+  //               two_coats: Boolean(room.ceiling_treatments?.two_coats)
+  //             }
+  //           };
+  //         }),
+
+  //         // 🔥 FIXED: Interior items with selective preparation steps
+  //         interior_items: Object.entries(interiorItems).reduce((acc, [type, items]) => {
+  //           if (items.length > 0) {
+  //             acc[type] = items.map(item => {
+  //               // Only apply woodwork conditions to items that actually use them
+  //               const hasConditions = ['doors', 'fixedWindows', 'turnWindows', 'skirtingBoards', 'otherItems'].includes(type);
+  //               const condition = hasConditions ? (item.condition || 'level_1') : null;
+  //               const conditionData = hasConditions ? woodworkConditions[condition] : null;
+
+  //               const itemData = {
+  //                 id: item.id,
+  //                 type: type,
+  //                 description: item.description || getItemTypeLabel(type),
+  //                 quantity: parseFloat(item.quantity) || 1,
+  //                 unit_price: getInteriorPrice(type, item),
+  //                 total_cost: (parseFloat(item.quantity) || 1) * getInteriorPrice(type, item),
+  //                 notes: item.notes || '',
+  //                 location: item.location || '',
+  //                 material: item.material || '',
+  //                 finish: item.finish || ''
+  //               };
+
+  //               // Add condition-specific data only for items that use conditions
+  //               if (type === 'doors') {
+  //                 itemData.door_type = item.doorType || 'inside';
+  //                 itemData.condition = condition;
+  //                 itemData.condition_name = conditionData?.name || 'Standard';
+  //                 itemData.steps = conditionData?.steps || [];
+  //               } else if (type.includes('Windows')) {
+  //                 itemData.size = item.size || 'medium';
+  //                 itemData.condition = condition;
+  //                 itemData.condition_name = conditionData?.name || 'Standard';
+  //                 itemData.steps = conditionData?.steps || [];
+  //               } else if (type === 'skirtingBoards' || type === 'otherItems') {
+  //                 itemData.condition = condition;
+  //                 itemData.condition_name = conditionData?.name || 'Standard';
+  //                 itemData.steps = conditionData?.steps || [];
+  //               } else {
+  //                 // For stairs, radiators - no conditions, no preparation steps
+  //                 itemData.steps = [];
+  //               }
+
+  //               return itemData;
+  //             });
+  //           }
+  //           return acc;
+  //         }, {}),
+
+  //         // 🔥 FIXED: Exterior items with selective preparation steps
+  //         exterior_items: Object.entries(exteriorItems).reduce((acc, [type, items]) => {
+  //           if (items.length > 0) {
+  //             acc[type] = items.map(item => {
+  //               // Only apply woodwork conditions to items that actually use them
+  //               const hasConditions = ['doors', 'fixedWindows', 'turnWindows', 'dormerWindows', 'fasciaBoards', 'otherItems'].includes(type);
+  //               const condition = hasConditions ? (item.condition || 'level_1') : null;
+  //               const conditionData = hasConditions ? woodworkConditions[condition] : null;
+
+  //               const itemData = {
+  //                 id: item.id,
+  //                 type: type,
+  //                 description: item.description || getItemTypeLabel(type),
+  //                 quantity: parseFloat(item.quantity) || 1,
+  //                 unit_price: getExteriorPrice(type, item),
+  //                 total_cost: (parseFloat(item.quantity) || 1) * getExteriorPrice(type, item),
+  //                 notes: item.notes || '',
+  //                 location: item.location || '',
+  //                 material: item.material || '',
+  //                 finish: item.finish || '',
+  //                 weatherproof: item.weatherproof || false
+  //               };
+
+  //               // Add condition-specific data only for items that use conditions
+  //               if (type === 'doors') {
+  //                 itemData.door_type = item.doorType || 'front';
+  //                 itemData.condition = condition;
+  //                 itemData.condition_name = conditionData?.name || 'Standard';
+  //                 itemData.steps = conditionData?.steps || [];
+  //               } else if (type.includes('Windows') || type === 'dormerWindows') {
+  //                 itemData.size = item.size || 'medium';
+  //                 itemData.condition = condition;
+  //                 itemData.condition_name = conditionData?.name || 'Standard';
+  //                 itemData.steps = conditionData?.steps || [];
+  //               } else if (type === 'fasciaBoards' || type === 'otherItems') {
+  //                 itemData.condition = condition;
+  //                 itemData.condition_name = conditionData?.name || 'Standard';
+  //                 itemData.steps = conditionData?.steps || [];
+  //               } else {
+  //                 // For rainPipe - no conditions, no preparation steps
+  //                 itemData.steps = [];
+  //               }
+
+  //               return itemData;
+  //             });
+  //           }
+  //           return acc;
+  //         }, {}),
+
+  //         // Special jobs with steps
+  //         special_jobs: specialJobs.map(job => ({
+  //           id: job.id,
+  //           type: job.type || 'custom',
+  //           name: job.name || 'Custom Work',
+  //           description: job.description || '',
+  //           category: job.category || 'General',
+  //           quantity: parseFloat(job.quantity) || 1,
+  //           unit: job.unit || 'job',
+  //           unit_price: parseFloat(job.unitPrice) || 0,
+  //           total_cost: (parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0),
+  //           location: job.location || '',
+  //           materials_included: job.materialsIncluded !== false,
+  //           estimated_hours: parseFloat(job.estimatedHours) || 0,
+  //           difficulty: job.difficulty || 'Standard',
+  //           notes: job.notes || '',
+  //           steps: job.steps || [] // Include custom steps from special jobs
+  //         })),
+
+  //         // Project summary
+  //         summary: {
+  //           total_rooms: rooms.length,
+  //           total_wall_area: rooms.reduce((sum, room) => sum + (parseFloat(room.walls_surface_m2) || 0), 0),
+  //           total_ceiling_area: rooms.reduce((sum, room) => sum + (parseFloat(room.area_m2) || 0), 0),
+  //           total_interior_items: Object.values(interiorItems).reduce((sum, items) => sum + items.length, 0),
+  //           total_exterior_items: Object.values(exteriorItems).reduce((sum, items) => sum + items.length, 0),
+  //           total_special_jobs: specialJobs.length,
+  //           project_notes: notes || ''
+  //         }
+  //       },
+
+  //       // Pricing information
+  //       wall_sanding_price: pricing?.walls?.sanding_filling || pricing?.walls?.sanding?.light?.price || 5.00,
+  //       wall_priming_price: pricing?.walls?.priming || pricing?.walls?.priming?.one_coat?.price || 4.50,
+  //       wall_one_coat_price: pricing?.walls?.one_coat || pricing?.walls?.painting?.one_coat?.price || 6.00,
+  //       wall_two_coats_price: pricing?.walls?.two_coats || pricing?.walls?.painting?.two_coat?.price || 9.50,
+
+  //       ceiling_prep_price: pricing?.ceiling?.sanding_filling || pricing?.ceiling?.preparation?.light?.price || 4.00,
+  //       ceiling_priming_price: pricing?.ceiling?.priming || pricing?.ceiling?.preparation?.light?.price || 4.00,
+  //       ceiling_one_coat_price: pricing?.ceiling?.one_coat || pricing?.ceiling?.painting?.one_coat?.price || 5.50,
+  //       ceiling_two_coats_price: pricing?.ceiling?.two_coats || pricing?.ceiling?.painting?.two_coat?.price || 8.50,
+
+  //       cleanup_fee: 150.00
+  //     };
+
+  //     console.log('🔄 Sending quote data with complete preparation steps:', quoteData);
+
+  //     // Generate quote
+  //     const response = await api.post(`/projects/${id}/quote`, quoteData);
+
+  //     console.log('✅ Complete quote generated with preparation steps:', response.data);
+
+  //     // Send email
+  //     await api.post(`/projects/${id}/email-quote`, {
+  //       client_email: project.client_email,
+  //       client_name: project.client_name,
+  //       project_name: project.name,
+  //       total_cost: totalCosts.total,
+  //       quote_id: response.data.quote_id
+  //     });
+
+  //     // Redirect to quote preview
+  //     navigate(`/quotes/${response.data.quote_id}`, {
+  //       replace: true
+  //     });
+
+  //     showSuccessMessage('Complete quote with preparation steps generated and emailed successfully!');
+
+  //   } catch (err) {
+  //     const errorMessage = err.response?.data?.error || err.message || 'Failed to generate quote or send email';
+  //     console.error('❌ Quote Generation Error:', err);
+  //     setError(`Quote generation failed: ${errorMessage}`);
+  //   } finally {
+  //     setGenerating(false);
+  //   }
+  // };
+
   const generateQuoteAndEmail = async () => {
     if (!project) {
       setError('Please save the project first');
@@ -664,20 +1302,17 @@ const ProjectDetails = () => {
         return;
       }
 
-      console.log('🔄 Generating quote with actual project data (Total Wall Area approach)...');
+      console.log('🔄 Generating quote with complete interior/exterior details and special job steps...');
 
-      // 🔥 FIXED: Quote data for the new Total Wall Area approach
+      // 🔥 FIXED: Quote data with complete preparation steps
       const quoteData = {
         title: `Comprehensive Paint Quote - ${project.name}`,
-        description: `Detailed painting quote for ${project.name} including room-by-room breakdown with total wall area measurements and treatment selections`,
+        description: `Detailed painting quote for ${project.name} including room-by-room breakdown with complete preparation steps`,
         valid_days: 30,
 
-        // 🔥 CRITICAL FIX: Updated for Total Wall Area approach
+        // Room measurements (same as before)
         measurement_details: {
-          // 🏠 Process rooms with Total Wall Area approach
           rooms: rooms.map(room => {
-            console.log(`Processing room: ${room.name}`, room);
-
             const wallArea = parseFloat(room.walls_surface_m2) || 0;
             const ceilingArea = parseFloat(room.area_m2) || 0;
 
@@ -685,173 +1320,124 @@ const ProjectDetails = () => {
               id: room.id,
               name: room.name,
               type: room.type || 'general',
-
-              // 🔥 NEW: Total area approach (replaces individual walls)
               total_wall_area: wallArea,
               total_ceiling_area: ceilingArea,
-
-              // 🔥 Process wall treatments with actual selected treatments
               wall_treatments: {
                 sanding_filling: Boolean(room.wall_treatments?.sanding_filling),
                 priming: Boolean(room.wall_treatments?.priming),
                 one_coat: Boolean(room.wall_treatments?.one_coat),
                 two_coats: Boolean(room.wall_treatments?.two_coats)
               },
-
-              // 🔥 Calculate wall costs for selected treatments only
-              wall_costs: {
-                sanding_filling: room.wall_treatments?.sanding_filling ?
-                  wallArea * (pricing?.walls?.sanding_filling || pricing?.walls?.sanding?.light?.price || 0) : 0,
-                priming: room.wall_treatments?.priming ?
-                  wallArea * (pricing?.walls?.priming || pricing?.walls?.priming?.one_coat?.price || 0) : 0,
-                one_coat: room.wall_treatments?.one_coat ?
-                  wallArea * (pricing?.walls?.one_coat || pricing?.walls?.painting?.one_coat?.price || 0) : 0,
-                two_coats: room.wall_treatments?.two_coats ?
-                  wallArea * (pricing?.walls?.two_coats || pricing?.walls?.painting?.two_coat?.price || 0) : 0
-              },
-
-              // 🔥 Process ceiling treatments with actual selected treatments
               ceiling_treatments: {
                 sanding_filling: Boolean(room.ceiling_treatments?.sanding_filling),
                 priming: Boolean(room.ceiling_treatments?.priming),
                 one_coat: Boolean(room.ceiling_treatments?.one_coat),
                 two_coats: Boolean(room.ceiling_treatments?.two_coats)
-              },
-
-              // 🔥 Calculate ceiling costs for selected treatments only
-              ceiling_costs: {
-                sanding_filling: room.ceiling_treatments?.sanding_filling ?
-                  ceilingArea * (pricing?.ceiling?.sanding_filling || pricing?.ceiling?.preparation?.light?.price || 0) : 0,
-                priming: room.ceiling_treatments?.priming ?
-                  ceilingArea * (pricing?.ceiling?.priming || pricing?.ceiling?.preparation?.light?.price || 0) : 0,
-                one_coat: room.ceiling_treatments?.one_coat ?
-                  ceilingArea * (pricing?.ceiling?.one_coat || pricing?.ceiling?.painting?.one_coat?.price || 0) : 0,
-                two_coats: room.ceiling_treatments?.two_coats ?
-                  ceilingArea * (pricing?.ceiling?.two_coats || pricing?.ceiling?.painting?.two_coat?.price || 0) : 0
-              },
-
-              // 🔥 Room totals
-              totals: {
-                total_wall_area: wallArea,
-                total_ceiling_area: ceilingArea,
-                wall_total: Object.values({
-                  sanding_filling: room.wall_treatments?.sanding_filling ?
-                    wallArea * (pricing?.walls?.sanding_filling || pricing?.walls?.sanding?.light?.price || 0) : 0,
-                  priming: room.wall_treatments?.priming ?
-                    wallArea * (pricing?.walls?.priming || pricing?.walls?.priming?.one_coat?.price || 0) : 0,
-                  one_coat: room.wall_treatments?.one_coat ?
-                    wallArea * (pricing?.walls?.one_coat || pricing?.walls?.painting?.one_coat?.price || 0) : 0,
-                  two_coats: room.wall_treatments?.two_coats ?
-                    wallArea * (pricing?.walls?.two_coats || pricing?.walls?.painting?.two_coat?.price || 0) : 0
-                }).reduce((sum, cost) => sum + cost, 0),
-                ceiling_total: Object.values({
-                  sanding_filling: room.ceiling_treatments?.sanding_filling ?
-                    ceilingArea * (pricing?.ceiling?.sanding_filling || pricing?.ceiling?.preparation?.light?.price || 0) : 0,
-                  priming: room.ceiling_treatments?.priming ?
-                    ceilingArea * (pricing?.ceiling?.priming || pricing?.ceiling?.preparation?.light?.price || 0) : 0,
-                  one_coat: room.ceiling_treatments?.one_coat ?
-                    ceilingArea * (pricing?.ceiling?.one_coat || pricing?.ceiling?.painting?.one_coat?.price || 0) : 0,
-                  two_coats: room.ceiling_treatments?.two_coats ?
-                    ceilingArea * (pricing?.ceiling?.two_coats || pricing?.ceiling?.painting?.two_coat?.price || 0) : 0
-                }).reduce((sum, cost) => sum + cost, 0)
               }
             };
           }),
 
-          // 🔥 FIXED: Process interior items with complete details from your project
+          // 🔥 FIXED: Interior items with selective preparation steps
           interior_items: Object.entries(interiorItems).reduce((acc, [type, items]) => {
             if (items.length > 0) {
               acc[type] = items.map(item => {
-                console.log(`Processing interior ${type}:`, item);
+                // Only apply woodwork conditions to items that actually use them
+                const hasConditions = ['doors', 'fixedWindows', 'turnWindows', 'skirtingBoards', 'otherItems'].includes(type);
+                const condition = hasConditions ? (item.condition || 'level_1') : null;
+                const conditionData = hasConditions ? woodworkConditions[condition] : null;
 
-                return {
+                const itemData = {
                   id: item.id,
                   type: type,
-                  description: item.description || '',
+                  description: item.description || getItemTypeLabel(type),
                   quantity: parseFloat(item.quantity) || 1,
-
-                  // Include actual item specifications from your project
-                  ...(type === 'doors' && {
-                    door_type: item.doorType || 'inside',
-                    condition: item.condition || 'level_1',
-                    condition_name: getConditionName(item.condition || 'level_1')
-                  }),
-
-                  ...(type.includes('Windows') && {
-                    size: item.size || 'medium',
-                    condition: item.condition || 'level_1',
-                    condition_name: getConditionName(item.condition || 'level_1')
-                  }),
-
-                  ...(['stairs', 'radiators', 'skirtingBoards', 'otherItems'].includes(type) && {
-                    condition: item.condition || 'level_1',
-                    condition_name: getConditionName(item.condition || 'level_1')
-                  }),
-
-                  // Calculate actual pricing
                   unit_price: getInteriorPrice(type, item),
                   total_cost: (parseFloat(item.quantity) || 1) * getInteriorPrice(type, item),
-
-                  // Include all item details from your project
                   notes: item.notes || '',
                   location: item.location || '',
                   material: item.material || '',
                   finish: item.finish || ''
                 };
+
+                // Add condition-specific data only for items that use conditions
+                if (type === 'doors') {
+                  itemData.door_type = item.doorType || 'inside';
+                  itemData.condition = condition;
+                  itemData.condition_name = conditionData?.name || 'Standard';
+                  itemData.steps = conditionData?.steps || [];
+                } else if (type.includes('Windows')) {
+                  itemData.size = item.size || 'medium';
+                  itemData.condition = condition;
+                  itemData.condition_name = conditionData?.name || 'Standard';
+                  itemData.steps = conditionData?.steps || [];
+                } else if (type === 'skirtingBoards' || type === 'otherItems') {
+                  itemData.condition = condition;
+                  itemData.condition_name = conditionData?.name || 'Standard';
+                  itemData.steps = conditionData?.steps || [];
+                } else {
+                  // For stairs, radiators - no conditions, no preparation steps
+                  itemData.steps = [];
+                }
+
+                return itemData;
               });
             }
             return acc;
           }, {}),
 
-          // 🔥 FIXED: Process exterior items with complete details from your project
+          // 🔥 FIXED: Exterior items with selective preparation steps
           exterior_items: Object.entries(exteriorItems).reduce((acc, [type, items]) => {
             if (items.length > 0) {
               acc[type] = items.map(item => {
-                console.log(`Processing exterior ${type}:`, item);
+                // Only apply woodwork conditions to items that actually use them
+                const hasConditions = ['doors', 'fixedWindows', 'turnWindows', 'dormerWindows', 'fasciaBoards', 'otherItems'].includes(type);
+                const condition = hasConditions ? (item.condition || 'level_1') : null;
+                const conditionData = hasConditions ? woodworkConditions[condition] : null;
 
-                return {
+                const itemData = {
                   id: item.id,
                   type: type,
-                  description: item.description || '',
+                  description: item.description || getItemTypeLabel(type),
                   quantity: parseFloat(item.quantity) || 1,
-
-                  // Include actual item specifications from your project
-                  ...(type === 'doors' && {
-                    door_type: item.doorType || 'front',
-                    condition: item.condition || 'level_1',
-                    condition_name: getConditionName(item.condition || 'level_1')
-                  }),
-
-                  ...(type.includes('Windows') && {
-                    size: item.size || 'medium',
-                    condition: item.condition || 'level_1',
-                    condition_name: getConditionName(item.condition || 'level_1')
-                  }),
-
-                  ...(['fasciaBoards', 'rainPipe', 'otherItems'].includes(type) && {
-                    condition: item.condition || 'level_1',
-                    condition_name: getConditionName(item.condition || 'level_1')
-                  }),
-
-                  // Calculate actual pricing
                   unit_price: getExteriorPrice(type, item),
                   total_cost: (parseFloat(item.quantity) || 1) * getExteriorPrice(type, item),
-
-                  // Include all item details from your project
                   notes: item.notes || '',
                   location: item.location || '',
                   material: item.material || '',
                   finish: item.finish || '',
                   weatherproof: item.weatherproof || false
                 };
+
+                // Add condition-specific data only for items that use conditions
+                if (type === 'doors') {
+                  itemData.door_type = item.doorType || 'front';
+                  itemData.condition = condition;
+                  itemData.condition_name = conditionData?.name || 'Standard';
+                  itemData.steps = conditionData?.steps || [];
+                } else if (type.includes('Windows') || type === 'dormerWindows') {
+                  itemData.size = item.size || 'medium';
+                  itemData.condition = condition;
+                  itemData.condition_name = conditionData?.name || 'Standard';
+                  itemData.steps = conditionData?.steps || [];
+                } else if (type === 'fasciaBoards' || type === 'otherItems') {
+                  itemData.condition = condition;
+                  itemData.condition_name = conditionData?.name || 'Standard';
+                  itemData.steps = conditionData?.steps || [];
+                } else {
+                  // For rainPipe - no conditions, no preparation steps
+                  itemData.steps = [];
+                }
+
+                return itemData;
               });
             }
             return acc;
           }, {}),
 
-          // 🔥 FIXED: Process special jobs with actual steps and details from your project
+          // 🔥 FIXED: Special jobs with their specific process steps
           special_jobs: specialJobs.map(job => {
-            console.log('Processing special job:', job);
+            // Get the specific steps for this job type
+            const jobTypeData = specialJobTypes[job.type];
 
             return {
               id: job.id,
@@ -859,31 +1445,24 @@ const ProjectDetails = () => {
               name: job.name || 'Custom Work',
               description: job.description || '',
               category: job.category || 'General',
-
-              // Quantity and pricing
               quantity: parseFloat(job.quantity) || 1,
               unit: job.unit || 'job',
               unit_price: parseFloat(job.unitPrice) || 0,
               total_cost: (parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0),
-
-              // Include all job details from your project
               location: job.location || '',
               materials_included: job.materialsIncluded !== false,
               estimated_hours: parseFloat(job.estimatedHours) || 0,
               difficulty: job.difficulty || 'Standard',
               notes: job.notes || '',
-
-              // 🔥 CRITICAL FIX: Include the actual process steps for special jobs
-              steps: job.steps || []
+              // 🔥 CRITICAL: Include the specific process steps for this special job type
+              steps: jobTypeData?.steps || job.steps || []
             };
           }),
 
-          // 🔥 Project summary with updated data for Total Wall Area approach
+          // Project summary
           summary: {
             total_rooms: rooms.length,
-            // 🔥 Updated: Calculate total wall area from walls_surface_m2
             total_wall_area: rooms.reduce((sum, room) => sum + (parseFloat(room.walls_surface_m2) || 0), 0),
-            // 🔥 Updated: Calculate total ceiling area from area_m2
             total_ceiling_area: rooms.reduce((sum, room) => sum + (parseFloat(room.area_m2) || 0), 0),
             total_interior_items: Object.values(interiorItems).reduce((sum, items) => sum + items.length, 0),
             total_exterior_items: Object.values(exteriorItems).reduce((sum, items) => sum + items.length, 0),
@@ -892,7 +1471,7 @@ const ProjectDetails = () => {
           }
         },
 
-        // 🔥 FIXED: Use actual pricing from your pricing system with fallbacks
+        // Pricing information
         wall_sanding_price: pricing?.walls?.sanding_filling || pricing?.walls?.sanding?.light?.price || 5.00,
         wall_priming_price: pricing?.walls?.priming || pricing?.walls?.priming?.one_coat?.price || 4.50,
         wall_one_coat_price: pricing?.walls?.one_coat || pricing?.walls?.painting?.one_coat?.price || 6.00,
@@ -906,12 +1485,12 @@ const ProjectDetails = () => {
         cleanup_fee: 150.00
       };
 
-      console.log('🔄 Sending quote data to backend (Total Wall Area approach):', quoteData);
+      console.log('🔄 Sending quote data with complete preparation steps and special job steps:', quoteData);
 
-      // Generate quote with comprehensive data
+      // Generate quote
       const response = await api.post(`/projects/${id}/quote`, quoteData);
 
-      console.log('✅ Comprehensive quote generated:', response.data);
+      console.log('✅ Complete quote generated with all process steps:', response.data);
 
       // Send email
       await api.post(`/projects/${id}/email-quote`, {
@@ -921,25 +1500,41 @@ const ProjectDetails = () => {
         total_cost: totalCosts.total,
         quote_id: response.data.quote_id
       });
-      
 
       // Redirect to quote preview
       navigate(`/quotes/${response.data.quote_id}`, {
         replace: true
       });
 
-      showSuccessMessage('Comprehensive quote with Total Wall Area approach generated and emailed successfully!');
+      showSuccessMessage('Complete quote with all preparation and special job steps generated and emailed successfully!');
 
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.message || 'Failed to generate quote or send email';
-      console.error('❌ Comprehensive Quote Generation Error:', err);
+      console.error('❌ Quote Generation Error:', err);
       setError(`Quote generation failed: ${errorMessage}`);
     } finally {
       setGenerating(false);
     }
   };
 
-  // Helper functions for quote generation
+  const getItemTypeLabel = (type) => {
+    const labels = {
+      doors: 'Door',
+      fixedWindows: 'Fixed Window',
+      turnWindows: 'Turn Window',
+      dormerWindows: 'Dormer Window',
+      stairs: 'Stair',
+      radiators: 'Radiator',
+      skirtingBoards: 'Skirting Board',
+      fasciaBoards: 'Fascia Board',
+      rainPipe: 'Rain Pipe',
+      otherItems: 'Other Item'
+    };
+    return labels[type] || type.charAt(0).toUpperCase() + type.slice(1);
+  };
+
+
+
   const getConditionName = (condition) => {
     const conditionMap = {
       'level_1': 'New/Pre-primed',

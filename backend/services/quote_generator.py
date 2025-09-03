@@ -1,19 +1,32 @@
-# services/quote_generator.py - Complete Fixed Version
+# services/quote_generator.py - Complete Fixed Version with Logo and Full Interior/Exterior Details
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 import logging
 from weasyprint import HTML, CSS
 from jinja2 import Template
+import requests
+from io import BytesIO
 
 class QuoteGenerator:
-    """Enhanced quote PDF generator matching the professional sample format"""
+    """Enhanced quote PDF generator with logo and complete interior/exterior details"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.logo_url = "https://flotto.jaytechprinterimports.co.ke/images/flotto_logo.png"
+    
+    def _download_logo(self):
+        """Download and cache the logo image"""
+        try:
+            response = requests.get(self.logo_url, timeout=10)
+            response.raise_for_status()
+            return response.content
+        except Exception as e:
+            self.logger.warning(f"Failed to download logo: {e}")
+            return None
     
     def generate_enhanced_quote_pdf(self, quote, project, company, output_dir: str) -> str:
-        """Generate a professional PDF quote matching the sample format"""
+        """Generate a professional PDF quote with logo and complete details"""
         try:
             os.makedirs(output_dir, exist_ok=True)
             
@@ -111,7 +124,7 @@ class QuoteGenerator:
         return self.generate_enhanced_quote_pdf(quote, project, company, output_dir)
     
     def _generate_professional_html_content(self, quote, project, company) -> str:
-        """Generate HTML content matching the professional sample - FIXED"""
+        """Generate HTML content with logo and complete interior/exterior details"""
         
         # Get client info safely
         try:
@@ -138,6 +151,9 @@ class QuoteGenerator:
         # Process measurement details and organize room work
         measurement_details = quote.measurement_details or {}
         rooms_data = measurement_details.get('rooms', [])
+        interior_items = measurement_details.get('interior_items', {})
+        exterior_items = measurement_details.get('exterior_items', {})
+        special_jobs = measurement_details.get('special_jobs', [])
         
         # Organize line items by room for proper display
         rooms_work = {}
@@ -192,6 +208,13 @@ class QuoteGenerator:
         elif quote.subtotal > 0:
             vat_rate = (quote.vat_amount / quote.subtotal) * 100
         
+        # Download logo
+        logo_data = self._download_logo()
+        logo_base64 = ""
+        if logo_data:
+            import base64
+            logo_base64 = base64.b64encode(logo_data).decode()
+        
         template_str = """
         <!DOCTYPE html>
         <html lang="en">
@@ -202,13 +225,20 @@ class QuoteGenerator:
         </head>
         <body>
             <div class="quote-container">
-                <!-- Header Section -->
+                <!-- Header Section with Logo -->
                 <div class="header-section">
-                    <div class="quote-info">
-                        <h1 class="quote-title">Quotation: {{ quote.quote_number }}</h1>
-                        <div class="quote-dates">
-                            <p>Quotation Date: {{ quote.created_at.strftime('%d/%m/%Y') if quote.created_at else datetime.now().strftime('%d/%m/%Y') }}</p>
-                            <p>Valid Until: {{ quote.valid_until.strftime('%d/%m/%Y') if quote.valid_until else (datetime.now() + timedelta(days=30)).strftime('%d/%m/%Y') }}</p>
+                    <div class="header-content">
+                        <div class="logo-section">
+                            {% if logo_base64 %}
+                            <img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" class="company-logo">
+                            {% endif %}
+                        </div>
+                        <div class="quote-info">
+                            <h1 class="quote-title">Quotation: {{ quote.quote_number }}</h1>
+                            <div class="quote-dates">
+                                <p>Quotation Date: {{ quote.created_at.strftime('%d/%m/%Y') if quote.created_at else datetime.now().strftime('%d/%m/%Y') }}</p>
+                                <p>Valid Until: {{ quote.valid_until.strftime('%d/%m/%Y') if quote.valid_until else (datetime.now() + timedelta(days=30)).strftime('%d/%m/%Y') }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -228,7 +258,7 @@ class QuoteGenerator:
                     </div>
                     
                     <div class="company-info">
-                        <h2>{{ company.name or 'Your Company Name' }}</h2>
+                        <h2>{{ company.name or 'Direct Thermal Printers' }}</h2>
                         <p>{{ company.address or 'Your Company Address' }}</p>
                         {% if company.city %}
                         <p>{{ company.city }}</p>
@@ -275,38 +305,113 @@ class QuoteGenerator:
                     {%- endfor %}
                     {%- endif %}
                     
-                    {%- for item in other_work %}
-                    {%- if item.category == 'interior' %}
+                    <!-- Interior Work Section with Selective Details -->
+                    {%- if interior_items %}
                     <div class="work-item">
-                        <h3>- {{ item.description|replace('Interior - ', '') }}:</h3>
+                        <h3>- Interior Work:</h3>
                         <ul class="work-list">
-                            <li>Degrease thoroughly</li>
-                            <li>Light sanding to prepare surface</li>
-                            <li>Fill small imperfections if needed</li>
-                            <li>Apply primer where necessary</li>
-                            <li>Apply durable topcoat</li>
-                        </ul>
-                    </div>
-                    {%- elif item.category == 'exterior' %}
-                    <div class="work-item">
-                        <h3>- {{ item.description|replace('Exterior - ', '') }}:</h3>
-                        <ul class="work-list">
-                            <li>Prepare surface and remove loose material</li>
-                            <li>Fill surface damage with exterior filler</li>
-                            <li>Sand to smooth finish</li>
-                            <li>Apply weather-resistant primer</li>
-                            <li>Apply durable exterior topcoat</li>
-                        </ul>
-                    </div>
-                    {%- elif item.category == 'special' %}
-                    <div class="work-item">
-                        <h3>- {{ item.description|replace('Special Job - ', '') }}:</h3>
-                        <ul class="work-list">
-                            <li>{{ item.specifications.description if item.specifications and item.specifications.description else 'Custom work as specified' }}</li>
+                            {%- for item_type, items in interior_items.items() %}
+                                {%- if items %}
+                                    {%- for item in items %}
+                                    <li><strong>{{ item_type|replace('_', ' ')|title }}:</strong> {{ item.description or (item_type|replace('_', ' ')|title) }} (Qty: {{ item.quantity }})</li>
+                                    {%- if item.condition_name %}
+                                    <li class="item-details">• Condition: {{ item.condition_name }}</li>
+                                    {%- endif %}
+                                    <li class="item-details">• Unit Price: £{{ "%.2f"|format(item.unit_price or 0) }}</li>
+                                    {%- if item.steps and item.steps|length > 0 %}
+                                    <li class="preparation-steps">
+                                        <strong>Preparation Steps:</strong>
+                                        <ol class="steps-list">
+                                            {%- for step in item.steps %}
+                                            <li>{{ step }}</li>
+                                            {%- endfor %}
+                                        </ol>
+                                    </li>
+                                    {%- endif %}
+                                    {%- if item.notes %}
+                                    <li class="item-details">• Notes: {{ item.notes }}</li>
+                                    {%- endif %}
+                                    {%- endfor %}
+                                {%- endif %}
+                            {%- endfor %}
                         </ul>
                     </div>
                     {%- endif %}
-                    {%- endfor %}
+                    
+                    <!-- Exterior Work Section with Selective Details -->
+                    {%- if exterior_items %}
+                    <div class="work-item">
+                        <h3>- Exterior Work:</h3>
+                        <ul class="work-list">
+                            {%- for item_type, items in exterior_items.items() %}
+                                {%- if items %}
+                                    {%- for item in items %}
+                                    <li><strong>{{ item_type|replace('_', ' ')|title }}:</strong> {{ item.description or (item_type|replace('_', ' ')|title) }} (Qty: {{ item.quantity }})</li>
+                                    {%- if item.condition_name %}
+                                    <li class="item-details">• Condition: {{ item.condition_name }}</li>
+                                    {%- endif %}
+                                    <li class="item-details">• Unit Price: £{{ "%.2f"|format(item.unit_price or 0) }}</li>
+                                    {%- if item.steps and item.steps|length > 0 %}
+                                    <li class="preparation-steps">
+                                        <strong>Preparation Steps:</strong>
+                                        <ol class="steps-list">
+                                            {%- for step in item.steps %}
+                                            <li>{{ step }}</li>
+                                            {%- endfor %}
+                                        </ol>
+                                    </li>
+                                    {%- endif %}
+                                    {%- if item.notes %}
+                                    <li class="item-details">• Notes: {{ item.notes }}</li>
+                                    {%- endif %}
+                                    {%- if item.weatherproof %}
+                                    <li class="item-details">• Weather resistant coating applied</li>
+                                    {%- endif %}
+                                    {%- endfor %}
+                                {%- endif %}
+                            {%- endfor %}
+                        </ul>
+                    </div>
+                    {%- endif %}
+                    
+                    <!-- Special Jobs Section with Detailed Process Steps -->
+                    {%- if special_jobs and special_jobs|length > 0 %}
+                    <div class="work-item">
+                        <h3>- Special Jobs & Conditions:</h3>
+                        <ul class="work-list">
+                            {%- for job in special_jobs %}
+                            <li><strong>{{ job.name }}:</strong> {{ job.description or job.name }} (Qty: {{ job.quantity }} {{ job.unit or 'job(s)' }})</li>
+                            <li class="item-details">• Unit Price: £{{ "%.2f"|format(job.unit_price or 0) }}</li>
+                            <li class="item-details">• Total Cost: £{{ "%.2f"|format(job.total_cost or 0) }}</li>
+                            {%- if job.location %}
+                            <li class="item-details">• Location: {{ job.location }}</li>
+                            {%- endif %}
+                            {%- if job.difficulty and job.difficulty != 'Standard' %}
+                            <li class="item-details">• Difficulty: {{ job.difficulty }}</li>
+                            {%- endif %}
+                            {%- if job.estimated_hours and job.estimated_hours > 0 %}
+                            <li class="item-details">• Estimated Hours: {{ job.estimated_hours }}</li>
+                            {%- endif %}
+                            {%- if job.materials_included %}
+                            <li class="item-details">• Materials included in price</li>
+                            {%- endif %}
+                            {%- if job.steps and job.steps|length > 0 %}
+                            <li class="preparation-steps">
+                                <strong>Process Steps for {{ job.name }}:</strong>
+                                <ol class="steps-list">
+                                    {%- for step in job.steps %}
+                                    <li>{{ step }}</li>
+                                    {%- endfor %}
+                                </ol>
+                            </li>
+                            {%- endif %}
+                            {%- if job.notes %}
+                            <li class="item-details">• Notes: {{ job.notes }}</li>
+                            {%- endif %}
+                            {%- endfor %}
+                        </ul>
+                    </div>
+                    {%- endif %}
                 </div>
 
                 <!-- Summary Table -->
@@ -362,11 +467,7 @@ class QuoteGenerator:
                                 <p>Digital Signature: _____________________</p>
                                 <p>Date: _____________________</p>
                             </div>
-                        </div>
-                        <div class="digital-signature-info">
-                            <p><em>To sign digitally, please visit:</em></p>
-                            <p><strong>{{ company.website or 'your-company-website.com' }}/api/quotes/{{ quote.id }}/sign</strong></p>
-                        </div>
+                        </div>                        
                     </div>
                 </div>
             </div>
@@ -374,7 +475,6 @@ class QuoteGenerator:
         </html>
         """
         
-        from datetime import timedelta
         template = Template(template_str)
         return template.render(
             quote=quote,
@@ -383,13 +483,17 @@ class QuoteGenerator:
             client_info=client_info,
             rooms_work=rooms_work,
             other_work=other_work,
+            interior_items=interior_items,
+            exterior_items=exterior_items,
+            special_jobs=special_jobs,
             vat_rate=vat_rate,
+            logo_base64=logo_base64,
             datetime=datetime,
             timedelta=timedelta
         )
     
     def _get_professional_pdf_styles(self) -> str:
-        """Professional CSS styles matching the sample format"""
+        """Professional CSS styles with logo support and detailed formatting"""
         return """
         @page {
             size: A4;
@@ -409,12 +513,33 @@ class QuoteGenerator:
             max-width: 100%;
         }
         
-        /* Header Section */
+        /* Header Section with Logo */
         .header-section {
-            text-align: right;
-            margin-bottom: 30px;
             border-bottom: 2px solid #333;
             padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            flex: 0 0 150px;
+        }
+        
+        .company-logo {
+            max-width: 150px;
+            max-height: 80px;
+            height: auto;
+            width: auto;
+        }
+        
+        .quote-info {
+            text-align: right;
+            flex: 1;
         }
         
         .quote-title {
@@ -469,13 +594,13 @@ class QuoteGenerator:
         }
         
         .room-description, .work-item {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .room-description h3, .work-item h3 {
             font-size: 11px;
             font-weight: bold;
-            margin: 0 0 5px 0;
+            margin: 0 0 8px 0;
             color: #333;
         }
         
@@ -486,8 +611,37 @@ class QuoteGenerator:
         
         .work-list li {
             font-size: 10px;
-            line-height: 1.3;
-            margin-bottom: 3px;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+        
+        .item-details {
+            font-size: 9px !important;
+            color: #666 !important;
+            margin-left: 15px !important;
+            margin-bottom: 2px !important;
+        }
+        
+        .preparation-steps {
+            margin-top: 8px !important;
+            margin-bottom: 12px !important;
+        }
+        
+        .preparation-steps strong {
+            font-size: 9px;
+            color: #444;
+        }
+        
+        .steps-list {
+            margin: 4px 0 0 20px;
+            padding: 0;
+        }
+        
+        .steps-list li {
+            font-size: 8px !important;
+            line-height: 1.3 !important;
+            margin-bottom: 2px !important;
+            color: #555;
         }
         
         /* Summary Section */
@@ -605,6 +759,14 @@ class QuoteGenerator:
             }
             
             .signature-section {
+                page-break-inside: avoid;
+            }
+            
+            .work-item {
+                page-break-inside: avoid;
+            }
+            
+            .preparation-steps {
                 page-break-inside: avoid;
             }
         }
