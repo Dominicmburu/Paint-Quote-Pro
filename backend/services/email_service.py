@@ -64,7 +64,7 @@ def send_welcome_email(email: str, first_name: str, company_name: str):
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/dashboard" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/dashboard" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Get Started
                     </a>
@@ -104,7 +104,7 @@ def send_password_reset_email(email: str, first_name: str, reset_token: str):
         msg['To'] = email
         msg['Subject'] = "Reset your Paint Quote Pro password"
         
-        reset_url = f"{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/reset-password?token={reset_token}&email={email}"
+        reset_url = f"{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/reset-password?token={reset_token}&email={email}"
         
         html_body = f"""
         <html>
@@ -188,7 +188,7 @@ def send_payment_success_email(email: str, first_name: str, company_name: str, p
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/dashboard" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/dashboard" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Go to Dashboard
                     </a>
@@ -262,7 +262,7 @@ def send_payment_failed_email(email: str, first_name: str, company_name: str, pl
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/subscription/billing" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/subscription/billing" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Update Payment Method
                     </a>
@@ -332,7 +332,7 @@ def send_subscription_cancelled_email(email: str, first_name: str, company_name:
                 <p>You can reactivate your subscription at any time and pick up exactly where you left off.</p>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/subscription" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/subscription" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Reactivate Subscription
                     </a>
@@ -571,7 +571,7 @@ def send_signature_confirmation_email(client_email: str, client_name: str, quote
         msg['Subject'] = f"Quote Signed Successfully - {quote.project.company.name}"
         
         # Get the correct download URL
-        frontend_url = current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')
+        frontend_url = current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')
         pdf_view_url = f"{frontend_url}/quotes/{quote.id}/pdf"
         
         html_body = f"""
@@ -675,7 +675,7 @@ def send_quote_signed_notification_email(company_email: str, company_name: str, 
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/projects/{quote.project.id}" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/projects/{quote.project.id}" 
                        style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         View Project Details
                     </a>

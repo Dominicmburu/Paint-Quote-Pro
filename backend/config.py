@@ -198,7 +198,7 @@ class Config:
     }
     
     # ENHANCED CORS Configuration for static files
-    CORS_ORIGINS = [origin.strip() for origin in os.environ.get('CORS_ORIGINS', 'https://localhost:5173, https://paint-quote-pro.vercel.app').split(',')]
+    CORS_ORIGINS = [origin.strip() for origin in os.environ.get('CORS_ORIGINS', 'https://localhost:5173, https://flotto.jaytechprinterimports.co.ke').split(',')]
     CORS_ALLOW_HEADERS = [
         'Content-Type', 'Authorization', 'X-Requested-With', 
         'Accept', 'Origin', 'Cache-Control', 'X-File-Name'
@@ -238,7 +238,7 @@ class Config:
     DEBUG = ENVIRONMENT == 'development'
     
     # Application URLs
-    FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')
+    FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')
     BACKEND_URL = os.environ.get('BACKEND_URL', 'https://paint-quote-pro.onrender.com')
     
     # Cache Configuration
@@ -302,7 +302,7 @@ class DevelopmentConfig(Config):
     EXPLAIN_TEMPLATE_LOADING = True
     
     # Development CORS - allow all origins
-    CORS_ORIGINS = ['https://paint-quote-pro.vercel.app', 'http://localhost:5173']
+    CORS_ORIGINS = ['https://flotto.jaytechprinterimports.co.ke', 'http://localhost:5173']
     
     # Shorter cache times for development
     CACHE_CONTROL = {
@@ -348,7 +348,7 @@ class ProductionConfig(Config):
     
     # Stricter CORS for production
     CORS_ORIGINS = [
-        os.environ.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app'),
+        os.environ.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke'),
         'https://www.yourdomain.com', 'http://localhost:5173'
     ]
 

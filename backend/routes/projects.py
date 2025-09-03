@@ -1059,7 +1059,7 @@ def email_quote(project_id):
             })
 
         # Get frontend URL for signature link
-        frontend_url = current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')
+        frontend_url = current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')
         
         # Use the enhanced email service
         try:
