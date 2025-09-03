@@ -14,7 +14,7 @@ const QuickStats = ({ stats, subscription }) => {
     {
       title: 'Ready for Quote',
       value: stats.ready_projects || 0,
-      icon: <CheckCircle className="h-6 w-6 text-green-600" />,
+      icon: <CheckCircle className="h-6 w-6 text-[#4bb4f5]" />,
       color: 'bg-green-50 border-green-200',
       change: '+8%',
       changeType: 'increase'

@@ -79,7 +79,7 @@ const ProjectCard = ({ project }) => {
             to={`/projects/${project.id}`}
             className="flex-1"
           >
-            <h3 className="text-lg font-semibold text-teal-800 hover:text-teal-900 transition-colors truncate">
+            <h3 className="text-lg font-semibold text-slate-900 hover:text-slate-900 transition-colors truncate">
               {project.name}
             </h3>
           </Link>
@@ -125,7 +125,7 @@ const ProjectCard = ({ project }) => {
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm text-gray-600">Quote Total:</span>
-            <span className="text-lg font-semibold text-teal-600">
+            <span className="text-lg font-semibold text-slate-900">
               {formatCurrency(project.quote_data.total_amount)}
             </span>
           </div>
@@ -136,8 +136,8 @@ const ProjectCard = ({ project }) => {
               {quoteSignature?.is_signed ? (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm">
-                    <FileCheck className="h-4 w-4 text-green-600 mr-1" />
-                    <span className="text-green-600 font-medium">Signed</span>
+                    <FileCheck className="h-4 w-4 text-slate-900 mr-1" />
+                    <span className="text-slate-900 font-medium">Signed</span>
                     {quoteSignature.signature && (
                       <span className="text-gray-500 ml-2">
                         by {quoteSignature.signature.client_name}
@@ -174,7 +174,7 @@ const ProjectCard = ({ project }) => {
         <div className="flex space-x-2">
           <Link
             to={`/projects/${project.id}`}
-            className="flex-1 text-center px-3 py-2 border border-teal-300 text-teal-800 hover:bg-teal-50 rounded-md text-sm font-medium transition-colors"
+            className="flex-1 text-center px-3 py-2 border border-slate-800 text-slate-900 hover:bg-slate-100 rounded-md text-sm font-medium transition-colors"
           >
             View Details
           </Link>

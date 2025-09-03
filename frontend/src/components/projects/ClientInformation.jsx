@@ -166,7 +166,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                <Users className="h-6 w-6 mr-3 text-purple-600" />
+                <Users className="h-6 w-6 mr-3 text-[#4bb4f5]" />
                 Client Information
             </h3>
 
@@ -182,8 +182,8 @@ const ClientInformation = ({ project, onClientUpdate }) => {
             {success && (
                 <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
                     <div className="flex items-center">
-                        <Check className="h-5 w-5 text-green-400 mr-3" />
-                        <p className="text-sm text-green-600">{success}</p>
+                        <Check className="h-5 w-5 text-[#4bb4f5] mr-3" />
+                        <p className="text-sm text-[#4bb4f5]">{success}</p>
                     </div>
                 </div>
             )}
@@ -202,7 +202,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 checked={!useManualEntry}
                                 onChange={() => handleManualEntryToggle(false)}
                                 disabled={clientsLoading}
-                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                                className="h-4 w-4 text-[#4bb4f5] focus:ring-[#4bb4f5] border-gray-300"
                             />
                             <span className="ml-3 text-sm text-gray-700">
                                 Select from existing clients 
@@ -215,7 +215,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                     <button
                                         type="button"
                                         onClick={refreshClients}
-                                        className="ml-2 text-purple-600 hover:text-purple-700 text-xs underline"
+                                        className="ml-2 text-[#4bb4f5] hover:text-[#4bb4f5] text-xs underline"
                                         disabled={clientsLoading}
                                     >
                                         Refresh
@@ -229,7 +229,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 name="clientMethod"
                                 checked={useManualEntry}
                                 onChange={() => handleManualEntryToggle(true)}
-                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                                className="h-4 w-4 text-[#4bb4f5] focus:ring-[#4bb4f5] border-gray-300"
                             />
                             <span className="ml-3 text-sm text-gray-700">
                                 Enter client details manually
@@ -513,7 +513,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                     <button
                         type="submit"
                         disabled={loading || clientsLoading}
-                        className="inline-flex items-center px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-md font-medium transition-colors"
+                        className="inline-flex items-center px-6 py-2 bg-[#4bb4f5] hover:bg-[#4bb4f5] disabled:opacity-50 text-white rounded-md font-medium transition-colors"
                     >
                         {loading ? (
                             <>

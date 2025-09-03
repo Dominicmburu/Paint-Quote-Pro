@@ -60,212 +60,6 @@ const ProjectDetails = () => {
     total: 0
   });
 
-  // const calculateTotalCosts = useCallback(() => {
-  //   if (!pricing) {
-  //     console.log('⚠️ Pricing not loaded yet, skipping cost calculation');
-  //     setTotalCosts({
-  //       rooms: 0,
-  //       interior: 0,
-  //       exterior: 0,
-  //       specialJobs: 0,
-  //       total: 0
-  //     });
-  //     return;
-  //   }
-
-  //   let roomsTotal = 0;
-  //   let interiorTotal = 0;
-  //   let exteriorTotal = 0;
-  //   let specialJobsTotal = 0;
-
-  //   try {
-  //     console.log('🔄 Starting centralized cost calculation...');
-  //     console.log('💰 Available pricing structure:', pricing);
-
-  //     // CALCULATE ROOMS COST (Walls and Ceilings)
-  //     rooms.forEach(room => {
-  //       console.log(`🏠 Calculating costs for room: ${room.name}`);
-
-  //       // Calculate wall costs
-  //       (room.walls || []).forEach(wall => {
-  //         const area = parseFloat(wall.area) || 0;
-  //         console.log(`📐 Wall area: ${area}m²`);
-
-  //         if (wall.sanding_filling) {
-  //           const price = pricing.walls?.sanding?.light?.price || 0;
-  //           const cost = area * price;
-  //           roomsTotal += cost;
-  //           console.log(`🔨 Wall sanding/filling: ${area}m² × £${price} = £${cost.toFixed(2)}`);
-  //         }
-  //         if (wall.priming) {
-  //           const price = pricing.walls?.priming?.one_coat?.price || 0;
-  //           const cost = area * price;
-  //           roomsTotal += cost;
-  //           console.log(`🎨 Wall priming: ${area}m² × £${price} = £${cost.toFixed(2)}`);
-  //         }
-  //         if (wall.one_coat) {
-  //           const price = pricing.walls?.painting?.one_coat?.price || 0;
-  //           const cost = area * price;
-  //           roomsTotal += cost;
-  //           console.log(`🖌️ Wall 1 coat: ${area}m² × £${price} = £${cost.toFixed(2)}`);
-  //         }
-  //         if (wall.two_coats) {
-  //           const price = pricing.walls?.painting?.two_coat?.price || 0;
-  //           const cost = area * price;
-  //           roomsTotal += cost;
-  //           console.log(`🖌️🖌️ Wall 2 coats: ${area}m² × £${price} = £${cost.toFixed(2)}`);
-  //         }
-  //       });
-
-  //       // Calculate ceiling costs
-  //       if (room.ceiling) {
-  //         const area = parseFloat(room.ceiling.area) || 0;
-  //         console.log(`🏔️ Ceiling area: ${area}m²`);
-
-  //         if (room.ceiling.sanding_filling) {
-  //           const price = pricing.ceiling?.preparation?.light?.price || 0;
-  //           const cost = area * price;
-  //           roomsTotal += cost;
-  //           console.log(`🔨 Ceiling sanding/filling: ${area}m² × £${price} = £${cost.toFixed(2)}`);
-  //         }
-  //         if (room.ceiling.priming) {
-  //           const price = pricing.ceiling?.preparation?.light?.price || 0;
-  //           const cost = area * price;
-  //           roomsTotal += cost;
-  //           console.log(`🎨 Ceiling priming: ${area}m² × £${price} = £${cost.toFixed(2)}`);
-  //         }
-  //         if (room.ceiling.one_coat) {
-  //           const price = pricing.ceiling?.painting?.one_coat?.price || 0;
-  //           const cost = area * price;
-  //           roomsTotal += cost;
-  //           console.log(`🖌️ Ceiling 1 coat: ${area}m² × £${price} = £${cost.toFixed(2)}`);
-  //         }
-  //         if (room.ceiling.two_coats) {
-  //           const price = pricing.ceiling?.painting?.two_coat?.price || 0;
-  //           const cost = area * price;
-  //           roomsTotal += cost;
-  //           console.log(`🖌️🖌️ Ceiling 2 coats: ${area}m² × £${price} = £${cost.toFixed(2)}`);
-  //         }
-  //       }
-  //     });
-
-  //     // 🔧 FIXED: CALCULATE INTERIOR ITEMS COST WITH CORRECT DOOR PRICING
-  //     Object.keys(interiorItems).forEach(type => {
-  //       interiorItems[type].forEach(item => {
-  //         const quantity = parseFloat(item.quantity) || 1;
-  //         let unitPrice = 0;
-
-  //         console.log(`🔍 Processing interior ${type}:`, item);
-
-  //         if (type === 'doors') {
-  //           // 🚨 FIX: Map the condition to the correct pricing structure
-  //           const conditionMapping = {
-  //             'level_1': 'easy_prep',    // Level 1 = Easy Prep
-  //             'level_2': 'medium_prep',  // Level 2 = Medium Prep  
-  //             'level_3': 'heavy_prep',   // Level 3 = Heavy Prep
-  //             'level_4': 'heavy_prep'    // Level 4 = Heavy Prep (same as level 3)
-  //           };
-
-  //           const mappedCondition = conditionMapping[item.condition] || 'easy_prep';
-  //           unitPrice = pricing.interior?.doors?.[mappedCondition]?.price || 0;
-
-  //           console.log(`🚪 Interior Door: condition=${item.condition} → mapped=${mappedCondition} → price=£${unitPrice}`);
-
-  //         } else if (type === 'fixedWindows' || type === 'turnWindows') {
-  //           unitPrice = pricing.interior?.[type]?.[item.size]?.price || 0;
-  //           console.log(`🪟 Interior Window ${type}: size=${item.size} → price=£${unitPrice}`);
-
-  //         } else if (type === 'stairs' || type === 'radiators' || type === 'skirtingBoards' || type === 'otherItems') {
-  //           unitPrice = pricing.interior?.[type]?.price || 0;
-  //           console.log(`🏠 Interior ${type}: price=£${unitPrice}`);
-  //         }
-
-  //         const itemCost = quantity * unitPrice;
-  //         interiorTotal += itemCost;
-  //         console.log(`💰 Interior ${type}: ${quantity} × £${unitPrice} = £${itemCost.toFixed(2)}`);
-  //       });
-  //     });
-
-  //     // 🔧 FIXED: CALCULATE EXTERIOR ITEMS COST WITH CORRECT DOOR PRICING
-  //     Object.keys(exteriorItems).forEach(type => {
-  //       exteriorItems[type].forEach(item => {
-  //         const quantity = parseFloat(item.quantity) || 1;
-  //         let unitPrice = 0;
-
-  //         console.log(`🔍 Processing exterior ${type}:`, item);
-
-  //         if (type === 'doors') {
-  //           // 🚨 FIX: Map the door type to the correct pricing structure
-  //           const doorTypeMapping = {
-  //             'front': 'front_door',
-  //             'garage': 'garage_door',
-  //             'outside': 'outside_door'
-  //           };
-
-  //           const mappedDoorType = doorTypeMapping[item.doorType] || 'front_door';
-  //           unitPrice = pricing.exterior?.doors?.[mappedDoorType]?.price || 0;
-
-  //           console.log(`🚪 Exterior Door: doorType=${item.doorType} → mapped=${mappedDoorType} → price=£${unitPrice}`);
-
-  //         } else if (type === 'fixedWindows' || type === 'turnWindows' || type === 'dormerWindows') {
-  //           unitPrice = pricing.exterior?.[type]?.[item.size]?.price || 0;
-  //           console.log(`🪟 Exterior Window ${type}: size=${item.size} → price=£${unitPrice}`);
-
-  //         } else if (type === 'fasciaBoards' || type === 'rainPipe' || type === 'otherItems') {
-  //           unitPrice = pricing.exterior?.[type]?.price || 0;
-  //           console.log(`🏠 Exterior ${type}: price=£${unitPrice}`);
-  //         }
-
-  //         const itemCost = quantity * unitPrice;
-  //         exteriorTotal += itemCost;
-  //         console.log(`💰 Exterior ${type}: ${quantity} × £${unitPrice} = £${itemCost.toFixed(2)}`);
-  //       });
-  //     });
-
-  //     // CALCULATE SPECIAL JOBS COST (unchanged)
-  //     specialJobs.forEach(job => {
-  //       const unitPrice = parseFloat(job.unitPrice) || 0;
-  //       const quantity = parseFloat(job.quantity) || 1;
-  //       const jobCost = unitPrice * quantity;
-  //       specialJobsTotal += jobCost;
-  //       console.log(`🔧 Special job ${job.name}: ${quantity} × £${unitPrice} = £${jobCost.toFixed(2)}`);
-  //     });
-
-  //     const grandTotal = roomsTotal + interiorTotal + exteriorTotal + specialJobsTotal;
-
-  //     // UPDATE STATE WITH BREAKDOWN
-  //     setTotalCosts({
-  //       rooms: roomsTotal,
-  //       interior: interiorTotal,
-  //       exterior: exteriorTotal,
-  //       specialJobs: specialJobsTotal,
-  //       total: grandTotal
-  //     });
-
-  //     console.log('💰 Centralized cost calculation completed:', {
-  //       rooms: roomsTotal.toFixed(2),
-  //       interior: interiorTotal.toFixed(2),
-  //       exterior: exteriorTotal.toFixed(2),
-  //       specialJobs: specialJobsTotal.toFixed(2),
-  //       total: grandTotal.toFixed(2)
-  //     });
-
-  //   } catch (error) {
-  //     console.error('❌ Error in centralized cost calculation:', error);
-  //     setTotalCosts({
-  //       rooms: 0,
-  //       interior: 0,
-  //       exterior: 0,
-  //       specialJobs: 0,
-  //       total: 0
-  //     });
-  //   }
-  // }, [rooms, interiorItems, exteriorItems, specialJobs, pricing]);
-
-
-  // TRIGGER CALCULATION WHENEVER DATA CHANGES
-
-
   const calculateTotalCosts = useCallback(() => {
     if (!pricing) {
       console.log('⚠️ Pricing not loaded yet, skipping cost calculation');
@@ -684,144 +478,6 @@ const ProjectDetails = () => {
       setUploadProgress(0);
     }
   };
-
-  // const performAIAnalysis = async () => {
-  //   if (!project?.uploaded_images || project.uploaded_images.length === 0) {
-  //     setError('Please upload floor plan images first');
-  //     return;
-  //   }
-
-  //   const hasExistingData = rooms.length > 0 ||
-  //     Object.values(interiorItems).some(items => items.length > 0) ||
-  //     Object.values(exteriorItems).some(items => items.length > 0) ||
-  //     specialJobs.length > 0;
-
-  //   if (hasExistingData) {
-  //     const confirmed = window.confirm(
-  //       'You have existing measurements. Running AI analysis will overwrite all current data. Continue?'
-  //     );
-  //     if (!confirmed) return;
-  //   }
-
-  //   setAnalyzing(true);
-  //   setError('');
-
-  //   try {
-  //     console.log('🚀 Starting AI analysis for project:', id);
-  //     const response = await api.post(`/projects/${id}/analyze`);
-
-  //     console.log('📊 AI Analysis Response:', response.data);
-
-  //     setProject(prev => ({
-  //       ...prev,
-  //       floor_plan_analysis: response.data.analysis,
-  //       status: 'ready'
-  //     }));
-
-  //     if (response.data.analysis?.structured_measurements) {
-  //       const measurements = response.data.analysis.structured_measurements;
-
-  //       if (measurements.rooms && Array.isArray(measurements.rooms)) {
-  //         console.log(`🏠 Found ${measurements.rooms.length} rooms in analysis`);
-
-  //         const mappedRooms = measurements.rooms.map(aiRoom => {
-  //           console.log('🔄 Processing room:', aiRoom.name);
-
-  //           const mappedRoom = {
-  //             id: aiRoom.id || Date.now() + Math.random(),
-  //             name: aiRoom.name || `Room ${aiRoom.id}`,
-  //             type: aiRoom.type || 'general',
-  //             walls: aiRoom.walls?.map((aiWall, index) => ({
-  //               id: aiWall.id || (Date.now() + index),
-  //               name: aiWall.name || `Wall ${index + 1}`,
-  //               length: parseFloat(aiWall.length) || 0,
-  //               height: parseFloat(aiWall.height) || 2.4,
-  //               area: parseFloat(aiWall.area) || 0,
-  //               sanding_filling: false,
-  //               priming: false,
-  //               one_coat: false,
-  //               two_coats: false
-  //             })) || [],
-  //             ceiling: aiRoom.ceiling ? {
-  //               length: parseFloat(aiRoom.ceiling.length) || 0,
-  //               width: parseFloat(aiRoom.ceiling.width) || 0,
-  //               area: parseFloat(aiRoom.ceiling.area) || 0,
-  //               sanding_filling: false,
-  //               priming: false,
-  //               one_coat: false,
-  //               two_coats: false
-  //             } : null,
-  //             other_surfaces: null
-  //           };
-
-  //           return mappedRoom;
-  //         });
-
-  //         setRooms(mappedRooms);
-  //         setInteriorItems({
-  //           doors: [], fixedWindows: [], turnWindows: [], stairs: [],
-  //           radiators: [], skirtingBoards: [], otherItems: []
-  //         });
-  //         setExteriorItems({
-  //           doors: [], fixedWindows: [], turnWindows: [], dormerWindows: [],
-  //           fasciaBoards: [], rainPipe: [], otherItems: []
-  //         });
-  //         setSpecialJobs([]);
-
-  //         if (measurements.notes) {
-  //           setNotes(measurements.notes);
-  //         }
-
-  //         const measurementData = {
-  //           rooms: mappedRooms,
-  //           interiorItems: {
-  //             doors: [], fixedWindows: [], turnWindows: [], stairs: [],
-  //             radiators: [], skirtingBoards: [], otherItems: []
-  //           },
-  //           exteriorItems: {
-  //             doors: [], fixedWindows: [], turnWindows: [], dormerWindows: [],
-  //             fasciaBoards: [], rainPipe: [], otherItems: []
-  //           },
-  //           specialJobs: [],
-  //           notes: measurements.notes || '',
-  //           totalCost: 0
-  //         };
-
-  //         try {
-  //           await api.post(`/projects/${id}/manual-measurements`, measurementData);
-  //           console.log('✅ AI analysis results auto-saved');
-  //         } catch (saveErr) {
-  //           console.error('❌ Failed to save AI analysis results:', saveErr);
-  //         }
-
-  //         const totalWalls = mappedRooms.reduce((sum, room) => sum + (room.walls?.length || 0), 0);
-  //         const totalWallArea = mappedRooms.reduce((sum, room) =>
-  //           sum + (room.walls || []).reduce((wallSum, wall) => wallSum + (parseFloat(wall.area) || 0), 0), 0
-  //         );
-  //         const totalCeilingArea = mappedRooms.reduce((sum, room) =>
-  //           sum + (room.ceiling ? parseFloat(room.ceiling.area) || 0 : 0), 0
-  //         );
-
-  //         showSuccessMessage(
-  //           `🔄 AI analysis completed and saved! Detected ${mappedRooms.length} rooms with ${totalWalls} walls. ` +
-  //           `Wall area: ${totalWallArea.toFixed(1)}m², ceiling area: ${totalCeilingArea.toFixed(1)}m²`
-  //         );
-  //       } else {
-  //         showSuccessMessage('AI analysis completed but no rooms were detected.');
-  //       }
-  //     } else {
-  //       showSuccessMessage('AI analysis completed but no structured measurements returned.');
-  //     }
-
-  //   } catch (err) {
-  //     const errorMessage = err.response?.data?.details || err.response?.data?.error || err.message || 'AI analysis failed';
-  //     console.error('❌ AI Analysis Error:', err);
-  //     setError(`AI analysis failed: ${errorMessage}`);
-  //   } finally {
-  //     setAnalyzing(false);
-  //   }
-  // };
-
 
   const performAIAnalysis = async () => {
     if (!project?.uploaded_images || project.uploaded_images.length === 0) {
@@ -1399,7 +1055,7 @@ const ProjectDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
-      <div className="bg-gradient-to-r from-teal-600 to-slate-600 text-white py-6 sticky top-0 z-10">
+      <div className="bg-gradient-to-r from-[#4bb4f5] to-[#4bb4f5] text-white py-6 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -1551,7 +1207,7 @@ const ProjectDetails = () => {
                       <button
                         onClick={performAIAnalysis}
                         disabled={analyzing || !project?.uploaded_images?.length}
-                        className="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                        className="inline-flex items-center px-6 py-3 bg-[#4bb4f5] hover:bg-[#4bb4f5] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
                       >
                         {analyzing ? (
                           <>
@@ -1576,7 +1232,7 @@ const ProjectDetails = () => {
 
             <section id="measurements-section" className="scroll-mt-24">
               <div className="space-y-8">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                     <Calculator className="h-6 w-6 mr-3 text-teal-800" />
                     Measurements & Work Items
@@ -1606,7 +1262,7 @@ const ProjectDetails = () => {
                       )}
                     </button>
                   </div>
-                </div>
+                </div> */}
 
                 {project && (
                   <>
@@ -1707,7 +1363,7 @@ const ProjectDetails = () => {
                       onClick={() => step.available && setCurrentStep(step.id)}
                       disabled={!step.available}
                       className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${currentStep === step.id
-                        ? 'bg-purple-100 text-purple-800 font-medium'
+                        ? 'bg-purple-100 text-[#4bb4f5] font-medium'
                         : step.available
                           ? 'hover:bg-gray-100 text-gray-700'
                           : 'text-gray-400 cursor-not-allowed'
@@ -1759,7 +1415,7 @@ const ProjectDetails = () => {
                 <button
                   onClick={generateQuoteAndEmail}
                   disabled={generating || !project || totalCosts.total === 0}
-                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+                  className="w-full bg-[#4bb4f5] hover:bg-[#4bb4f5] disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
                 >
                   {generating ? (
                     <>

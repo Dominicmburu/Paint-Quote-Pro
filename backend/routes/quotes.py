@@ -1647,6 +1647,7 @@ def get_public_quote(quote_id):
         current_app.logger.error(f'Get public quote error: {e}')
         return jsonify({'error': 'Quote not found'}), 404
 
+
 # Update the send quote route to use frontend URL
 # @quotes_bp.route('/<int:quote_id>/send', methods=['POST'])
 # @jwt_required()
@@ -2058,6 +2059,7 @@ def send_quote_email_manual(quote_id):
             'error': 'Failed to process quote sending',
             'details': str(e)
         }), 500
+
 
 @quotes_bp.route('/<int:quote_id>/download-signed', methods=['GET'])
 def download_signed_quote_pdf(quote_id):

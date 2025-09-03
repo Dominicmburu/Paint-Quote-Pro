@@ -121,14 +121,14 @@ const Dashboard = () => {
               <h1 className="text-3xl font-bold text-slate-800">
                 Welcome back, {user?.first_name}!
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-slate-800 mt-1">
                 {company?.name} • {subscription?.plan_name} Plan
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
               <Link
                 to="/subscription"
-                className="inline-flex items-center px-4 py-2 border border-purple-300 rounded-md text-purple-700 hover:bg-purple-50 transition-colors"
+                className="inline-flex items-center px-4 py-2 border border-purple-300 rounded-md text-[#4bb4f5] hover:bg-purple-50 transition-colors"
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Upgrade Plan
@@ -136,7 +136,7 @@ const Dashboard = () => {
               <button
                 onClick={handleCreateProject}
                 disabled={!canCreateProject()}
-                className="inline-flex items-center px-6 py-2 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
+                className="inline-flex items-center px-6 py-2 bg-[#4bb4f5] hover:bg-[#4bb4f5] disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 New Project

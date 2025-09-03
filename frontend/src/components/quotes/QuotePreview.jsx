@@ -199,22 +199,28 @@ const QuotePreview = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-[#4bb4f5] to-[#4bb4f5] text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
             <div className="flex items-center">
-              <button
+              {/* <button
                 onClick={() => navigate(-1)}
                 className="text-white hover:text-gray-200 mr-4"
               >
                 <ArrowLeft className="h-6 w-6" />
-              </button>
+              </button> */}
+              <Link
+                    to={`/projects/${quote.project?.id}`}
+                    className="text-white hover:text-gray-200 mr-4"
+                  >
+                    <ArrowLeft className="h-6 w-6" />
+                  </Link>
               <div>
                 <h1 className="text-2xl font-bold">Quote Preview - Total Wall Area</h1>
                 <div className="flex items-center space-x-4 mt-1">
                   <p className="text-sm opacity-90">#{quote.quote_number}</p>
-                  <span className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
-                    Total Wall Area Approach
+                  <span className="text-xs bg-white text-slate-900 bg-opacity-20 px-2 py-1 rounded-full">
+                    Total Wall Area
                   </span>
                   <span className="text-xs bg-green-500 bg-opacity-80 px-2 py-1 rounded-full">
                     Real-time Calculated
@@ -226,9 +232,9 @@ const QuotePreview = () => {
             <div className="flex space-x-3">
               <button
                 onClick={downloadPDF}
-                className="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-md font-medium transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-slate-900 rounded-md font-medium transition-colors"
               >
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-4 w-4 mr-2 text-slate-900" />
                 Download PDF
               </button>
 
@@ -280,7 +286,7 @@ const QuotePreview = () => {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
             {/* Project Summary Card */}
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6">
+            <div className="bg-gradient-to-r from-[#4bb4f5] to-[#4bb4f5] text-white rounded-lg p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Project Overview</h3>
@@ -335,7 +341,7 @@ const QuotePreview = () => {
                       key={id}
                       onClick={() => setActiveTab(id)}
                       className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === id
-                        ? 'border-purple-500 text-purple-600'
+                        ? 'border-[#4bb4f5] text-[#4bb4f5]'
                         : 'border-transparent text-gray-500 hover:text-gray-700'
                         }`}
                     >
@@ -501,7 +507,7 @@ const QuotePreview = () => {
                           {roomData.ceiling_items.length > 0 && (
                             <div className="mb-4">
                               <h5 className="text-md font-medium text-gray-900 mb-3 flex items-center">
-                                <Layers className="h-4 w-4 mr-2 text-green-600" />
+                                <Layers className="h-4 w-4 mr-2 text-[#4bb4f5]" />
                                 Ceiling Treatments
                               </h5>
                               <div className="space-y-2">
@@ -647,7 +653,7 @@ const QuotePreview = () => {
                     {organizedItems.special.length > 0 ? (
                       <>
                         <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                          <h4 className="text-lg font-semibold text-purple-900 flex items-center">
+                          <h4 className="text-lg font-semibold text-[#4bb4f5] flex items-center">
                             <AlertTriangle className="h-5 w-5 mr-2" />
                             Special Jobs
                           </h4>
@@ -666,7 +672,7 @@ const QuotePreview = () => {
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <div className="font-bold text-purple-900 text-xl">£{item.total.toFixed(2)}</div>
+                                  <div className="font-bold text-[#4bb4f5] text-xl">£{item.total.toFixed(2)}</div>
                                 </div>
                               </div>
 
@@ -707,7 +713,7 @@ const QuotePreview = () => {
                                   <ol className="space-y-1 text-sm">
                                     {item.specifications.steps.map((step, stepIndex) => (
                                       <li key={stepIndex} className="flex">
-                                        <span className="font-medium text-purple-600 mr-2">{stepIndex + 1}.</span>
+                                        <span className="font-medium text-[#4bb4f5] mr-2">{stepIndex + 1}.</span>
                                         <span className="text-gray-700">{step}</span>
                                       </li>
                                     ))}
@@ -718,8 +724,8 @@ const QuotePreview = () => {
                           ))}
 
                           <div className="flex justify-between items-center py-3 px-4 bg-purple-100 rounded-lg border-2 border-purple-300">
-                            <span className="font-bold text-purple-900">Special Jobs Total:</span>
-                            <span className="font-bold text-purple-900 text-lg">£{summary.cost_breakdown.special.toFixed(2)}</span>
+                            <span className="font-bold text-[#4bb4f5]">Special Jobs Total:</span>
+                            <span className="font-bold text-[#4bb4f5] text-lg">£{summary.cost_breakdown.special.toFixed(2)}</span>
                           </div>
                         </div>
                       </>
@@ -750,7 +756,7 @@ const QuotePreview = () => {
                 <div className="border-t pt-3">
                   <div className="flex justify-between">
                     <span className="text-lg font-semibold text-gray-900">Total Amount:</span>
-                    <span className="text-2xl font-bold text-green-600">£{quote.total_amount.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-[#4bb4f5]">£{quote.total_amount.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -768,7 +774,7 @@ const QuotePreview = () => {
                     <span className="text-sm text-gray-600">Status:</span>
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${quote.status === 'draft' ? 'bg-gray-100 text-gray-800' :
                       quote.status === 'sent' ? 'bg-blue-100 text-blue-800' :
-                        quote.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                        quote.status === 'accepted' ? 'bg-green-100 text-[#4bb4f5]' :
                           'bg-red-100 text-red-800'
                       }`}>
                       {quote.status.charAt(0).toUpperCase() + quote.status.slice(1)}
@@ -910,7 +916,7 @@ const QuotePreview = () => {
                     <button
                       onClick={sendQuote}
                       disabled={sending}
-                      className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-md text-sm transition-colors"
+                      className="w-full inline-flex items-center justify-center px-4 py-2 bg-[#4bb4f5] hover:bg-[#4bb4f5] disabled:opacity-50 text-white rounded-md text-sm transition-colors"
                     >
                       {sending ? (
                         <>
