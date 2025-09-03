@@ -657,6 +657,66 @@ def send_quote_with_signature_link_frontend(client_email: str, client_name: str,
         current_app.logger.error(f"Failed to send quote email: {e}")
         raise
 
+def send_email(to_email, subject, html_content, from_name=None):
+    """Send email using Flask-Mail"""
+    try:
+        # Initialize Flask-Mail
+        mail = Mail(current_app)
+        
+        # Set sender
+        sender = current_app.config.get('MAIL_USERNAME')
+        if from_name:
+            sender = f"{from_name} <{sender}>"
+        
+        # Create message
+        msg = Message(
+            subject=subject,
+            sender=sender,
+            recipients=[to_email]
+        )
+        
+        msg.html = html_content
+        
+        # Send email
+        mail.send(msg)
+        logger.info(f"Email sent successfully to {to_email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send email to {to_email}: {str(e)}")
+        raise e
+
+
+def send_simple_test_email(client_email, company):
+    """Send a simple test email"""
+    
+    # Email content
+    subject = "Testing Email"
+    
+    html_content = f"""
+    <html>
+    <body>
+        <h2>Testing Email</h2>
+        <p>Hello!</p>
+        <p>This is a test email from {company.name}.</p>
+        <p>If you received this, the email system is working.</p>
+        <hr>
+        <p>Best regards,<br>{company.name}</p>
+    </body>
+    </html>
+    """
+    
+    # Send email using your existing email setup
+    send_email(
+        to_email=client_email,
+        subject=subject,
+        html_content=html_content,
+        from_name=company.name
+    )
+
+
+
+
+
 
 # def send_signature_confirmation_email(client_email: str, client_name: str, quote):
 #     """Send signature confirmation email to client"""

@@ -921,6 +921,7 @@ const ProjectDetails = () => {
         total_cost: totalCosts.total,
         quote_id: response.data.quote_id
       });
+      
 
       // Redirect to quote preview
       navigate(`/quotes/${response.data.quote_id}`, {

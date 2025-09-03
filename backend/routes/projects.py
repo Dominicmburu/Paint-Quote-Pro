@@ -974,10 +974,185 @@ def duplicate_project(project_id):
 
 # Updated projects.py - email_quote function with enhanced error handling
 
+# @projects_bp.route('/<int:project_id>/email-quote', methods=['POST'])
+# @jwt_required()
+# def email_quote(project_id):
+#     """Send quote email to client with enhanced error handling and PDF attachment logging"""
+#     try:
+#         current_user_id = get_jwt_identity()
+#         user = db.session.get(User, int(current_user_id))
+        
+#         if not user or not user.company:
+#             return jsonify({'error': 'User or company not found'}), 400
+
+#         data = request.get_json()
+#         if not data:
+#             return jsonify({'error': 'No data provided'}), 400
+            
+#         # Validate required fields
+#         required_fields = ['client_email', 'project_name', 'total_cost']
+#         missing_fields = [field for field in required_fields if not data.get(field)]
+#         if missing_fields:
+#             return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+
+#         project = Project.query.filter_by(
+#             id=project_id,
+#             company_id=user.company_id
+#         ).first()
+        
+#         if not project:
+#             return jsonify({'error': 'Project not found'}), 404
+
+#         client_email = data['client_email']
+#         project_name = data['project_name']
+#         total_cost = data['total_cost']
+#         quote_id = data.get('quote_id', 'N/A')
+#         client_name = data.get('client_name', 'Valued Client')
+
+#         # Enhanced logging
+#         current_app.logger.info(f"📧 Starting email process for project {project_id} to {client_email}")
+
+#         # Check SMTP configuration
+#         smtp_server = current_app.config.get('MAIL_SERVER')
+#         smtp_port = current_app.config.get('MAIL_PORT', 587)
+#         smtp_user = current_app.config.get('MAIL_USERNAME')
+#         smtp_password = current_app.config.get('MAIL_PASSWORD')
+        
+#         current_app.logger.info(f"📧 SMTP Config - Server: {smtp_server}, Port: {smtp_port}, User: {smtp_user[:5]}...{smtp_user[-5:] if smtp_user else 'None'}")
+        
+#         # Check PDF availability
+#         quote_pdf_path = project.quote_pdf_path
+#         pdf_status = {
+#             'path_exists': bool(quote_pdf_path),
+#             'file_exists': False,
+#             'file_size': 0,
+#             'path': quote_pdf_path
+#         }
+        
+#         if quote_pdf_path and os.path.exists(quote_pdf_path):
+#             pdf_status['file_exists'] = True
+#             pdf_status['file_size'] = os.path.getsize(quote_pdf_path)
+#             current_app.logger.info(f"📎 PDF found: {quote_pdf_path} (Size: {pdf_status['file_size']} bytes)")
+#         else:
+#             current_app.logger.warning(f"⚠️ PDF not available for project {project_id}")
+
+#         # Handle development/staging environment gracefully
+#         if not all([smtp_server, smtp_user, smtp_password]):
+#             current_app.logger.warning('📧 SMTP not fully configured - simulating email send')
+            
+#             return jsonify({
+#                 'message': f'Quote email prepared successfully (SMTP not configured - simulation mode)',
+#                 'timestamp': datetime.utcnow().isoformat(),
+#                 'development_mode': True,
+#                 'pdf_status': pdf_status,
+#                 'email_details': {
+#                     'to': client_email,
+#                     'subject': f'Quote for Project: {project_name}',
+#                     'total_cost': total_cost,
+#                     'quote_id': quote_id,
+#                     'client_name': client_name
+#                 },
+#                 'smtp_config': {
+#                     'server_configured': bool(smtp_server),
+#                     'user_configured': bool(smtp_user),
+#                     'password_configured': bool(smtp_password)
+#                 }
+#             })
+
+#         # Get frontend URL for signature link
+#         frontend_url = current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')
+        
+#         # Use the enhanced email service
+#         try:
+#             from services.email_service import send_quote_with_signature_link_frontend
+            
+#             # Get or create quote object for email
+#             from models.quote import Quote
+#             quote_obj = None
+            
+#             if quote_id and quote_id != 'N/A':
+#                 quote_obj = Quote.query.filter_by(id=quote_id, project_id=project_id).first()
+            
+#             if not quote_obj:
+#                 # Create a temporary quote-like object for email
+#                 class TempQuote:
+#                     def __init__(self, quote_id, project_name, total_cost):
+#                         self.id = quote_id
+#                         self.quote_number = quote_id
+#                         self.total_amount = float(total_cost)
+#                         self.valid_until = datetime.utcnow() + timedelta(days=30)
+#                         self.project = project
+                
+#                 quote_obj = TempQuote(quote_id, project_name, total_cost)
+            
+#             # Send enhanced email with signature link
+#             send_quote_with_signature_link_frontend(
+#                 client_email=client_email,
+#                 client_name=client_name or "Valued Client",
+#                 quote=quote_obj,
+#                 company=user.company,
+#                 frontend_url=frontend_url,
+#                 pdf_path=quote_pdf_path
+#             )
+            
+#             current_app.logger.info(f"✅ Email sent successfully to {client_email}")
+            
+#             return jsonify({
+#                 'message': f'Quote email sent successfully to {client_email}',
+#                 'timestamp': datetime.utcnow().isoformat(),
+#                 'email_details': {
+#                     'to': client_email,
+#                     'subject': f'Quote #{quote_id} - {user.company.name}',
+#                     'total_cost': total_cost,
+#                     'quote_id': quote_id,
+#                     'client_name': client_name,
+#                     'pdf_attached': pdf_status['file_exists'],
+#                     'signature_url': f"{frontend_url}/quotes/{quote_id}/sign"
+#                 },
+#                 'pdf_status': pdf_status
+#             })
+
+#         except ImportError as e:
+#             current_app.logger.error(f'❌ Email service import failed: {e}')
+#             return jsonify({
+#                 'error': 'Email service not available',
+#                 'details': 'Email functionality is not properly configured'
+#             }), 500
+            
+#         except Exception as email_error:
+#             current_app.logger.error(f'❌ Email sending failed: {str(email_error)}')
+            
+#             # Provide specific error messages based on the exception
+#             if 'authentication' in str(email_error).lower():
+#                 return jsonify({
+#                     'error': 'Email authentication failed',
+#                     'details': 'Please check email server credentials'
+#                 }), 500
+#             elif 'connection' in str(email_error).lower():
+#                 return jsonify({
+#                     'error': 'Email server connection failed',
+#                     'details': 'Please check SMTP server configuration'
+#                 }), 500
+#             else:
+#                 return jsonify({
+#                     'error': 'Failed to send email',
+#                     'details': 'Please contact support if this persists'
+#                 }), 500
+
+#     except Exception as e:
+#         current_app.logger.error(f'❌ Email quote error: {str(e)}')
+#         current_app.logger.error(f'Full traceback: {traceback.format_exc()}')
+#         return jsonify({
+#             'error': 'Failed to process email request',
+#             'details': str(e)
+#         }), 500
+
+
+
 @projects_bp.route('/<int:project_id>/email-quote', methods=['POST'])
 @jwt_required()
 def email_quote(project_id):
-    """Send quote email to client with enhanced error handling and PDF attachment logging"""
+    """Simple test email - temporarily replacing the main function"""
     try:
         current_user_id = get_jwt_identity()
         user = db.session.get(User, int(current_user_id))
@@ -986,166 +1161,59 @@ def email_quote(project_id):
             return jsonify({'error': 'User or company not found'}), 400
 
         data = request.get_json()
-        if not data:
-            return jsonify({'error': 'No data provided'}), 400
-            
-        # Validate required fields
-        required_fields = ['client_email', 'project_name', 'total_cost']
-        missing_fields = [field for field in required_fields if not data.get(field)]
-        if missing_fields:
-            return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
-
-        project = Project.query.filter_by(
-            id=project_id,
-            company_id=user.company_id
-        ).first()
-        
-        if not project:
-            return jsonify({'error': 'Project not found'}), 404
+        if not data or not data.get('client_email'):
+            return jsonify({'error': 'client_email is required'}), 400
 
         client_email = data['client_email']
-        project_name = data['project_name']
-        total_cost = data['total_cost']
-        quote_id = data.get('quote_id', 'N/A')
-        client_name = data.get('client_name', 'Valued Client')
-
-        # Enhanced logging
-        current_app.logger.info(f"📧 Starting email process for project {project_id} to {client_email}")
 
         # Check SMTP configuration
         smtp_server = current_app.config.get('MAIL_SERVER')
-        smtp_port = current_app.config.get('MAIL_PORT', 587)
         smtp_user = current_app.config.get('MAIL_USERNAME')
         smtp_password = current_app.config.get('MAIL_PASSWORD')
         
-        current_app.logger.info(f"📧 SMTP Config - Server: {smtp_server}, Port: {smtp_port}, User: {smtp_user[:5]}...{smtp_user[-5:] if smtp_user else 'None'}")
+        current_app.logger.info(f"📧 SMTP Config - Server: {smtp_server}, User: {smtp_user}")
         
-        # Check PDF availability
-        quote_pdf_path = project.quote_pdf_path
-        pdf_status = {
-            'path_exists': bool(quote_pdf_path),
-            'file_exists': False,
-            'file_size': 0,
-            'path': quote_pdf_path
-        }
-        
-        if quote_pdf_path and os.path.exists(quote_pdf_path):
-            pdf_status['file_exists'] = True
-            pdf_status['file_size'] = os.path.getsize(quote_pdf_path)
-            current_app.logger.info(f"📎 PDF found: {quote_pdf_path} (Size: {pdf_status['file_size']} bytes)")
-        else:
-            current_app.logger.warning(f"⚠️ PDF not available for project {project_id}")
-
-        # Handle development/staging environment gracefully
         if not all([smtp_server, smtp_user, smtp_password]):
-            current_app.logger.warning('📧 SMTP not fully configured - simulating email send')
-            
-            return jsonify({
-                'message': f'Quote email prepared successfully (SMTP not configured - simulation mode)',
-                'timestamp': datetime.utcnow().isoformat(),
-                'development_mode': True,
-                'pdf_status': pdf_status,
-                'email_details': {
-                    'to': client_email,
-                    'subject': f'Quote for Project: {project_name}',
-                    'total_cost': total_cost,
-                    'quote_id': quote_id,
-                    'client_name': client_name
-                },
-                'smtp_config': {
-                    'server_configured': bool(smtp_server),
-                    'user_configured': bool(smtp_user),
-                    'password_configured': bool(smtp_password)
-                }
-            })
+            return jsonify({'error': 'SMTP not configured'}), 500
 
-        # Get frontend URL for signature link
-        frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:5173')
-        
-        # Use the enhanced email service
+        # Use your existing email service
         try:
-            from services.email_service import send_quote_with_signature_link_frontend
+            from services.email_service import send_simple_test_email
             
-            # Get or create quote object for email
-            from models.quote import Quote
-            quote_obj = None
-            
-            if quote_id and quote_id != 'N/A':
-                quote_obj = Quote.query.filter_by(id=quote_id, project_id=project_id).first()
-            
-            if not quote_obj:
-                # Create a temporary quote-like object for email
-                class TempQuote:
-                    def __init__(self, quote_id, project_name, total_cost):
-                        self.id = quote_id
-                        self.quote_number = quote_id
-                        self.total_amount = float(total_cost)
-                        self.valid_until = datetime.utcnow() + timedelta(days=30)
-                        self.project = project
-                
-                quote_obj = TempQuote(quote_id, project_name, total_cost)
-            
-            # Send enhanced email with signature link
-            send_quote_with_signature_link_frontend(
+            send_simple_test_email(
                 client_email=client_email,
-                client_name=client_name or "Valued Client",
-                quote=quote_obj,
-                company=user.company,
-                frontend_url=frontend_url,
-                pdf_path=quote_pdf_path
+                company=user.company
             )
             
-            current_app.logger.info(f"✅ Email sent successfully to {client_email}")
+            current_app.logger.info(f"✅ Test email sent successfully to {client_email}")
             
             return jsonify({
-                'message': f'Quote email sent successfully to {client_email}',
-                'timestamp': datetime.utcnow().isoformat(),
-                'email_details': {
-                    'to': client_email,
-                    'subject': f'Quote #{quote_id} - {user.company.name}',
-                    'total_cost': total_cost,
-                    'quote_id': quote_id,
-                    'client_name': client_name,
-                    'pdf_attached': pdf_status['file_exists'],
-                    'signature_url': f"{frontend_url}/quotes/{quote_id}/sign"
-                },
-                'pdf_status': pdf_status
+                'message': f'Test email sent successfully to {client_email}',
+                'timestamp': datetime.utcnow().isoformat()
             })
 
-        except ImportError as e:
-            current_app.logger.error(f'❌ Email service import failed: {e}')
-            return jsonify({
-                'error': 'Email service not available',
-                'details': 'Email functionality is not properly configured'
-            }), 500
-            
         except Exception as email_error:
-            current_app.logger.error(f'❌ Email sending failed: {str(email_error)}')
-            
-            # Provide specific error messages based on the exception
-            if 'authentication' in str(email_error).lower():
-                return jsonify({
-                    'error': 'Email authentication failed',
-                    'details': 'Please check email server credentials'
-                }), 500
-            elif 'connection' in str(email_error).lower():
-                return jsonify({
-                    'error': 'Email server connection failed',
-                    'details': 'Please check SMTP server configuration'
-                }), 500
-            else:
-                return jsonify({
-                    'error': 'Failed to send email',
-                    'details': 'Please contact support if this persists'
-                }), 500
+            current_app.logger.error(f'❌ Test email failed: {str(email_error)}')
+            return jsonify({
+                'error': 'Failed to send test email',
+                'details': str(email_error)
+            }), 500
 
     except Exception as e:
-        current_app.logger.error(f'❌ Email quote error: {str(e)}')
-        current_app.logger.error(f'Full traceback: {traceback.format_exc()}')
+        current_app.logger.error(f'❌ Test email error: {str(e)}')
         return jsonify({
-            'error': 'Failed to process email request',
+            'error': 'Failed to process test email request',
             'details': str(e)
         }), 500
+
+
+
+
+
+
+
+
+
 
 @projects_bp.route('/stats', methods=['GET'])
 @jwt_required()
