@@ -1,23 +1,45 @@
 import os
-from flask import current_app, render_template_string
-from flask_mail import Mail, Message
+from flask import current_app
 import logging
 from datetime import datetime
-
 import smtplib
+import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
+from email.mime.base import MIMEBase
+from email import encoders
 
 logger = logging.getLogger(__name__)
+
+
+def _get_smtp_connection():
+    """Get SMTP connection with proper TLS configuration"""
+    smtp_server = current_app.config.get('MAIL_SERVER')
+    smtp_port = current_app.config.get('MAIL_PORT', 587)
+    smtp_user = current_app.config.get('MAIL_USERNAME')
+    smtp_password = current_app.config.get('MAIL_PASSWORD')
+    
+    # Create secure SSL context
+    context = ssl.create_default_context()
+    
+    # Connect to server
+    server = smtplib.SMTP(smtp_server, smtp_port)
+    server.starttls(context=context)
+    server.login(smtp_user, smtp_password)
+    
+    return server, smtp_user
 
 
 def send_welcome_email(email: str, first_name: str, company_name: str):
     """Send welcome email to new user"""
     try:
-        mail = Mail(current_app)
+        server, smtp_user = _get_smtp_connection()
         
-        subject = f"Welcome to Paint Quote Pro, {first_name}!"
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email
+        msg['Subject'] = f"Welcome to Paint Quote Pro, {first_name}!"
         
         html_body = f"""
         <html>
@@ -42,7 +64,7 @@ def send_welcome_email(email: str, first_name: str, company_name: str):
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:5173')}/dashboard" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/dashboard" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Get Started
                     </a>
@@ -61,13 +83,10 @@ def send_welcome_email(email: str, first_name: str, company_name: str):
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[email],
-            html=html_body
-        )
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
         
-        mail.send(msg)
         logger.info(f"Welcome email sent to {email}")
         
     except Exception as e:
@@ -77,10 +96,15 @@ def send_welcome_email(email: str, first_name: str, company_name: str):
 def send_password_reset_email(email: str, first_name: str, reset_token: str):
     """Send password reset email"""
     try:
-        mail = Mail(current_app)
+        server, smtp_user = _get_smtp_connection()
         
-        subject = "Reset your Paint Quote Pro password"
-        reset_url = f"{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/reset-password?token={reset_token}&email={email}"
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email
+        msg['Subject'] = "Reset your Paint Quote Pro password"
+        
+        reset_url = f"{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/reset-password?token={reset_token}&email={email}"
         
         html_body = f"""
         <html>
@@ -113,25 +137,27 @@ def send_password_reset_email(email: str, first_name: str, reset_token: str):
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[email],
-            html=html_body
-        )
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
         
-        mail.send(msg)
         logger.info(f"Password reset email sent to {email}")
         
     except Exception as e:
         logger.error(f"Failed to send password reset email: {e}")
         raise
 
+
 def send_payment_success_email(email: str, first_name: str, company_name: str, plan_name: str, billing_cycle: str, amount: float):
     """Send payment success confirmation email"""
     try:
-        mail = Mail(current_app)
+        server, smtp_user = _get_smtp_connection()
         
-        subject = f"Payment Successful - Welcome to {plan_name.title()}!"
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email
+        msg['Subject'] = f"Payment Successful - Welcome to {plan_name.title()}!"
         
         html_body = f"""
         <html>
@@ -162,7 +188,7 @@ def send_payment_success_email(email: str, first_name: str, company_name: str, p
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/dashboard" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/dashboard" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Go to Dashboard
                     </a>
@@ -183,26 +209,26 @@ def send_payment_success_email(email: str, first_name: str, company_name: str, p
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[email],
-            html=html_body
-        )
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
         
-        mail.send(msg)
         logger.info(f"Payment success email sent to {email}")
         
     except Exception as e:
         logger.error(f"Failed to send payment success email: {e}")
         raise
 
-
 def send_payment_failed_email(email: str, first_name: str, company_name: str, plan_name: str, attempt_count: int):
     """Send payment failure notification email"""
     try:
-        mail = Mail(current_app)
+        server, smtp_user = _get_smtp_connection()
         
-        subject = "Payment Issue - Let's Get You Back on Track"
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email
+        msg['Subject'] = "Payment Issue - Let's Get You Back on Track"
         
         html_body = f"""
         <html>
@@ -236,7 +262,7 @@ def send_payment_failed_email(email: str, first_name: str, company_name: str, pl
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/subscription/billing" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/subscription/billing" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Update Payment Method
                     </a>
@@ -252,13 +278,10 @@ def send_payment_failed_email(email: str, first_name: str, company_name: str, pl
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[email],
-            html=html_body
-        )
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
         
-        mail.send(msg)
         logger.info(f"Payment failed email sent to {email}")
         
     except Exception as e:
@@ -269,9 +292,13 @@ def send_payment_failed_email(email: str, first_name: str, company_name: str, pl
 def send_subscription_cancelled_email(email: str, first_name: str, company_name: str, cancellation_reason: str):
     """Send subscription cancellation confirmation email"""
     try:
-        mail = Mail(current_app)
+        server, smtp_user = _get_smtp_connection()
         
-        subject = "Subscription Cancelled - We'll Miss You"
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email
+        msg['Subject'] = "Subscription Cancelled - We'll Miss You"
         
         reason_text = {
             'payment_failed': 'due to failed payment attempts',
@@ -305,7 +332,7 @@ def send_subscription_cancelled_email(email: str, first_name: str, company_name:
                 <p>You can reactivate your subscription at any time and pick up exactly where you left off.</p>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/subscription" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/subscription" 
                        style="background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         Reactivate Subscription
                     </a>
@@ -321,13 +348,10 @@ def send_subscription_cancelled_email(email: str, first_name: str, company_name:
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[email],
-            html=html_body
-        )
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
         
-        mail.send(msg)
         logger.info(f"Subscription cancelled email sent to {email}")
         
     except Exception as e:
@@ -338,9 +362,13 @@ def send_subscription_cancelled_email(email: str, first_name: str, company_name:
 def send_quote_email(client_email: str, quote, project, company):
     """Send quote to client"""
     try:
-        mail = Mail(current_app)
+        server, smtp_user = _get_smtp_connection()
         
-        subject = f"Paint Quote #{quote.quote_number} from {company.name}"
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = client_email
+        msg['Subject'] = f"Paint Quote #{quote.quote_number} from {company.name}"
         
         html_body = f"""
         <html>
@@ -378,22 +406,23 @@ def send_quote_email(client_email: str, quote, project, company):
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[client_email],
-            html=html_body
-        )
+        msg.attach(MIMEText(html_body, 'html'))
         
         # Attach PDF if it exists
         if quote.pdf_path and os.path.exists(quote.pdf_path):
-            with open(quote.pdf_path, 'rb') as f:
-                msg.attach(
-                    filename=f"quote_{quote.quote_number}.pdf",
-                    content_type="application/pdf",
-                    data=f.read()
+            with open(quote.pdf_path, 'rb') as attachment:
+                part = MIMEBase('application', 'octet-stream')
+                part.set_payload(attachment.read())
+                encoders.encode_base64(part)
+                part.add_header(
+                    'Content-Disposition',
+                    f'attachment; filename= quote_{quote.quote_number}.pdf',
                 )
+                msg.attach(part)
         
-        mail.send(msg)
+        server.send_message(msg)
+        server.quit()
+        
         logger.info(f"Quote email sent to {client_email}")
         
     except Exception as e:
@@ -401,154 +430,21 @@ def send_quote_email(client_email: str, quote, project, company):
         raise
 
 
-# def send_quote_with_signature_link(client_email: str, client_name: str, quote, company, signature_url: str, pdf_path: str = None):
-#     """Send quote email with PDF attachment and signature link"""
-#     try:
-#         from flask_mail import Mail, Message
-#         from email.mime.base import MIMEBase
-#         from email import encoders
-#         import os
-        
-#         mail = Mail(current_app)
-        
-#         subject = f"Quote #{quote.quote_number} - {company.name}"
-        
-#         # Create multipart message
-#         msg = Message(
-#             subject=subject,
-#             recipients=[client_email],
-#             sender=current_app.config.get('MAIL_DEFAULT_SENDER')
-#         )
-        
-#         # HTML body with signature button
-#         html_body = f"""
-#         <html>
-#         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-#             <div style="background-color: #2563eb; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-#                 <h1 style="margin: 0; font-size: 28px;">Quote Ready for Signature</h1>
-#                 <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">
-#                     From {company.name}
-#                 </p>
-#             </div>
-            
-#             <div style="background-color: #f8fafc; padding: 30px; border-radius: 0 0 8px 8px;">
-#                 <h2 style="color: #1e293b; margin-top: 0;">Dear {client_name},</h2>
-                
-#                 <p style="color: #475569; font-size: 16px; line-height: 1.6;">
-#                     Thank you for your interest in our services. We have prepared a detailed quote for your project.
-#                 </p>
-                
-#                 <div style="background-color: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 20px 0;">
-#                     <h3 style="color: #1e293b; margin-top: 0;">Quote Details</h3>
-#                     <table style="width: 100%; border-collapse: collapse;">
-#                         <tr>
-#                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Quote Number:</td>
-#                             <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.quote_number}</td>
-#                         </tr>
-#                         <tr>
-#                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Project:</td>
-#                             <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.project.name}</td>
-#                         </tr>
-#                         <tr>
-#                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Total Amount:</td>
-#                             <td style="padding: 8px 0; color: #059669; font-weight: 700; font-size: 18px;">€{quote.total_amount:,.2f}</td>
-#                         </tr>
-#                         <tr>
-#                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Valid Until:</td>
-#                             <td style="padding: 8px 0; color: #1e293b; font-weight: 600;">{quote.valid_until.strftime('%B %d, %Y')}</td>
-#                         </tr>
-#                     </table>
-#                 </div>
-                
-#                 <div style="text-align: center; margin: 30px 0;">
-#                     <a href="{signature_url}" 
-#                        style="display: inline-block; background-color: #059669; color: white; padding: 15px 30px; 
-#                               text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-#                         📝 SIGN QUOTE ONLINE
-#                     </a>
-#                 </div>
-                
-#                 <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 15px; margin: 20px 0;">
-#                     <h4 style="color: #047857; margin-top: 0;">Quick & Secure Digital Signing</h4>
-#                     <ul style="color: #065f46; margin: 0; padding-left: 20px;">
-#                         <li>Review the complete quote details</li>
-#                         <li>Sign digitally with your mouse or finger</li>
-#                         <li>Get instant confirmation</li>
-#                         <li>Legally binding electronic signature</li>
-#                     </ul>
-#                 </div>
-                
-#                 <p style="color: #475569; font-size: 14px; line-height: 1.6;">
-#                     📎 <strong>Quote PDF is attached</strong> for your records. You can also download it from the signing page.
-#                 </p>
-                
-#                 <p style="color: #475569; font-size: 16px; line-height: 1.6;">
-#                     If you have any questions about this quote, please don't hesitate to contact us.
-#                 </p>
-                
-#                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-#                     <p style="color: #475569; margin: 0;">
-#                         <strong>Best regards,</strong><br>
-#                         {company.name}<br>
-#                         {company.phone or ''}<br>
-#                         {company.email or ''}
-#                     </p>
-#                 </div>
-#             </div>
-            
-#             <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px;">
-#                 <p style="margin: 0;">
-#                     This is an automated message from {company.name}.<br>
-#                     Quote generated on {datetime.now().strftime('%B %d, %Y')}
-#                 </p>
-#             </div>
-#         </body>
-#         </html>
-#         """
-        
-#         msg.html = html_body
-        
-#         # Attach PDF if available
-#         if pdf_path and os.path.exists(pdf_path):
-#             try:
-#                 with open(pdf_path, "rb") as attachment:
-#                     msg.attach(
-#                         filename=f"quote_{quote.quote_number}.pdf",
-#                         content_type="application/pdf",
-#                         data=attachment.read()
-#                     )
-                
-#                 current_app.logger.info(f"📎 PDF attached to email: {pdf_path}")
-                
-#             except Exception as e:
-#                 current_app.logger.warning(f"Failed to attach PDF: {e}")
-        
-#         # Send email
-#         mail.send(msg)
-#         current_app.logger.info(f"📧 Quote email sent successfully to {client_email}")
-        
-#     except Exception as e:
-#         current_app.logger.error(f"Failed to send quote email: {e}")
-#         raise
-
-
 def send_quote_with_signature_link_frontend(client_email: str, client_name: str, quote, company, frontend_url: str, pdf_path: str = None):
     """Send quote email with PDF attachment and frontend signature link"""
     try:
+        current_app.logger.info(f"Sending quote email to {client_email} for quote #{quote.quote_number}")
 
-        current_app.logger.info(f"Sending quote email to {client_email}, {client_name}, {quote}, {company}, {frontend_url}, {pdf_path} for quote #{quote.quote_number}")
-
-
-        from flask_mail import Mail, Message
+        server, smtp_user = _get_smtp_connection()
         
-        mail = Mail(current_app)
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = client_email
+        msg['Subject'] = f"Quote #{quote.quote_number} - {company.name}"
         
         # Frontend signature URL instead of backend
         signature_url = f"{frontend_url}/quotes/{quote.id}/sign"
-        
-        subject = f"Quote #{quote.quote_number} - {company.name}"
-        
-        
         
         html_body = f"""
         <html>
@@ -635,335 +531,47 @@ def send_quote_with_signature_link_frontend(client_email: str, client_name: str,
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[client_email],
-            html=html_body,
-            # sender=current_app.config.get('MAIL_DEFAULT_SENDER')
-        )
+        msg.attach(MIMEText(html_body, 'html'))
         
         # Attach PDF if available
         if pdf_path and os.path.exists(pdf_path):
             try:
                 with open(pdf_path, "rb") as attachment:
-                    msg.attach(
-                        filename=f"quote_{quote.quote_number}.pdf",
-                        content_type="application/pdf",
-                        data=attachment.read()
+                    part = MIMEBase('application', 'octet-stream')
+                    part.set_payload(attachment.read())
+                    encoders.encode_base64(part)
+                    part.add_header(
+                        'Content-Disposition',
+                        f'attachment; filename= quote_{quote.quote_number}.pdf',
                     )
+                    msg.attach(part)
                 current_app.logger.info(f"📎 PDF attached to email: {pdf_path}")
             except Exception as e:
                 current_app.logger.warning(f"Failed to attach PDF: {e}")
         
-        mail.send(msg)
+        server.send_message(msg)
+        server.quit()
+        
         current_app.logger.info(f"📧 Quote email sent successfully to {client_email}")
         
     except Exception as e:
         current_app.logger.error(f"Failed to send quote email: {e}")
         raise
 
-# def send_email(to_email, subject, html_content, from_name=None):
-#     """Send email using Flask-Mail"""
-#     try:
-#         # Initialize Flask-Mail
-#         mail = Mail(current_app)
-        
-#         # Set sender
-#         sender = current_app.config.get('MAIL_USERNAME')
-#         if from_name:
-#             sender = f"{from_name} <{sender}>"
-        
-#         # Create message
-#         msg = Message(
-#             subject=subject,
-#             sender=sender,
-#             recipients=[to_email]
-#         )
-        
-#         msg.html = html_content
-        
-#         # Send email
-#         mail.send(msg)
-#         logger.info(f"Email sent successfully to {to_email}")
-        
-#     except Exception as e:
-#         logger.error(f"Failed to send email to {to_email}: {str(e)}")
-#         raise e
 
-
-# def send_simple_test_email(client_email, company):
-#     """Send a simple test email"""
-    
-#     # Email content
-#     subject = "Testing Email"
-    
-#     html_content = f"""
-#     <html>
-#     <body>
-#         <h2>Testing Email</h2>
-#         <p>Hello!</p>
-#         <p>This is a test email from {company.name}.</p>
-#         <p>If you received this, the email system is working.</p>
-#         <hr>
-#         <p>Best regards,<br>{company.name}</p>
-#     </body>
-#     </html>
-#     """
-    
-#     # Send email using your existing email setup
-#     send_email(
-#         to_email=client_email,
-#         subject=subject,
-#         html_content=html_content,
-#         from_name=company.name
-#     )
-
-
-# Replace your email service function with this direct SMTP version
-
-
-
-def send_simple_test_email(client_email, company):
-    """Send a simple test email using direct SMTP connection"""
-    
-    # Get SMTP configuration
-    smtp_server = current_app.config.get('MAIL_SERVER')
-    smtp_port = current_app.config.get('MAIL_PORT', 587)
-    smtp_user = current_app.config.get('MAIL_USERNAME')
-    smtp_password = current_app.config.get('MAIL_PASSWORD')
-    use_tls = current_app.config.get('MAIL_USE_TLS', True)
-    
-    logger.info(f"📧 Direct SMTP - Server: {smtp_server}:{smtp_port}, User: {smtp_user}, TLS: {use_tls}")
-    
+def send_signature_confirmation_email(client_email: str, client_name: str, quote):
+    """Send signature confirmation email to client"""
     try:
+        server, smtp_user = _get_smtp_connection()
+        
         # Create message
         msg = MIMEMultipart()
         msg['From'] = smtp_user
         msg['To'] = client_email
-        msg['Subject'] = "Testing Email - Direct SMTP"
-        
-        # Email body
-        html_body = f"""
-        <html>
-        <body>
-            <h2>🧪 Testing Email (Direct SMTP)</h2>
-            <p>Hello!</p>
-            <p>This is a test email from <strong>{company.name}</strong>.</p>
-            <p>✅ If you received this, the email system is working with direct SMTP!</p>
-            <hr>
-            <p>Sent at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
-            <p>From: {smtp_user}</p>
-            <p>Best regards,<br>{company.name}</p>
-        </body>
-        </html>
-        """
-        
-        msg.attach(MIMEText(html_body, 'html'))
-        
-        # Connect to server and send email
-        logger.info(f"📧 Connecting to {smtp_server}:{smtp_port}")
-        
-        # Create SMTP connection
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        
-        # Enable debug output
-        server.set_debuglevel(1)
-        
-        logger.info("📧 Starting TLS...")
-        server.starttls()
-        
-        logger.info("📧 Attempting login...")
-        server.login(smtp_user, smtp_password)
-        
-        logger.info(f"📧 Sending email to {client_email}...")
-        text = msg.as_string()
-        server.sendmail(smtp_user, client_email, text)
-        
-        server.quit()
-        
-        logger.info(f"✅ Direct SMTP email sent successfully to {client_email}")
-        
-    except smtplib.SMTPAuthenticationError as e:
-        logger.error(f"❌ SMTP Authentication Error: {e}")
-        raise Exception(f"Email authentication failed: {e}")
-        
-    except smtplib.SMTPRecipientsRefused as e:
-        logger.error(f"❌ SMTP Recipients Refused: {e}")
-        raise Exception(f"Email recipient refused: {e}")
-        
-    except smtplib.SMTPServerDisconnected as e:
-        logger.error(f"❌ SMTP Server Disconnected: {e}")
-        raise Exception(f"Email server disconnected: {e}")
-        
-    except smtplib.SMTPConnectError as e:
-        logger.error(f"❌ SMTP Connection Error: {e}")
-        raise Exception(f"Cannot connect to email server: {e}")
-        
-    except Exception as e:
-        logger.error(f"❌ Direct SMTP Error: {e}")
-        raise Exception(f"Email sending failed: {e}")
-
-
-# Fixed version with proper TLS handling
-def send_simple_test_email_debug(client_email, company):
-    """Send test email with proper TLS configuration"""
-    
-    smtp_server = current_app.config.get('MAIL_SERVER')
-    smtp_port = current_app.config.get('MAIL_PORT', 587)
-    smtp_user = current_app.config.get('MAIL_USERNAME')
-    smtp_password = current_app.config.get('MAIL_PASSWORD')
-    
-    logger.info(f"🔍 EMAIL DEBUG INFO:")
-    logger.info(f"   SMTP Server: {smtp_server}")
-    logger.info(f"   SMTP Port: {smtp_port}")
-    logger.info(f"   SMTP User: {smtp_user}")
-    logger.info(f"   SMTP Password Length: {len(smtp_password) if smtp_password else 0}")
-    logger.info(f"   To Email: {client_email}")
-    logger.info(f"   Company: {company.name}")
-    
-    try:
-        # Create message first
-        msg = MIMEMultipart()
-        msg['From'] = smtp_user
-        msg['To'] = client_email
-        msg['Subject'] = "Testing Email - Paint Quote Pro"
-        
-        html_body = f"""
-        <html>
-        <body>
-            <h2>🧪 Testing Email</h2>
-            <p>Hello!</p>
-            <p>This is a test email from <strong>{company.name}</strong>.</p>
-            <p>✅ If you received this, the email system is working!</p>
-            <hr>
-            <p>Sent at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
-            <p>Best regards,<br>{company.name}</p>
-        </body>
-        </html>
-        """
-        
-        msg.attach(MIMEText(html_body, 'html'))
-        
-        # Connect with proper TLS context
-        import ssl
-        
-        logger.info("🔍 Creating SMTP connection with TLS...")
-        
-        # Create secure SSL context
-        context = ssl.create_default_context()
-        
-        # Connect to server
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.set_debuglevel(1)  # Reduce debug level
-        
-        # Start TLS with proper context and server name
-        logger.info("🔍 Starting TLS with proper context...")
-        server.starttls(context=context)
-        
-        logger.info("🔍 Attempting login...")
-        server.login(smtp_user, smtp_password)
-        
-        logger.info("🔍 Sending email...")
-        server.send_message(msg)
-        
-        server.quit()
-        logger.info("✅ Email sent successfully!")
-        
-    except smtplib.SMTPAuthenticationError as e:
-        logger.error(f"❌ SMTP Auth Error: {e}")
-        raise Exception(f"Gmail authentication failed. Check your App Password: {e}")
-        
-    except smtplib.SMTPRecipientsRefused as e:
-        logger.error(f"❌ Recipients Refused: {e}")
-        raise Exception(f"Email recipient refused: {e}")
-        
-    except Exception as e:
-        logger.error(f"❌ Email failed: {e}")
-        raise Exception(f"Email sending failed: {e}")
-
-
-# def send_signature_confirmation_email(client_email: str, client_name: str, quote):
-#     """Send signature confirmation email to client"""
-#     try:
-#         mail = Mail(current_app)
-        
-#         subject = f"Quote Signed Successfully - {quote.project.company.name}"
-        
-#         html_body = f"""
-#         <html>
-#         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-#             <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
-#                 <h1>✅ Quote Signed Successfully!</h1>
-#             </div>
-            
-#             <div style="padding: 30px;">
-#                 <h2>Dear {client_name},</h2>
-                
-#                 <p>Thank you for digitally signing our quote! We have received your acceptance and are excited to work with you.</p>
-                
-#                 <div style="background-color: #e8f5e8; border: 1px solid #28a745; padding: 20px; border-radius: 8px; margin: 20px 0;">
-#                     <h3 style="color: #1e7e34; margin-top: 0;">Quote Details</h3>
-#                     <p><strong>Quote Number:</strong> {quote.quote_number}</p>
-#                     <p><strong>Project:</strong> {quote.project.name}</p>
-#                     <p><strong>Total Amount:</strong> €{quote.total_amount:.2f}</p>
-#                     <p><strong>Signed On:</strong> {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</p>
-#                 </div>
-                
-#                 <h3>What Happens Next?</h3>
-#                 <ul>
-#                     <li>Our team will review your signed quote within 1 business day</li>
-#                     <li>A project coordinator will contact you to schedule the work</li>
-#                     <li>We'll confirm all details and start dates with you directly</li>
-#                     <li>All work will be completed according to the specifications in your quote</li>
-#                 </ul>
-                
-#                 <div style="text-align: center; margin: 30px 0;">
-#                     <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/quotes/{quote.id}/pdf" 
-#                        style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-#                         Download Signed Quote PDF
-#                     </a>
-#                 </div>
-                
-#                 <p>Your digital signature has been securely recorded and has the same legal validity as a handwritten signature.</p>
-                
-#                 <p>If you have any questions, please don't hesitate to contact us.</p>
-                
-#                 <p>Best regards,<br>{quote.project.company.name}<br>
-#                 {quote.project.company.phone or ''}<br>
-#                 {quote.project.company.email or ''}</p>
-#             </div>
-            
-#             <div style="background-color: #F3F4F6; padding: 20px; text-align: center; font-size: 12px; color: #6B7280;">
-#                 <p>This is an automated confirmation of your digital signature.</p>
-#                 <p>© 2025 {quote.project.company.name}. All rights reserved.</p>
-#             </div>
-#         </body>
-#         </html>
-#         """
-        
-#         msg = Message(
-#             subject=subject,
-#             recipients=[client_email],
-#             html=html_body
-#         )
-        
-#         mail.send(msg)
-#         logger.info(f"Signature confirmation email sent to {client_email}")
-        
-#     except Exception as e:
-#         logger.error(f"Failed to send signature confirmation email: {e}")
-#         raise
-
-# services/email_service.py - Fix email templates
-def send_signature_confirmation_email(client_email: str, client_name: str, quote):
-    """Send signature confirmation email to client"""
-    try:
-        mail = Mail(current_app)
-        
-        subject = f"Quote Signed Successfully - {quote.project.company.name}"
+        msg['Subject'] = f"Quote Signed Successfully - {quote.project.company.name}"
         
         # Get the correct download URL
-        frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:5173')
+        frontend_url = current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')
         pdf_view_url = f"{frontend_url}/quotes/{quote.id}/pdf"
         
         html_body = f"""
@@ -1013,13 +621,10 @@ def send_signature_confirmation_email(client_email: str, client_name: str, quote
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[client_email],
-            html=html_body
-        )
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
         
-        mail.send(msg)
         logger.info(f"Signature confirmation email sent to {client_email}")
         
     except Exception as e:
@@ -1030,9 +635,13 @@ def send_signature_confirmation_email(client_email: str, client_name: str, quote
 def send_quote_signed_notification_email(company_email: str, company_name: str, quote, client_name: str):
     """Send quote signed notification to company"""
     try:
-        mail = Mail(current_app)
+        server, smtp_user = _get_smtp_connection()
         
-        subject = f"🎉 Quote #{quote.quote_number} Signed by {client_name}"
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = company_email
+        msg['Subject'] = f"🎉 Quote #{quote.quote_number} Signed by {client_name}"
         
         html_body = f"""
         <html>
@@ -1051,7 +660,7 @@ def send_quote_signed_notification_email(company_email: str, company_name: str, 
                     <p><strong>Client:</strong> {client_name}</p>
                     <p><strong>Project:</strong> {quote.project.name}</p>
                     <p><strong>Quote Number:</strong> {quote.quote_number}</p>
-                    <p><strong>Total Amount:</strong> €{quote.total_amount:.2f}</p>
+                    <p><strong>Total Amount:</strong> £{quote.total_amount:.2f}</p>
                     <p><strong>Property:</strong> {quote.project.property_address}</p>
                     <p><strong>Client Email:</strong> {quote.project.client_email}</p>
                     <p><strong>Client Phone:</strong> {quote.project.client_phone or 'Not provided'}</p>
@@ -1066,7 +675,7 @@ def send_quote_signed_notification_email(company_email: str, company_name: str, 
                 </ul>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{current_app.config.get('FRONTEND_URL', 'http://localhost:3000')}/projects/{quote.project.id}" 
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://paint-quote-pro.vercel.app')}/projects/{quote.project.id}" 
                        style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                         View Project Details
                     </a>
@@ -1082,19 +691,15 @@ def send_quote_signed_notification_email(company_email: str, company_name: str, 
         </html>
         """
         
-        msg = Message(
-            subject=subject,
-            recipients=[company_email],
-            html=html_body
-        )
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
         
-        mail.send(msg)
         logger.info(f"Quote signed notification sent to {company_email}")
         
     except Exception as e:
         logger.error(f"Failed to send quote signed notification: {e}")
         raise
-
 
 
 
