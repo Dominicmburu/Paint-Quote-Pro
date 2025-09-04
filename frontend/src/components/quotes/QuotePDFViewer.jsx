@@ -158,10 +158,6 @@ const QuotePDFViewer = () => {
                                 <p className="text-sm text-gray-600">Total Amount</p>
                                 <p className="text-xl font-bold text-blue-600">£{quote.total_amount?.toLocaleString()}</p>
                             </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Valid Until</p>
-                                <p className="font-medium">{new Date(quote.valid_until).toLocaleDateString()}</p>
-                            </div>
                         </div>
 
                         {quote.is_signed && quote.signed_at && (

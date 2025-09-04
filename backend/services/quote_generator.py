@@ -258,8 +258,8 @@ class QuoteGenerator:
                     </div>
                     
                     <div class="company-info">
-                        <h2>{{ company.name or 'Direct Thermal Printers' }}</h2>
-                        <p>{{ company.address or 'Your Company Address' }}</p>
+                        <h2>{{ company.name or 'Company' }}</h2>
+                        <p>{{ company.address or 'Address' }}</p>
                         {% if company.city %}
                         <p>{{ company.city }}</p>
                         {% endif %}
@@ -276,7 +276,7 @@ class QuoteGenerator:
                         <p>Email: {{ company.email }}</p>
                         {% endif %}
                         {% if company.website %}
-                        <p>Website: {{ company.website }}</p>
+                        <p>Website: "https://flotto.jaytechprinterimports.co.ke"</p>
                         {% endif %}
                         {% if company.iban %}
                         <p>IBAN: {{ company.iban }}</p>
