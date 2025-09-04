@@ -276,7 +276,7 @@ class QuoteGenerator:
                         <p>Email: {{ company.email }}</p>
                         {% endif %}
                         {% if company.website %}
-                        <p>Website: "https://flotto.jaytechprinterimports.co.ke"</p>
+                        <p>Website: https://flotto.jaytechprinterimports.co.ke</p>
                         {% endif %}
                         {% if company.iban %}
                         <p>IBAN: {{ company.iban }}</p>
