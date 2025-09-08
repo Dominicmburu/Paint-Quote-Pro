@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from werkzeug.security import generate_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import secrets
 
@@ -67,13 +67,22 @@ def register():
         
         db.session.add(user)
         db.session.flush()  # Get user ID
+
+        trial_start = datetime.utcnow()
+        trial_end = trial_start + timedelta(days=7)
         
-        # Create trial subscription
         subscription = Subscription(
             company_id=company.id,
-            plan_name='starter',
+            plan_name='trial',  # Distinct from paid plans
             billing_cycle='monthly',
-            status='trial'
+            status='trial',
+            trial_start=trial_start,
+            trial_end=trial_end,
+            max_projects=3,  # Limited trial projects
+            max_users=1,     # Single user for trial
+            projects_used_this_month=0,
+            trial_reminder_sent=False,
+            trial_ending_reminder_sent=False
         )
         
         db.session.add(subscription)
@@ -94,7 +103,13 @@ def register():
             'company': company.to_dict(),
             'subscription': subscription.to_dict(),
             'access_token': access_token,
-            'refresh_token': refresh_token
+            'refresh_token': refresh_token,
+            'trial_info': {
+                'days_remaining': 7,
+                'trial_end': trial_end.isoformat(),
+                'max_projects': 3,
+                'projects_used': 0
+            }
         }), 201
         
     except Exception as e:
@@ -122,6 +137,8 @@ def login():
         
         if not user.is_active:
             return jsonify({'error': 'Account is deactivated'}), 401
+        
+        
         
         # Update last login
         user.last_login = datetime.utcnow()

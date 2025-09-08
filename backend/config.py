@@ -153,8 +153,8 @@ class Config:
         },
         'professional': {
             'name': 'Professional',
-            'price_monthly': 79,
-            'price_yearly': 790,
+            'price_monthly': 79.00,
+            'price_yearly': 790.00,
             'stripe_price_id_monthly': os.environ.get('STRIPE_PRO_MONTHLY'),
             'stripe_price_id_yearly': os.environ.get('STRIPE_PRO_YEARLY'),
             'max_projects': 25,

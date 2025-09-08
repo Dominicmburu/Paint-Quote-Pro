@@ -9,8 +9,14 @@ from models.user import User
 from models.company import Company
 from models.subscription import Subscription
 from utils.decorators import require_active_subscription
-from services.email_service import send_payment_success_email, send_payment_failed_email, send_subscription_cancelled_email
-
+from services.email_service import (
+    send_payment_success_email, 
+    send_payment_failed_email, 
+    send_subscription_cancelled_email,
+    send_trial_reminder_email,
+    send_trial_ending_email,
+    send_subscription_expiring_email
+)
 
 subscriptions_bp = Blueprint('subscriptions', __name__)
 
@@ -32,23 +38,26 @@ def get_current_subscription():
         subscription = user.company.subscription
         
         if not subscription:
-            # Create a default trial subscription
-            from datetime import datetime, timedelta
+            # Create a default trial subscription (7 days only)
             subscription = Subscription(
                 company_id=user.company_id,
-                plan_name='starter',
+                plan_name='trial',
                 billing_cycle='monthly',
                 status='trial',
-                current_period_start=datetime.utcnow(),
-                current_period_end=datetime.utcnow() + timedelta(days=7),
-                trial_end=datetime.utcnow() + timedelta(days=7)
+                trial_start=datetime.utcnow(),
+                trial_end=datetime.utcnow() + timedelta(days=7),
+                max_projects=3,  # Limited trial projects
+                max_users=1
             )
             db.session.add(subscription)
             db.session.commit()
         
         return jsonify({
             'subscription': subscription.to_dict(),
-            'company': user.company.to_dict()
+            'company': user.company.to_dict(),
+            'trial_days_remaining': subscription.days_remaining if subscription.status == 'trial' else None,
+            'is_trial_ending_soon': subscription.is_trial_ending_soon(),
+            'can_use_system': subscription.can_use_system()
         })
         
     except Exception as e:
@@ -58,16 +67,22 @@ def get_current_subscription():
 
 @subscriptions_bp.route('/plans', methods=['GET'])
 def get_subscription_plans():
-    """Get available subscription plans"""
+    """Get available subscription plans (excluding trial)"""
+    plans = current_app.config['SUBSCRIPTION_PLANS'].copy()
+    
+    # Remove trial plan from available plans for purchase
+    if 'trial' in plans:
+        del plans['trial']
+    
     return jsonify({
-        'plans': current_app.config['SUBSCRIPTION_PLANS']
+        'plans': plans
     })
 
 
 @subscriptions_bp.route('/create-checkout-session', methods=['POST'])
 @jwt_required()
 def create_checkout_session():
-    """Create Stripe checkout session for subscription"""
+    """Create Stripe checkout session for subscription upgrade"""
     try:
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
@@ -79,14 +94,18 @@ def create_checkout_session():
         plan_name = data.get('plan_name')
         billing_cycle = data.get('billing_cycle', 'monthly')
         
+        # Ensure user can't purchase trial plan
+        if plan_name == 'trial':
+            return jsonify({'error': 'Trial plan cannot be purchased'}), 400
+        
         if plan_name not in current_app.config['SUBSCRIPTION_PLANS']:
             return jsonify({'error': 'Invalid plan'}), 400
         
         plan = current_app.config['SUBSCRIPTION_PLANS'][plan_name]
-        price_id = plan[f'stripe_price_id_{billing_cycle}']
+        price_id = plan.get(f'stripe_price_id_{billing_cycle}')
         
         if not price_id:
-            return jsonify({'error': 'Price ID not configured'}), 400
+            return jsonify({'error': 'Price ID not configured for this plan and billing cycle'}), 400
         
         # Create or get Stripe customer
         subscription = user.company.subscription
@@ -96,7 +115,7 @@ def create_checkout_session():
             customer = stripe.Customer.create(
                 email=user.email,
                 name=user.company.name,
-                metadata={'company_id': user.company_id}
+                metadata={'company_id': str(user.company_id)}
             )
             customer_id = customer.id
             
@@ -116,22 +135,25 @@ def create_checkout_session():
                 'quantity': 1,
             }],
             mode='subscription',
-            success_url=f'{frontend_url}/payment/success?session_id={{CHECKOUT_SESSION_ID}}',
-            cancel_url=f'{frontend_url}/payment/cancelled',
+            success_url=f'{frontend_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}',
+            cancel_url=f'{frontend_url}/subscription/cancelled',
             metadata={
-                'company_id': user.company_id,
+                'company_id': str(user.company_id),
                 'plan_name': plan_name,
-                'billing_cycle': billing_cycle
+                'billing_cycle': billing_cycle,
+                'user_id': str(user.id)
             }
         )
         
         return jsonify({
-            'checkout_url': checkout_session.url
+            'checkout_url': checkout_session.url,
+            'session_id': checkout_session.id
         })
         
     except Exception as e:
         current_app.logger.error(f'Create checkout session error: {e}')
         return jsonify({'error': 'Failed to create checkout session'}), 500
+
 
 @subscriptions_bp.route('/webhook', methods=['POST'])
 def stripe_webhook():
@@ -143,8 +165,10 @@ def stripe_webhook():
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
     except ValueError:
+        current_app.logger.error('Invalid payload in webhook')
         return jsonify({'error': 'Invalid payload'}), 400
     except stripe.error.SignatureVerificationError:
+        current_app.logger.error('Invalid signature in webhook')
         return jsonify({'error': 'Invalid signature'}), 400
     
     try:
@@ -164,14 +188,16 @@ def stripe_webhook():
             subscription = event['data']['object']
             handle_subscription_cancelled(subscription)
         
+        elif event['type'] == 'customer.subscription.updated':
+            subscription = event['data']['object']
+            handle_subscription_updated(subscription)
+        
         return jsonify({'status': 'success'})
         
     except Exception as e:
         current_app.logger.error(f'Webhook error: {e}')
         return jsonify({'error': 'Webhook processing failed'}), 500
 
-
-# Add this new endpoint to your subscriptions.py
 
 @subscriptions_bp.route('/session/<session_id>', methods=['GET'])
 @jwt_required()
@@ -206,7 +232,7 @@ def get_session_details(session_id):
             'session_id': session_id,
             'plan_name': session.metadata.get('plan_name'),
             'billing_cycle': session.metadata.get('billing_cycle'),
-            'amount': session.amount_total / 100 if session.amount_total else 0,  # Convert from cents
+            'amount': session.amount_total / 100 if session.amount_total else 0,
             'currency': session.currency or 'gbp',
             'customer_email': user.email,
             'next_billing_date': next_billing_date,
@@ -221,75 +247,44 @@ def get_session_details(session_id):
         current_app.logger.error(f'Error retrieving session details: {e}')
         return jsonify({'error': 'Failed to get session details'}), 500
 
-# def handle_successful_payment(session):
-#     """Handle successful payment from checkout"""
-#     company_id = session['metadata']['company_id']
-#     plan_name = session['metadata']['plan_name']
-#     billing_cycle = session['metadata']['billing_cycle']
-    
-#     company = Company.query.get(company_id)
-#     if not company:
-#         return
-    
-#     subscription = company.subscription
-#     if not subscription:
-#         subscription = Subscription(company_id=company_id)
-#         db.session.add(subscription)
-    
-#     # Get plan details
-#     plan = current_app.config['SUBSCRIPTION_PLANS'][plan_name]
-    
-#     # Update subscription
-#     subscription.stripe_customer_id = session['customer']
-#     subscription.stripe_subscription_id = session['subscription']
-#     subscription.plan_name = plan_name
-#     subscription.billing_cycle = billing_cycle
-#     subscription.status = 'active'
-#     subscription.max_projects = plan['max_projects']
-#     subscription.max_users = plan['max_users']
-#     subscription.current_period_start = datetime.utcnow()
-    
-#     if billing_cycle == 'yearly':
-#         subscription.current_period_end = datetime.utcnow() + timedelta(days=365)
-#     else:
-#         subscription.current_period_end = datetime.utcnow() + timedelta(days=30)
-    
-#     db.session.commit()
+
+@subscriptions_bp.route('/cancel', methods=['POST'])
+@jwt_required()
+def cancel_subscription():
+    """Cancel current subscription"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        
+        if not user or not user.company:
+            return jsonify({'error': 'User or company not found'}), 404
+        
+        subscription = user.company.subscription
+        if not subscription or not subscription.stripe_subscription_id:
+            return jsonify({'error': 'No active subscription found'}), 404
+        
+        # Cancel subscription in Stripe (at period end)
+        stripe_sub = stripe.Subscription.modify(
+            subscription.stripe_subscription_id,
+            cancel_at_period_end=True
+        )
+        
+        # Update local subscription
+        subscription.will_cancel_at_period_end = True
+        subscription.cancellation_requested_at = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Subscription will be cancelled at the end of current billing period',
+            'subscription': subscription.to_dict()
+        })
+        
+    except Exception as e:
+        current_app.logger.error(f'Cancel subscription error: {e}')
+        return jsonify({'error': 'Failed to cancel subscription'}), 500
 
 
-# def handle_successful_renewal(invoice):
-#     """Handle successful subscription renewal"""
-#     customer_id = invoice['customer']
-#     subscription = Subscription.query.filter_by(stripe_customer_id=customer_id).first()
-    
-#     if subscription:
-#         subscription.status = 'active'
-#         subscription.current_period_start = datetime.utcfromtimestamp(invoice['period_start'])
-#         subscription.current_period_end = datetime.utcfromtimestamp(invoice['period_end'])
-#         subscription.projects_used_this_month = 0  # Reset usage
-#         db.session.commit()
-
-# def handle_failed_payment(invoice):
-#     """Handle failed payment"""
-#     customer_id = invoice['customer']
-#     subscription = Subscription.query.filter_by(stripe_customer_id=customer_id).first()
-    
-#     if subscription:
-#         subscription.status = 'past_due'
-#         db.session.commit()
-
-# def handle_subscription_cancelled(stripe_subscription):
-#     """Handle subscription cancellation"""
-#     subscription = Subscription.query.filter_by(
-#         stripe_subscription_id=stripe_subscription['id']
-#     ).first()
-    
-#     if subscription:
-#         subscription.status = 'cancelled'
-#         subscription.cancelled_at = datetime.utcnow()
-#         db.session.commit()
-
-
+# Helper functions for webhook handling
 
 def handle_successful_payment(session):
     """Handle successful payment from checkout"""
@@ -319,6 +314,9 @@ def handle_successful_payment(session):
             subscription = Subscription(company_id=company_id)
             db.session.add(subscription)
         
+        # Store previous status for email
+        was_trial = subscription.status == 'trial'
+        
         # Update subscription with new details
         subscription.stripe_customer_id = session.get('customer')
         subscription.stripe_subscription_id = session.get('subscription')
@@ -331,6 +329,8 @@ def handle_successful_payment(session):
         
         # Clear trial status
         subscription.trial_end = None
+        subscription.trial_reminder_sent = False
+        subscription.trial_ending_reminder_sent = False
         
         # Set period end based on billing cycle
         if billing_cycle == 'yearly':
@@ -345,21 +345,20 @@ def handle_successful_payment(session):
         
         # Send success email
         try:
-            # Get the primary user for this company
             primary_user = User.query.filter_by(company_id=company_id).first()
             if primary_user:
-                amount = (session.get('amount_total', 0) / 100) if session.get('amount_total') else plan.get('price', 0)
+                amount = (session.get('amount_total', 0) / 100) if session.get('amount_total') else plan.get('price_monthly', 0)
                 send_payment_success_email(
                     email=primary_user.email,
                     first_name=primary_user.first_name,
                     company_name=company.name,
                     plan_name=plan_name,
                     billing_cycle=billing_cycle,
-                    amount=amount
+                    amount=amount,
+                    was_trial=was_trial
                 )
         except Exception as email_error:
             current_app.logger.error(f'Failed to send payment success email: {email_error}')
-            # Don't fail the payment processing if email fails
         
         current_app.logger.info(f'Successfully processed payment for company {company_id}, plan {plan_name}')
         
@@ -372,7 +371,6 @@ def handle_successful_renewal(invoice):
     """Handle successful subscription renewal"""
     try:
         customer_id = invoice.get('customer')
-        subscription_id = invoice.get('subscription')
         
         if not customer_id:
             current_app.logger.error(f'Missing customer ID in invoice: {invoice.get("id")}')
@@ -394,6 +392,7 @@ def handle_successful_renewal(invoice):
         
         # Clear any past due status
         subscription.past_due_notified = False
+        subscription.expiration_reminder_sent = False
         
         db.session.commit()
         current_app.logger.info(f'Successfully processed renewal for subscription {subscription.id}')
@@ -442,7 +441,8 @@ def handle_failed_payment(invoice):
                     first_name=primary_user.first_name,
                     company_name=company.name,
                     plan_name=subscription.plan_name,
-                    attempt_count=attempt_count
+                    attempt_count=attempt_count,
+                    is_final_attempt=(attempt_count >= 4)
                 )
         except Exception as email_error:
             current_app.logger.error(f'Failed to send payment failed email: {email_error}')
@@ -504,13 +504,15 @@ def handle_subscription_cancelled(stripe_subscription):
     except Exception as e:
         current_app.logger.error(f'Error handling subscription cancellation: {e}')
         db.session.rollback()
-    """Handle subscription cancellation"""
+
+
+def handle_subscription_updated(stripe_subscription):
+    """Handle subscription updates"""
     try:
         subscription_id = stripe_subscription.get('id')
-        cancel_reason = stripe_subscription.get('cancellation_details', {}).get('reason', 'user_cancelled')
         
         if not subscription_id:
-            current_app.logger.error('Missing subscription ID in cancellation event')
+            current_app.logger.error('Missing subscription ID in update event')
             return
         
         subscription = Subscription.query.filter_by(
@@ -521,20 +523,26 @@ def handle_subscription_cancelled(stripe_subscription):
             current_app.logger.error(f'Subscription not found for Stripe subscription: {subscription_id}')
             return
         
-        # Update subscription status
-        subscription.status = 'cancelled'
-        subscription.cancelled_at = datetime.utcnow()
-        subscription.cancellation_reason = cancel_reason
+        # Update subscription based on Stripe data
+        subscription.current_period_start = datetime.utcfromtimestamp(
+            stripe_subscription.get('current_period_start', 0)
+        )
+        subscription.current_period_end = datetime.utcfromtimestamp(
+            stripe_subscription.get('current_period_end', 0)
+        )
         
-        # Set end of service period (allow access until period end)
-        cancel_at_period_end = stripe_subscription.get('cancel_at_period_end', False)
-        if cancel_at_period_end:
-            subscription.status = 'active'  # Keep active until period ends
-            subscription.will_cancel_at_period_end = True
+        # Update status
+        stripe_status = stripe_subscription.get('status')
+        if stripe_status == 'active':
+            subscription.status = 'active'
+        elif stripe_status == 'past_due':
+            subscription.status = 'past_due'
+        elif stripe_status in ['canceled', 'cancelled']:
+            subscription.status = 'cancelled'
         
         db.session.commit()
-        current_app.logger.info(f'Successfully processed cancellation for subscription {subscription.id}')
+        current_app.logger.info(f'Successfully updated subscription {subscription.id}')
         
     except Exception as e:
-        current_app.logger.error(f'Error handling subscription cancellation: {e}')
+        current_app.logger.error(f'Error handling subscription update: {e}')
         db.session.rollback()

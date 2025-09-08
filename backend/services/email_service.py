@@ -701,9 +701,225 @@ def send_quote_signed_notification_email(company_email: str, company_name: str, 
         raise
 
 
+def send_trial_reminder_email(email: str, first_name: str, company_name: str, days_remaining: int):
+    """Send trial reminder email (2 days before expiry)"""
+    try:
+        server, smtp_user = _get_smtp_connection()
+        
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email
+        msg['Subject'] = f"Your PaintQuote Pro trial expires in {days_remaining} days"
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #f59e0b; color: white; padding: 20px; text-align: center;">
+                <h1>Trial Expiring Soon!</h1>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h2>Hi {first_name},</h2>
+                
+                <div style="background-color: #fef2f2; border: 1px solid #f87171; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #DC2626; margin-top: 0;">Your PaintQuote Pro trial for {company_name} expires in {days_remaining} days!</h3>
+                </div>
+                
+                <p>Don't lose access to:</p>
+                <ul>
+                    <li>AI-powered floor plan analysis</li>
+                    <li>Professional quote generation</li>
+                    <li>Project management tools</li>
+                    <li>And much more!</li>
+                </ul>
+                
+                <h3>Choose a plan that works for you:</h3>
+                
+                <div style="background-color: #F3F4F6; padding: 20px; margin: 15px 0; border-radius: 8px;">
+                    <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px; border: 2px solid #e5e7eb;">
+                        <h4 style="margin: 0; color: #4f46e5;">STARTER</h4>
+                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">£9.99/month</div>
+                        <ul>
+                            <li>Up to 5 projects per month</li>
+                            <li>1 team member</li>
+                            <li>Basic features</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px; border: 2px solid #4f46e5;">
+                        <h4 style="margin: 0; color: #4f46e5;">PROFESSIONAL</h4>
+                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">£79/month</div>
+                        <ul>
+                            <li>Up to 25 projects per month</li>
+                            <li>10 team members</li>
+                            <li>Advanced features</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="padding: 15px; background: white; border-radius: 6px; border: 2px solid #e5e7eb;">
+                        <h4 style="margin: 0; color: #4f46e5;">ENTERPRISE</h4>
+                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">£199/month</div>
+                        <ul>
+                            <li>Unlimited projects</li>
+                            <li>Unlimited team members</li>
+                            <li>Premium support</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/subscription/plans" 
+                       style="background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        Upgrade Now
+                    </a>
+                </div>
+                
+                <p>Best regards,<br>The PaintQuote Pro Team</p>
+            </div>
+            
+            <div style="background-color: #F3F4F6; padding: 20px; text-align: center; font-size: 12px; color: #6B7280;">
+                <p>PaintQuote Pro - Professional Painting Quote Software</p>
+                <p>© 2025 PaintQuote Pro. All rights reserved.</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
+        
+        logger.info(f"Trial reminder email sent to {email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send trial reminder email: {e}")
+        raise
 
 
+def send_subscription_expiring_email(email: str, first_name: str, company_name: str, plan_name: str, days_remaining: int):
+    """Send subscription expiring reminder"""
+    try:
+        server, smtp_user = _get_smtp_connection()
+        
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email
+        msg['Subject'] = f"Your {plan_name.title()} subscription expires in {days_remaining} days"
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #f59e0b; color: white; padding: 20px; text-align: center;">
+                <h1>Subscription Renewal Reminder</h1>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h2>Hi {first_name},</h2>
+                
+                <div style="background-color: #fffbeb; border: 1px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #D97706; margin-top: 0;">Your {plan_name.title()} subscription for {company_name} will expire in {days_remaining} days.</h3>
+                </div>
+                
+                <p>Don't lose access to your valuable features! Your subscription will automatically renew unless cancelled.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/subscription/manage" 
+                       style="background-color: #f59e0b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        Manage Subscription
+                    </a>
+                </div>
+                
+                <p>If you have any questions about your subscription or need to make changes, please contact us.</p>
+                
+                <p>Best regards,<br>The PaintQuote Pro Team</p>
+            </div>
+            
+            <div style="background-color: #F3F4F6; padding: 20px; text-align: center; font-size: 12px; color: #6B7280;">
+                <p>PaintQuote Pro - Professional Painting Quote Software</p>
+                <p>© 2025 PaintQuote Pro. All rights reserved.</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
+        
+        logger.info(f"Subscription expiring email sent to {email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send subscription expiring email: {e}")
+        raise
 
+
+def send_trial_ending_email(email: str, first_name: str, company_name: str):
+    """Send trial ending email (1 day before expiry)"""
+    try:
+        server, smtp_user = _get_smtp_connection()
+        
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = smtp_user
+        msg['To'] = email
+        msg['Subject'] = "Your PaintQuote Pro trial ends tomorrow!"
+        
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #dc2626; color: white; padding: 20px; text-align: center;">
+                <h1>Final Reminder!</h1>
+            </div>
+            
+            <div style="padding: 30px;">
+                <h2>Hi {first_name},</h2>
+                
+                <div style="background-color: #fef2f2; border: 1px solid #f87171; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="color: #DC2626; margin-top: 0;">Your PaintQuote Pro trial for {company_name} ends TOMORROW!</h3>
+                    <p>This is your final reminder to upgrade and continue using our powerful features.</p>
+                </div>
+                
+                <p><strong>After your trial expires, you won't be able to:</strong></p>
+                <ul>
+                    <li>Create new projects</li>
+                    <li>Generate quotes</li>
+                    <li>Access your dashboard</li>
+                    <li>Use any PaintQuote Pro features</li>
+                </ul>
+                
+                <p>Don't let your business miss out on professional quotes and streamlined workflow.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{current_app.config.get('FRONTEND_URL', 'https://flotto.jaytechprinterimports.co.ke')}/subscription/plans" 
+                       style="background-color: #dc2626; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-size: 18px;">
+                        Upgrade Now - Don't Lose Access!
+                    </a>
+                </div>
+                
+                <p>Questions? Reply to this email - we're here to help!</p>
+                
+                <p>Best regards,<br>The PaintQuote Pro Team</p>
+            </div>
+            
+            <div style="background-color: #F3F4F6; padding: 20px; text-align: center; font-size: 12px; color: #6B7280;">
+                <p>PaintQuote Pro - Professional Painting Quote Software</p>
+                <p>© 2025 PaintQuote Pro. All rights reserved.</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html_body, 'html'))
+        server.send_message(msg)
+        server.quit()
+        
+        logger.info(f"Trial ending email sent to {email}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send trial ending email: {e}")
+        raise
 
 
 
