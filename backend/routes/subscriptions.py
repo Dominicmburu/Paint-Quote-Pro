@@ -199,36 +199,106 @@ def stripe_webhook():
         return jsonify({'error': 'Webhook processing failed'}), 500
 
 
+# @subscriptions_bp.route('/session/<session_id>', methods=['GET'])
+# @jwt_required()
+# def get_session_details(session_id):
+#     """Get Stripe checkout session details"""
+#     try:
+#         current_user_id = get_jwt_identity()
+#         user = User.query.get(current_user_id)
+        
+#         if not user or not user.company:
+#             return jsonify({'error': 'User or company not found'}), 404
+        
+#         # Retrieve session from Stripe
+#         session = stripe.checkout.Session.retrieve(session_id)
+        
+#         if not session:
+#             return jsonify({'error': 'Session not found'}), 404
+        
+#         # Verify session belongs to this user's company
+#         if session.metadata.get('company_id') != str(user.company_id):
+#             return jsonify({'error': 'Unauthorized'}), 403
+        
+#         # Get subscription details
+#         subscription = user.company.subscription
+#         if not subscription:
+#             return jsonify({'error': 'Subscription not found'}), 404
+        
+#         # Calculate next billing date
+#         next_billing_date = subscription.current_period_end.strftime('%Y-%m-%d') if subscription.current_period_end else None
+        
+#         return jsonify({
+#             'session_id': session_id,
+#             'plan_name': session.metadata.get('plan_name'),
+#             'billing_cycle': session.metadata.get('billing_cycle'),
+#             'amount': session.amount_total / 100 if session.amount_total else 0,
+#             'currency': session.currency or 'gbp',
+#             'customer_email': user.email,
+#             'next_billing_date': next_billing_date,
+#             'company_name': user.company.name,
+#             'subscription_status': subscription.status
+#         })
+        
+#     except stripe.error.StripeError as e:
+#         current_app.logger.error(f'Stripe error retrieving session: {e}')
+#         return jsonify({'error': 'Failed to retrieve session details'}), 500
+#     except Exception as e:
+#         current_app.logger.error(f'Error retrieving session details: {e}')
+#         return jsonify({'error': 'Failed to get session details'}), 500
+
 @subscriptions_bp.route('/session/<session_id>', methods=['GET'])
 @jwt_required()
 def get_session_details(session_id):
     """Get Stripe checkout session details"""
     try:
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
+        current_app.logger.info(f'Session details request for session_id: {session_id}')
         
-        if not user or not user.company:
-            return jsonify({'error': 'User or company not found'}), 404
+        current_user_id = get_jwt_identity()
+        current_app.logger.info(f'Current user ID from JWT: {current_user_id}')
+        
+        user = User.query.get(current_user_id)
+        if not user:
+            current_app.logger.error(f'User not found: {current_user_id}')
+            return jsonify({'error': 'User not found'}), 404
+            
+        if not user.company:
+            current_app.logger.error(f'Company not found for user: {current_user_id}')
+            return jsonify({'error': 'Company not found'}), 404
+        
+        current_app.logger.info(f'User company ID: {user.company_id}')
         
         # Retrieve session from Stripe
         session = stripe.checkout.Session.retrieve(session_id)
+        current_app.logger.info(f'Retrieved Stripe session: {session.id}')
+        current_app.logger.info(f'Session metadata: {session.metadata}')
         
         if not session:
             return jsonify({'error': 'Session not found'}), 404
         
         # Verify session belongs to this user's company
-        if session.metadata.get('company_id') != str(user.company_id):
-            return jsonify({'error': 'Unauthorized'}), 403
+        session_company_id = session.metadata.get('company_id')
+        user_company_id = str(user.company_id)
+        
+        current_app.logger.info(f'Session company ID: {session_company_id}')
+        current_app.logger.info(f'User company ID: {user_company_id}')
+        
+        if session_company_id != user_company_id:
+            current_app.logger.error(f'Company ID mismatch: session={session_company_id}, user={user_company_id}')
+            return jsonify({'error': 'Unauthorized - company mismatch'}), 403
         
         # Get subscription details
         subscription = user.company.subscription
         if not subscription:
+            current_app.logger.error(f'Subscription not found for company: {user.company_id}')
             return jsonify({'error': 'Subscription not found'}), 404
+        
+        current_app.logger.info(f'Found subscription: {subscription.id}')
         
         # Calculate next billing date
         next_billing_date = subscription.current_period_end.strftime('%Y-%m-%d') if subscription.current_period_end else None
         
-        return jsonify({
+        response_data = {
             'session_id': session_id,
             'plan_name': session.metadata.get('plan_name'),
             'billing_cycle': session.metadata.get('billing_cycle'),
@@ -238,15 +308,19 @@ def get_session_details(session_id):
             'next_billing_date': next_billing_date,
             'company_name': user.company.name,
             'subscription_status': subscription.status
-        })
+        }
+        
+        current_app.logger.info(f'Returning session details: {response_data}')
+        return jsonify(response_data)
         
     except stripe.error.StripeError as e:
         current_app.logger.error(f'Stripe error retrieving session: {e}')
-        return jsonify({'error': 'Failed to retrieve session details'}), 500
+        return jsonify({'error': f'Stripe error: {str(e)}'}), 500
     except Exception as e:
-        current_app.logger.error(f'Error retrieving session details: {e}')
-        return jsonify({'error': 'Failed to get session details'}), 500
-
+        current_app.logger.error(f'Error retrieving session details: {e}', exc_info=True)
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+        
+        
 
 @subscriptions_bp.route('/cancel', methods=['POST'])
 @jwt_required()

@@ -161,7 +161,7 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-500 mb-2">Red tape:</h2>
+                {/* <h2 className="text-2xl font-bold text-slate-500 mb-2">Red tape:</h2> */}
                 <h3 className="text-3xl font-bold text-slate-900 mb-6">Super simple AI quoting!</h3>
               </div>
 

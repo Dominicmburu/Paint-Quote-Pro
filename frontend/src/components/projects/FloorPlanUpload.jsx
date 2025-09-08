@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, FileImage, X, Eye, AlertTriangle, RefreshCw, CheckCircle } from 'lucide-react';
+import { API_BASE_URL, API_IMAGE_URL } from '../../services/api';
 
 const FloorPlanUpload = ({ 
   projectId, 
@@ -198,7 +199,7 @@ const FloorPlanUpload = ({
               <div key={index} className="relative group">
                 <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
                   <img
-                    src={`/api/projects/${projectId}/files/${imagePath.split('/').pop()}`}
+                    src={`${API_IMAGE_URL}/${imagePath.split('/').pop()}`}
                     alt={`Floor Plan ${index + 1}`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -216,21 +217,11 @@ const FloorPlanUpload = ({
                     }}
                   />
                 </div>
-                
+
                 <div className="mt-2 flex items-center justify-between">
                   <p className="text-sm text-gray-600 truncate">
                     Floor Plan {index + 1}
                   </p>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => window.open(`/api/projects/${projectId}/files/${imagePath.split('/').pop()}`, '_blank')}
-                      className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
-                      title="View full size"
-                    >
-                      <Eye className="h-3 w-3 mr-1" />
-                      View
-                    </button>
-                  </div>
                 </div>
               </div>
             ))}

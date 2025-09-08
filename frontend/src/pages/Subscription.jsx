@@ -18,6 +18,8 @@ const Subscription = () => {
   const { subscription } = useSubscription();
   const { company } = useAuth();
 
+  console.log('Subscription Data:', subscription);
+
   const subscriptionSections = [
     {
       id: 'plans',
@@ -77,6 +79,7 @@ const Subscription = () => {
   };
 
   const planDisplayNames = {
+    trial: 'Trial',
     starter: 'Starter',
     professional: 'Professional',
     business: 'Business',
@@ -94,7 +97,7 @@ const Subscription = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-3xl font-bold text-purple-700 flex items-center">
+          <h1 className="text-3xl font-bold text-[#4bb4f5] flex items-center">
             <Crown className="h-8 w-8 mr-3" />
             Subscription
           </h1>
@@ -141,10 +144,10 @@ const Subscription = () => {
       {!subscription && (
         <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
           <div className="flex items-center">
-            <Crown className="h-8 w-8 text-blue-600 mr-4" />
+            <Crown className="h-8 w-8 text-[#4bb4f5] mr-4" />
             <div>
-              <h3 className="text-lg font-medium text-blue-900">Start Your Journey</h3>
-              <p className="text-blue-700">
+              <h3 className="text-lg font-medium text-[#4bb4f5]">Start Your Journey</h3>
+              <p className="text-[#4bb4f5]">
                 Choose a subscription plan to unlock all features and start creating professional quotes.
               </p>
             </div>
@@ -165,10 +168,10 @@ const Subscription = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <Icon className="h-8 w-8 text-purple-600" />
+                    <Icon className="h-8 w-8 text-[#4bb4f5]" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900 group-hover:text-purple-700 transition-colors">
+                    <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#4bb4f5] transition-colors">
                       {section.name}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
@@ -176,7 +179,7 @@ const Subscription = () => {
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-[#4bb4f5] transition-colors" />
               </div>
             </div>
           );
@@ -209,8 +212,8 @@ const Subscription = () => {
 
       {/* Help Section */}
       <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h4 className="text-sm font-medium text-blue-900 mb-3">💡 Subscription Help:</h4>
-        <ul className="text-sm text-blue-800 space-y-2">
+        <h4 className="text-sm font-medium text-[#4bb4f5] mb-3">💡 Subscription Help:</h4>
+        <ul className="text-sm text-[#4bb4f5] space-y-2">
           <li>• <strong>Pricing Plans:</strong> Compare features and upgrade or downgrade your plan anytime</li>
           <li>• <strong>Billing Information:</strong> Manage payment methods and access your invoice history</li>
           <li>• Need help? Contact our support team for assistance with your subscription</li>

@@ -207,9 +207,9 @@ function App() {
 
                 <Route path="/forgot-password" element={<ForgotPassword />} />
 
-                <Route path="/payment/success" element={<PaymentSuccess />} />
-                <Route path="/payment/cancelled" element={<PaymentCancelled />} />
-                <Route path="/payment/failed" element={<PaymentFailed />} />
+                <Route path="/subscription/success" element={<PaymentSuccess />} />
+                <Route path="/subscription/cancelled" element={<subscriptionCancelled />} />
+                <Route path="/subscription/failed" element={<PaymentFailed />} />
 
                 {/* Subscription Status Routes - Protected but accessible when expired */}
                 <Route path="/subscription/expired" element={
