@@ -248,7 +248,7 @@ def stripe_webhook():
 #         return jsonify({'error': 'Failed to get session details'}), 500
 
 @subscriptions_bp.route('/session/<session_id>', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def get_session_details(session_id):
     """Get Stripe checkout session details"""
     try:
@@ -320,7 +320,7 @@ def get_session_details(session_id):
         current_app.logger.error(f'Error retrieving session details: {e}', exc_info=True)
         return jsonify({'error': f'Server error: {str(e)}'}), 500
         
-        
+
 
 @subscriptions_bp.route('/cancel', methods=['POST'])
 @jwt_required()

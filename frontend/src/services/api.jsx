@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'http://localhost:5000/api';
-export const API_IMAGE_URL = 'http://localhost:5000/static';
-// export const API_BASE_URL = 'https://paint-quote-pro.onrender.com/api';
-// export const API_IMAGE_URL = 'https://paint-quote-pro.onrender.com/static';
+// export const API_BASE_URL = 'http://localhost:5000/api';
+// export const API_IMAGE_URL = 'http://localhost:5000/static';
+export const API_BASE_URL = 'https://paint-quote-pro.onrender.com/api';
+export const API_IMAGE_URL = 'https://paint-quote-pro.onrender.com/static';
 
 
 const api = axios.create({
