@@ -132,23 +132,39 @@ class Config:
     
     # Subscription Plans with enhanced configuration
     SUBSCRIPTION_PLANS = {
+        'trial': {
+            'name': 'Trial',
+            'price_monthly': 0,
+            'price_yearly': 0,
+            'max_projects': 3,
+            'max_users': 1,
+            'max_storage_mb': 500,
+            'api_rate_limit': 50,
+            'features': [
+                '3 projects total',
+                'Basic floor plan analysis', 
+                '1 team member',
+                '500MB storage',
+                '7-day trial period'
+            ]
+        },
         'starter': {
             'name': 'Starter',
             'price_monthly': 9.99,
             'price_yearly': 90.99,
             'stripe_price_id_monthly': os.environ.get('STRIPE_STARTER_MONTHLY'),
             'stripe_price_id_yearly': os.environ.get('STRIPE_STARTER_YEARLY'),
-            'max_projects': 5,
-            'max_users': 1,
-            'max_storage_mb': 1000,  # 1GB
-            'api_rate_limit': 100,   # requests per hour
+            'max_projects': 5,  # ADDITIONAL 5 projects per month
+            'max_users': 1,     # ADDITIONAL 1 user
+            'max_storage_mb': 1000,  # ADDITIONAL 1GB storage
+            'api_rate_limit': 100,   # ADDITIONAL 100 requests
             'features': [
-                'Up to 5 projects per month',
+                '5 additional projects per month',
                 'Basic floor plan analysis',
-                'PDF quote generation',
-                '2 team members',
+                'PDF quote generation', 
+                '1 additional team member',
                 'Email support',
-                '1GB file storage'
+                '1GB additional storage'
             ]
         },
         'professional': {
@@ -157,31 +173,31 @@ class Config:
             'price_yearly': 790.00,
             'stripe_price_id_monthly': os.environ.get('STRIPE_PRO_MONTHLY'),
             'stripe_price_id_yearly': os.environ.get('STRIPE_PRO_YEARLY'),
-            'max_projects': 25,
-            'max_users': 1,
-            'max_storage_mb': 5000,  # 5GB
-            'api_rate_limit': 500,   # requests per hour
+            'max_projects': 25,  # ADDITIONAL 25 projects
+            'max_users': 10,     # ADDITIONAL 10 users
+            'max_storage_mb': 5000,  # ADDITIONAL 5GB
+            'api_rate_limit': 500,   # ADDITIONAL 500 requests
             'features': [
-                'Up to 25 projects per month',
+                '25 additional projects per month',
                 'Advanced AI floor plan analysis',
                 'Custom quote templates',
-                '10 team members',
+                '10 additional team members',
                 'Priority email support',
                 'Custom paint brand settings',
-                '5GB file storage',
+                '5GB additional storage',
                 'API access'
             ]
         },
         'enterprise': {
-            'name': 'Enterprise',
+            'name': 'Enterprise', 
             'price_monthly': 199,
             'price_yearly': 1990,
             'stripe_price_id_monthly': os.environ.get('STRIPE_ENTERPRISE_MONTHLY'),
             'stripe_price_id_yearly': os.environ.get('STRIPE_ENTERPRISE_YEARLY'),
-            'max_projects': -1,      # Unlimited
-            'max_users': -1,         # Unlimited
-            'max_storage_mb': -1,    # Unlimited
-            'api_rate_limit': -1,    # Unlimited
+            'max_projects': -1,  # Unlimited overrides everything
+            'max_users': -1,     # Unlimited overrides everything
+            'max_storage_mb': -1,
+            'api_rate_limit': -1,
             'features': [
                 'Unlimited projects',
                 'Unlimited team members',
@@ -195,8 +211,8 @@ class Config:
                 'Custom deployment'
             ]
         }
-    }
-    
+    }    
+
     # ENHANCED CORS Configuration for static files
     CORS_ORIGINS = [origin.strip() for origin in os.environ.get('CORS_ORIGINS', 'https://localhost:5173, https://flotto.jaytechprinterimports.co.ke').split(',')]
     CORS_ALLOW_HEADERS = [

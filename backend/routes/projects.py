@@ -74,11 +74,13 @@ def get_projects():
 
 
 # routes/projects.py - Updated create_project function
+# Fixed create_project function in routes/projects.py
+
 @projects_bp.route('', methods=['POST'])
 @projects_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_project():
-    """Create a new project with basic project details only"""
+    """Create a new project with proper subscription usage tracking"""
     try:
         current_user_id = get_jwt_identity()
         user = db.session.get(User, int(current_user_id))
@@ -87,14 +89,23 @@ def create_project():
             return jsonify({'error': 'User or company not found'}), 404
         
         subscription = user.company.subscription
-        if subscription:
-            max_projects = getattr(subscription, 'max_projects', 0)
-            projects_used = getattr(subscription, 'projects_used_this_month', 0)
+        if not subscription:
+            return jsonify({'error': 'No subscription found'}), 404
+        
+        # FIXED: Check if user can create project using proper method
+        if not subscription.can_create_project():
+            current_usage = subscription.projects_used_this_period or 0
+            limit = subscription.total_projects_allowed
             
-            if max_projects > 0 and projects_used >= max_projects:
-                return jsonify({
-                    'error': 'Project limit reached for your subscription plan'
-                }), 403
+            return jsonify({
+                'error': 'Project limit reached for your subscription plan',
+                'details': {
+                    'current_usage': current_usage,
+                    'limit': limit,
+                    'plan': subscription.plan_name,
+                    'days_remaining': subscription.days_remaining
+                }
+            }), 403
         
         data = request.get_json()
         if not data:
@@ -125,21 +136,31 @@ def create_project():
         )
         
         db.session.add(project)
+        db.session.flush()  # Get project ID without committing yet
         
-        if subscription and hasattr(subscription, 'projects_used_this_month'):
-            subscription.projects_used_this_month = getattr(subscription, 'projects_used_this_month', 0) + 1
+        # FIXED: Properly increment project usage using the subscription method
+        old_usage = subscription.projects_used_this_period or 0
+        subscription.increment_project_usage()
+        new_usage = subscription.projects_used_this_period
         
         db.session.commit()
         
         return jsonify({
             'message': 'Project created successfully',
-            'project': project.to_dict()
+            'project': project.to_dict(),
+            'usage_info': {
+                'projects_used': new_usage,
+                'projects_allowed': subscription.total_projects_allowed,
+                'remaining': subscription.total_projects_allowed - new_usage if subscription.total_projects_allowed > 0 else 'Unlimited',
+                'can_create_more': subscription.can_create_project()
+            }
         }), 201
         
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Create project error: {str(e)}\n{traceback.format_exc()}')
         return jsonify({'error': f'Failed to create project: {str(e)}'}), 500
+
 
 @projects_bp.route('/<int:project_id>/client', methods=['PUT'])
 @jwt_required()
@@ -727,12 +748,19 @@ def duplicate_project(project_id):
             
             duplicate_project.uploaded_images = new_uploaded_images
         
-        subscription.projects_used_this_month += 1
+        # FIXED: Use the proper method to increment usage
+        subscription.increment_project_usage()
+        subscription.updated_at = datetime.utcnow()
+        
         db.session.commit()
         
         return jsonify({
             'message': 'Project duplicated successfully',
-            'project': duplicate_project.to_dict()
+            'project': duplicate_project.to_dict(),
+            'usage_info': {
+                'projects_used': subscription.projects_used_this_period,
+                'projects_allowed': subscription.total_projects_allowed
+            }
         }), 201
         
     except Exception as e:
@@ -916,7 +944,7 @@ def email_quote(project_id):
 @projects_bp.route('/stats', methods=['GET'])
 @jwt_required()
 def get_project_stats():
-    """Get project statistics for the company"""
+    """Get project statistics for the company with proper subscription data"""
     try:
         current_user_id = get_jwt_identity()
         user = db.session.get(User, int(current_user_id))
@@ -924,12 +952,14 @@ def get_project_stats():
         if not user or not user.company:
             return jsonify({'error': 'User or company not found'}), 404
         
+        # Get project stats
         total_projects = Project.query.filter_by(company_id=user.company_id).count()
         draft_projects = Project.query.filter_by(company_id=user.company_id, status='draft').count()
         analyzing_projects = Project.query.filter_by(company_id=user.company_id, status='analyzing').count()
         ready_projects = Project.query.filter_by(company_id=user.company_id, status='ready').count()
         completed_projects = Project.query.filter_by(company_id=user.company_id, status='completed').count()
         
+        # Calculate revenue (existing logic)
         total_revenue = 0.0
         try:
             completed_project_objects = Project.query.filter_by(
@@ -952,9 +982,10 @@ def get_project_stats():
                     except (ValueError, TypeError):
                         continue
         except Exception as e:
-            current_app.logger.warning(f'Error calculating revenue: {str(e)}\n{traceback.format_exc()}')
+            current_app.logger.warning(f'Error calculating revenue: {str(e)}')
             total_revenue = 0.0
         
+        # Get recent projects
         recent_projects = []
         try:
             recent_projects_query = Project.query.filter_by(
@@ -962,38 +993,30 @@ def get_project_stats():
             ).order_by(Project.created_at.desc()).limit(5).all()
             recent_projects = [project.to_dict() for project in recent_projects_query]
         except Exception as e:
-            current_app.logger.warning(f'Error getting recent projects: {str(e)}\n{traceback.format_exc()}')
+            current_app.logger.warning(f'Error getting recent projects: {str(e)}')
             recent_projects = []
         
+        # Get subscription info with proper error handling
         subscription = user.company.subscription
-        projects_this_month = 0
-        project_limit = 0
         subscription_dict = None
+        projects_this_period = 0
+        project_limit = 0
         
-        try:
-            if subscription:
-                projects_this_month = getattr(subscription, 'projects_used_this_month', 0)
-                if hasattr(subscription, 'get_max_projects'):
-                    try:
-                        project_limit = subscription.get_max_projects()
-                    except Exception:
-                        project_limit = getattr(subscription, 'max_projects', 0)
-                else:
-                    project_limit = getattr(subscription, 'max_projects', 0)
-                if hasattr(subscription, 'to_dict'):
-                    try:
-                        subscription_dict = subscription.to_dict()
-                    except Exception as e:
-                        current_app.logger.warning(f'Error converting subscription to dict: {str(e)}\n{traceback.format_exc()}')
-                        subscription_dict = {
-                            'id': getattr(subscription, 'id', None),
-                            'plan_name': getattr(subscription, 'plan_name', 'unknown'),
-                            'status': getattr(subscription, 'status', 'unknown'),
-                            'max_projects': project_limit,
-                            'projects_used_this_month': projects_this_month
-                        }
-        except Exception as e:
-            current_app.logger.warning(f'Error processing subscription: {str(e)}\n{traceback.format_exc()}')
+        if subscription:
+            try:
+                # Recalculate limits to ensure they're up to date
+                subscription.recalculate_limits()
+                db.session.commit()
+                
+                projects_this_period = subscription.projects_used_this_period
+                project_limit = subscription.total_projects_allowed
+                subscription_dict = subscription.to_dict()
+            except Exception as e:
+                current_app.logger.warning(f'Error processing subscription: {str(e)}')
+                subscription_dict = {
+                    'status': 'error',
+                    'message': 'Unable to load subscription details'
+                }
         
         avg_project_value = 0.0
         if completed_projects > 0 and total_revenue > 0:
@@ -1006,7 +1029,7 @@ def get_project_stats():
                 'analyzing_projects': analyzing_projects,
                 'ready_projects': ready_projects,
                 'completed_projects': completed_projects,
-                'projects_this_month': projects_this_month,
+                'projects_this_period': projects_this_period,  # FIXED: Use correct field name
                 'project_limit': project_limit,
                 'total_revenue': round(total_revenue, 2),
                 'avg_project_value': round(avg_project_value, 2)
@@ -1016,7 +1039,7 @@ def get_project_stats():
         })
         
     except Exception as e:
-        current_app.logger.error(f'Get project stats error: {str(e)}\n{traceback.format_exc()}')
+        current_app.logger.error(f'Get project stats error: {str(e)}')
         return jsonify({
             'stats': {
                 'total_projects': 0,
@@ -1024,7 +1047,7 @@ def get_project_stats():
                 'analyzing_projects': 0,
                 'ready_projects': 0,
                 'completed_projects': 0,
-                'projects_this_month': 0,
+                'projects_this_period': 0,
                 'project_limit': 0,
                 'total_revenue': 0.0,
                 'avg_project_value': 0.0

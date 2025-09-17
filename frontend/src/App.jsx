@@ -41,7 +41,6 @@ import PaintBrandSettings from './components/settings/PaintBrandSettings';
 import Subscription from './pages/Subscription';
 import PricingPlans from './components/subscription/PricingPlans';
 import SubscriptionStatus from './components/subscription/SubscriptionStatus';
-import BillingInfo from './components/subscription/BillingInfo';
 
 // Payment and Subscription Status Pages
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -81,6 +80,7 @@ import CookiePolicy from './pages/CookiePolicy';
 import TermsOfService from './pages/TermsofService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TestimonialsPage from './pages/Testimonials';
+import PaymentHistory from './components/subscription/PaymentHistory';
 
 function App() {
   return (
@@ -364,7 +364,7 @@ function App() {
 
                         <Route path="/subscription/billing" element={
                           <ProtectedRoute>
-                            <BillingInfo />
+                            <PaymentHistory/>
                           </ProtectedRoute>
                         } />
 

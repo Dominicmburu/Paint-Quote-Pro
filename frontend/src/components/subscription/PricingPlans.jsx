@@ -16,6 +16,8 @@ const PricingPlans = () => {
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [error, setError] = useState('');
 
+  console.log('Current Subscription:', currentSubscription);
+
   useEffect(() => {
     loadPlans();
   }, []);
@@ -225,7 +227,7 @@ const PricingPlans = () => {
               </div>
               <div className="text-right">
                 <p className="text-sm">
-                  {currentSubscription.projects_used_this_month} / {currentSubscription.max_projects === -1 ? '∞' : currentSubscription.max_projects} projects used
+                  {currentSubscription.projects_used_this_period} / {currentSubscription.total_projects_allowed === -1 ? '∞' : currentSubscription.total_projects_allowed} projects used
                 </p>
                 {currentSubscription.status === 'trial' && (
                   <p className="text-xs mt-1">

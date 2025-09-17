@@ -73,16 +73,30 @@ def register():
         
         subscription = Subscription(
             company_id=company.id,
-            plan_name='trial',  # Distinct from paid plans
+            plan_name='trial',
             billing_cycle='monthly',
             status='trial',
             trial_start=trial_start,
             trial_end=trial_end,
-            max_projects=3,  # Limited trial projects
-            max_users=1,     # Single user for trial
-            projects_used_this_month=0,
-            trial_reminder_sent=False,
-            trial_ending_reminder_sent=False
+            
+            # Fixed: Use correct field names from the model
+            total_projects_allowed=3,  # Changed from max_projects
+            total_users_allowed=1,     # Changed from max_users  
+            total_storage_mb_allowed=500,
+            total_api_rate_limit=50,   # Changed from total_api_rate_limit
+            
+            # Current period usage tracking (correct field names)
+            projects_used_this_period=0,  # Changed from projects_used_this_month
+            storage_used_mb=0,
+            trial_projects_used=0,
+            
+            # Initialize period fields properly for trial
+            current_period_start=trial_start,  # Set to trial start instead of None
+            current_period_end=trial_end,      # Set to trial end instead of None
+            
+            # Initialize other fields
+            failed_payment_count=0,
+            will_cancel_at_period_end=False
         )
         
         db.session.add(subscription)
@@ -103,13 +117,7 @@ def register():
             'company': company.to_dict(),
             'subscription': subscription.to_dict(),
             'access_token': access_token,
-            'refresh_token': refresh_token,
-            'trial_info': {
-                'days_remaining': 7,
-                'trial_end': trial_end.isoformat(),
-                'max_projects': 3,
-                'projects_used': 0
-            }
+            'refresh_token': refresh_token
         }), 201
         
     except Exception as e:

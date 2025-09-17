@@ -21,13 +21,30 @@ import {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, company } = useAuth();
-  const { subscription, canCreateProject, getProjectsRemaining } = useSubscription();
+  const { 
+    subscription, 
+    canCreateProject, 
+    getProjectsRemaining,
+    isTrialActive,
+    hasActiveSubscription,
+    getCurrentUsage,
+    trialDaysRemaining 
+  } = useSubscription();
   const [projects, setProjects] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+
+  console.log('Projects remaining:', getProjectsRemaining());
+  console.log('Can create project:', canCreateProject());
+  console.log('Subscription:', subscription);
+  console.log('User:', user);
+  console.log('Company:', company);
+  console.log('Stats:', stats);
+  console.log('Projects:', projects);
+  console.log('Status Filter:', statusFilter);
 
   useEffect(() => {
     loadDashboardData();
@@ -61,7 +78,7 @@ const Dashboard = () => {
 
   const handleCreateProject = () => {
     if (!canCreateProject()) {
-      alert('You have reached your project limit for this month. Please upgrade your plan.');
+      alert('You have reached your project limit for this period. Please upgrade your plan.');
       return;
     }
     navigate('/projects/new');
@@ -110,6 +127,7 @@ const Dashboard = () => {
   }
 
   const projectCounts = getProjectCounts();
+  const currentUsage = getCurrentUsage();
 
   return (
     <div className="min-h-screen bg-yellow-50">
@@ -122,7 +140,8 @@ const Dashboard = () => {
                 Welcome back, {user?.first_name}!
               </h1>
               <p className="text-slate-800 mt-1">
-                {company?.name} • {subscription?.plan_name} Plan
+                {company?.name} • {subscription?.plan_name || 'No Plan'} Plan
+                {isTrialActive() && ` (Trial - ${trialDaysRemaining} days left)`}
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
@@ -145,7 +164,7 @@ const Dashboard = () => {
           </div>
 
           {/* Subscription Alerts */}
-          {subscription && !subscription.is_active && (
+          {subscription && !hasActiveSubscription() && (
             <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
               <div className="flex items-center">
                 <AlertCircle className="h-5 w-5 text-red-400 mr-3" />
@@ -167,55 +186,11 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* Signature Alert */}
-          {/* {projectCounts.pending_signature > 0 && (
-            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4">
-              <div className="flex items-center">
-                <FileCheck className="h-5 w-5 text-blue-400 mr-3" />
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium text-blue-800">
-                    Quotes Awaiting Signature
-                  </h3>
-                  <p className="text-sm text-blue-700 mt-1">
-                    {projectCounts.pending_signature} quote{projectCounts.pending_signature !== 1 ? 's' : ''} {projectCounts.pending_signature === 1 ? 'is' : 'are'} waiting for client signature.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setStatusFilter('quoted')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  View Quotes
-                </button>
-              </div>
-            </div>
-          )} */}
-
-          {/* {projectCounts.signed > 0 && (
-            <div className="mt-4 bg-green-50 border border-green-200 rounded-md p-4">
-              <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium text-green-800">
-                    Recently Signed Quotes
-                  </h3>
-                  <p className="text-sm text-green-700 mt-1">
-                    {projectCounts.signed} quote{projectCounts.signed !== 1 ? 's' : ''} {projectCounts.signed === 1 ? 'has' : 'have'} been digitally signed by clients.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setStatusFilter('quoted')}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  View Signed
-                </button>
-              </div>
-            </div>
-          )} */}
-
-          {/* Usage Warning */}
-          {subscription && subscription.is_active && subscription.max_projects > 0 && (
-            subscription.projects_used_this_month / subscription.max_projects > 0.8
-          ) && (
+          {/* Usage Warning - Updated field names */}
+          {subscription && hasActiveSubscription() && 
+           currentUsage?.projects && 
+           subscription.total_projects_allowed > 0 && 
+           currentUsage.projects.percentage > 80 && (
             <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-4">
               <div className="flex items-center">
                 <AlertCircle className="h-5 w-5 text-yellow-400 mr-3" />
@@ -224,7 +199,7 @@ const Dashboard = () => {
                     Approaching Project Limit
                   </h3>
                   <p className="text-sm text-yellow-700 mt-1">
-                    You've used {subscription.projects_used_this_month} of {subscription.max_projects} projects this month.
+                    You've used {currentUsage.projects.used} of {currentUsage.projects.allowed} projects this period.
                   </p>
                 </div>
                 <Link
