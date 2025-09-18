@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Plus } from 'lucide-react';
+import { Search, Filter, Plus, FolderOpen } from 'lucide-react';
 import ProjectCard from './ProjectCard';
 import api from '../../services/api';
 import Loading from '../common/Loading';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const ProjectList = () => {
   const [projects, setProjects] = useState([]);
@@ -11,6 +12,7 @@ const ProjectList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadProjects();
@@ -42,29 +44,29 @@ const ProjectList = () => {
   };
 
   const statusOptions = [
-    { value: 'all', label: 'All Projects' },
-    { value: 'draft', label: 'Draft' },
-    { value: 'analyzing', label: 'Analyzing' },
-    { value: 'ready', label: 'Ready' },
-    { value: 'quoted', label: 'Quoted' },
-    { value: 'completed', label: 'Completed' }
+    { value: 'all', label: t('All Projects') },
+    { value: 'draft', label: t('Draft') },
+    { value: 'analyzing', label: t('Analyzing') },
+    { value: 'ready', label: t('Ready') },
+    { value: 'quoted', label: t('Quoted') },
+    { value: 'completed', label: t('Completed') }
   ];
 
   if (loading && !projects.length) {
-    return <Loading message="Loading projects..." />;
+    return <Loading message={t("Loading projects...")} />;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-        <h1 className="text-2xl font-bold text-purple-700">Projects</h1>
+        <h1 className="text-2xl font-bold text-purple-700">{t('Projects')}</h1>
         <Link
           to="/projects/new"
           className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-medium transition-colors"
         >
           <Plus className="h-4 w-4 mr-2" />
-          New Project
+          {t('New Project')}
         </Link>
       </div>
 
@@ -76,7 +78,7 @@ const ProjectList = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search projects..."
+                placeholder={t("Search projects...")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -117,12 +119,12 @@ const ProjectList = () => {
             <FolderOpen className="h-16 w-16 mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {searchTerm || statusFilter !== 'all' ? 'No projects found' : 'No projects yet'}
+            {searchTerm || statusFilter !== 'all' ? t('No projects found') : t('No projects yet')}
           </h3>
           <p className="text-gray-500 mb-6">
             {searchTerm || statusFilter !== 'all' 
-              ? 'Try adjusting your search or filter criteria.'
-              : 'Create your first project to get started.'
+              ? t('Try adjusting your search or filter criteria.')
+              : t('Create your first project to get started.')
             }
           </p>
           {(!searchTerm && statusFilter === 'all') && (
@@ -131,7 +133,7 @@ const ProjectList = () => {
               className="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-md font-medium transition-colors"
             >
               <Plus className="h-5 w-5 mr-2" />
-              Create Your First Project
+              {t('Create Your First Project')}
             </Link>
           )}
         </div>
@@ -144,7 +146,7 @@ const ProjectList = () => {
             onClick={() => setCurrentPage(currentPage + 1)}
             className="px-6 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
           >
-            Load More Projects
+            {t('Load More Projects')}
           </button>
         </div>
       )}

@@ -1,7 +1,10 @@
 import React from 'react';
 import { FileText, CheckCircle, TrendingUp, Clock, Users, DollarSign, AlertTriangle } from 'lucide-react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const QuickStats = ({ stats, subscription }) => {
+  const { t } = useTranslation();
+  
   // Helper function to format project usage display
   const getProjectUsageDisplay = () => {
     if (!subscription) return '0/0'; 
@@ -36,7 +39,7 @@ const QuickStats = ({ stats, subscription }) => {
 
   // Helper function to get expiry details
   const getExpiryInfo = () => {
-    if (!subscription) return { text: 'No Plan', type: 'error' };
+    if (!subscription) return { text: t('No Plan'), type: 'error' };
     
     const daysRemaining = subscription.days_remaining || 0;
     
@@ -44,27 +47,27 @@ const QuickStats = ({ stats, subscription }) => {
     if (subscription.status === 'trial') {
       const trialDays = subscription.trial_days_remaining || 0;
       if (trialDays <= 0) {
-        return { text: 'Trial Expired', type: 'error' };
+        return { text: t('Trial Expired'), type: 'error' };
       }
-      return { text: 'Trial Active', type: 'trial' };
+      return { text: t('Trial Active'), type: 'trial' };
     }
     
     // For active subscriptions
     if (subscription.status === 'active') {
       if (daysRemaining <= 3) {
-        return { text: 'Expires Soon', type: 'warning' };
+        return { text: t('Expires Soon'), type: 'warning' };
       }
       if (daysRemaining <= 7) {
-        return { text: 'Expires This Week', type: 'warning' };
+        return { text: t('Expires This Week'), type: 'warning' };
       }
-      return { text: subscription.plan_name?.charAt(0)?.toUpperCase() + subscription.plan_name?.slice(1) || 'Active', type: 'active' };
+      return { text: subscription.plan_name?.charAt(0)?.toUpperCase() + subscription.plan_name?.slice(1) || t('Active'), type: 'active' };
     }
     
     if (subscription.status === 'expired') {
-      return { text: 'Subscription Expired', type: 'error' };
+      return { text: t('Subscription Expired'), type: 'error' };
     }
     
-    return { text: 'Unknown Status', type: 'neutral' };
+    return { text: t('Unknown Status'), type: 'neutral' };
   };
 
   // Helper function to get usage status
@@ -72,18 +75,18 @@ const QuickStats = ({ stats, subscription }) => {
     const percentage = getUsagePercentage();
     
     if (!subscription || !subscription.can_create_project) {
-      return { text: 'Limit Reached', type: 'error' };
+      return { text: t('Limit Reached'), type: 'error' };
     }
     
     if (percentage >= 90) {
-      return { text: 'Nearly Full', type: 'warning' };
+      return { text: t('Nearly Full'), type: 'warning' };
     }
     
     if (percentage >= 70) {
-      return { text: 'Getting Full', type: 'caution' };
+      return { text: t('Getting Full'), type: 'caution' };
     }
     
-    return { text: 'Available', type: 'success' };
+    return { text: t('Available'), type: 'success' };
   };
 
   const expiryInfo = getExpiryInfo();
@@ -91,23 +94,23 @@ const QuickStats = ({ stats, subscription }) => {
 
   const statCards = [
     {
-      title: 'Total Projects',
+      title: t('Total Projects'),
       value: stats?.total_projects || 0,
       icon: <FileText className="h-6 w-6 text-purple-600" />,
       color: 'bg-purple-50 border-purple-200',
-      change: `${stats?.draft_projects || 0} draft, ${stats?.ready_projects || 0} ready`,
+      change: `${stats?.draft_projects || 0} ${t('draft')}, ${stats?.ready_projects || 0} ${t('ready')}`,
       changeType: 'neutral'
     },
     {
-      title: 'Ready for Quote',
+      title: t('Ready for Quote'),
       value: stats?.ready_projects || 0,
       icon: <CheckCircle className="h-6 w-6 text-green-600" />,
       color: 'bg-green-50 border-green-200',
-      change: `${stats?.completed_projects || 0} completed`,
+      change: `${stats?.completed_projects || 0} ${t('completed')}`,
       changeType: 'success'
     },
     {
-      title: 'Projects This Period',
+      title: t('Projects This Period'),
       value: getProjectUsageDisplay(),
       icon: subscription?.total_projects_allowed === -1 ? 
         <TrendingUp className="h-6 w-6 text-blue-600" /> : 
@@ -121,7 +124,7 @@ const QuickStats = ({ stats, subscription }) => {
       progressPercentage: getUsagePercentage()
     },
     {
-      title: 'Access Remaining',
+      title: t('Access Remaining'),
       value: getRemainingDaysDisplay(),
       icon: expiryInfo.type === 'warning' || expiryInfo.type === 'error' ? 
         <AlertTriangle className="h-6 w-6 text-red-600" /> :
@@ -132,7 +135,7 @@ const QuickStats = ({ stats, subscription }) => {
              'bg-green-50 border-green-200',
       change: expiryInfo.text,
       changeType: expiryInfo.type,
-      subtitle: getRemainingDaysDisplay() === 1 ? 'day' : 'days'
+      subtitle: getRemainingDaysDisplay() === 1 ? t('day') : t('days')
     }
   ];
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { 
   Brain, 
   FileText, 
@@ -26,50 +27,51 @@ import {
 
 const Features = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const { t } = useTranslation();
 
   const mainFeatures = [
     {
       icon: <Brain className="h-12 w-12 text-[#4bb4f5]" />,
-      title: "AI Floor Plan Analysis",
-      subtitle: "Revolutionary AI Technology",
-      description: "Upload any floor plan and watch our AI automatically identify rooms, calculate surface areas, and provide detailed measurements with 95% accuracy. Our advanced computer vision technology can handle everything from hand-drawn sketches to complex architectural drawings.",
+      title: t("AI Floor Plan Analysis"),
+      subtitle: t("Revolutionary AI Technology"),
+      description: t("Upload any floor plan and watch our AI automatically identify rooms, calculate surface areas, and provide detailed measurements with 95% accuracy. Our advanced computer vision technology can handle everything from hand-drawn sketches to complex architectural drawings."),
       benefits: [
-        "Supports hand-drawn sketches and digital plans",
-        "Identifies walls, doors, and windows automatically",
-        "Calculates floor, wall, and ceiling areas",
-        "Provides room-by-room breakdowns",
-        "95% accuracy guarantee",
-        "Processes plans in under 30 seconds"
+        t("Supports hand-drawn sketches and digital plans"),
+        t("Identifies walls, doors, and windows automatically"),
+        t("Calculates floor, wall, and ceiling areas"),
+        t("Provides room-by-room breakdowns"),
+        t("95% accuracy guarantee"),
+        t("Processes plans in under 30 seconds")
       ],
       image: "images/AI.jpg"
     },
     {
       icon: <FileText className="h-12 w-12 text-amber-600" />,
-      title: "Professional Quote Generation",
-      subtitle: "Impress Every Client",
-      description: "Create stunning, branded PDF quotes that impress clients and win more jobs. Customize templates with your company branding, add detailed breakdowns, and include professional terms and conditions. Your quotes will look better than your competition's.",
+      title: t("Professional Quote Generation"),
+      subtitle: t("Impress Every Client"),
+      description: t("Create stunning, branded PDF quotes that impress clients and win more jobs. Customize templates with your company branding, add detailed breakdowns, and include professional terms and conditions. Your quotes will look better than your competition's."),
       benefits: [
-        "Professional PDF generation with your branding",
-        "Custom company logos and contact details",
-        "Detailed line-item breakdowns with materials",
-        "Multiple professional template options",
-        "Automatic terms and conditions",
-        "Email delivery with tracking"
+        t("Professional PDF generation with your branding"),
+        t("Custom company logos and contact details"),
+        t("Detailed line-item breakdowns with materials"),
+        t("Multiple professional template options"),
+        t("Automatic terms and conditions"),
+        t("Email delivery with tracking")
       ],
       image: "images/Quotation.png"
     },
     {
       icon: <Clock className="h-12 w-12 text-blue-600" />,
-      title: "Time-Saving Automation",
-      subtitle: "Work Smarter, Not Harder",
-      description: "Reduce quote creation time from hours to minutes. Our automation handles calculations, formatting, and presentation, so you can focus on what you do best - painting. Get back to the job site faster and take on more projects.",
+      title: t("Time-Saving Automation"),
+      subtitle: t("Work Smarter, Not Harder"),
+      description: t("Reduce quote creation time from hours to minutes. Our automation handles calculations, formatting, and presentation, so you can focus on what you do best - painting. Get back to the job site faster and take on more projects."),
       benefits: [
-        "5x faster quote creation process",
-        "Automatic surface area calculations",
-        "No manual measurements required",
-        "Instant quote delivery to clients",
-        "Automated follow-up reminders",
-        "Mobile app for on-site quoting"
+        t("5x faster quote creation process"),
+        t("Automatic surface area calculations"),
+        t("No manual measurements required"),
+        t("Instant quote delivery to clients"),
+        t("Automated follow-up reminders"),
+        t("Mobile app for on-site quoting")
       ],
       image: "images/image.png"
     }
@@ -78,66 +80,66 @@ const Features = () => {
   const businessFeatures = [
     {
       icon: <BarChart3 className="h-8 w-8 text-[#4bb4f5]" />,
-      title: "Project Management",
-      description: "Track your painting projects from quote to completion with built-in project management tools."
+      title: t("Project Management"),
+      description: t("Track your painting projects from quote to completion with built-in project management tools.")
     },
     {
       icon: <Calculator className="h-8 w-8 text-amber-600" />,
-      title: "Smart Pricing Calculator",
-      description: "Built-in pricing templates for different paint types, surface preparations, and job complexities."
+      title: t("Smart Pricing Calculator"),
+      description: t("Built-in pricing templates for different paint types, surface preparations, and job complexities.")
     },
     {
       icon: <Camera className="h-8 w-8 text-blue-600" />,
-      title: "Photo Documentation",
-      description: "Document your work with before/after photos that automatically attach to project files."
+      title: t("Photo Documentation"),
+      description: t("Document your work with before/after photos that automatically attach to project files.")
     },
     {
       icon: <Users className="h-8 w-8 text-[#4bb4f5]" />,
-      title: "Team Collaboration",
-      description: "Add team members and collaborate on projects with role-based permissions and real-time updates."
+      title: t("Team Collaboration"),
+      description: t("Add team members and collaborate on projects with role-based permissions and real-time updates.")
     },
     {
       icon: <Shield className="h-8 w-8 text-amber-600" />,
-      title: "Secure Cloud Storage",
-      description: "Your data is encrypted and backed up securely in the cloud with 99.9% uptime guarantee."
+      title: t("Secure Cloud Storage"),
+      description: t("Your data is encrypted and backed up securely in the cloud with 99.9% uptime guarantee.")
     },
     {
       icon: <Smartphone className="h-8 w-8 text-blue-600" />,
-      title: "Mobile App",
-      description: "Access your projects and create quotes from any device, anywhere with our native mobile apps."
+      title: t("Mobile App"),
+      description: t("Access your projects and create quotes from any device, anywhere with our native mobile apps.")
     }
   ];
 
   const integrationFeatures = [
     {
       icon: <PaintBucket className="h-8 w-8 text-[#4bb4f5]" />,
-      title: "Paint Brand Integration",
-      description: "Support for all major paint brands with accurate pricing and coverage data."
+      title: t("Paint Brand Integration"),
+      description: t("Support for all major paint brands with accurate pricing and coverage data.")
     },
     {
       icon: <Download className="h-8 w-8 text-amber-600" />,
-      title: "Export & Integration",
-      description: "Export quotes as PDF, Excel, or integrate with your existing CRM and accounting systems."
+      title: t("Export & Integration"),
+      description: t("Export quotes as PDF, Excel, or integrate with your existing CRM and accounting systems.")
     },
     {
       icon: <DollarSign className="h-8 w-8 text-blue-600" />,
-      title: "Payment Processing",
-      description: "Accept deposits and payments directly through your quotes with integrated payment processing."
+      title: t("Payment Processing"),
+      description: t("Accept deposits and payments directly through your quotes with integrated payment processing.")
     },
     {
       icon: <Target className="h-8 w-8 text-[#4bb4f5]" />,
-      title: "Lead Management",
-      description: "Track leads, follow up automatically, and convert more prospects into paying customers."
+      title: t("Lead Management"),
+      description: t("Track leads, follow up automatically, and convert more prospects into paying customers.")
     },
     {
       icon: <Layers className="h-8 w-8 text-amber-600" />,
-      title: "Multi-Surface Coating",
-      description: "Handle complex projects with multiple surface types, primer requirements, and finish options."
+      title: t("Multi-Surface Coating"),
+      description: t("Handle complex projects with multiple surface types, primer requirements, and finish options.")
     },
     {
       icon: <Settings className="h-8 w-8 text-blue-600" />,
-      title: "Custom Workflows",
-      description: "Set up custom approval workflows and project stages that match your business processes."
+      title: t("Custom Workflows"),
+      description: t("Set up custom approval workflows and project stages that match your business processes.")
     }
   ];
 
@@ -148,12 +150,11 @@ const Features = () => {
       <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
-            Powerful Features for
-            <span className="block text-slate-700">Professional Painters</span>
+            {t('Powerful Features for')}
+            <span className="block text-slate-700">{t('Professional Painters')}</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto leading-relaxed">
-            Everything you need to create accurate, professional paint quotes faster than ever before. 
-            Discover the tools that are transforming how painting contractors work.
+            {t('Everything you need to create accurate, professional paint quotes faster than ever before. Discover the tools that are transforming how painting contractors work.')}
           </p>
         </div>
       </section>
@@ -217,10 +218,10 @@ const Features = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-              Complete Business Management
+              {t('Complete Business Management')}
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Beyond quoting - manage your entire painting business with our comprehensive suite of tools
+              {t('Beyond quoting - manage your entire painting business with our comprehensive suite of tools')}
             </p>
           </div>
 
@@ -249,10 +250,10 @@ const Features = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-              Integrations & Advanced Tools
+              {t('Integrations & Advanced Tools')}
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Connect with your existing tools and unlock advanced functionality for complex projects
+              {t('Connect with your existing tools and unlock advanced functionality for complex projects')}
             </p>
           </div>
 
@@ -281,10 +282,10 @@ const Features = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-              See How It Works
+              {t('See How It Works')}
             </h2>
             <p className="text-xl text-slate-600">
-              From floor plan to professional quote in 3 simple steps
+              {t('From floor plan to professional quote in 3 simple steps')}
             </p>
           </div>
 
@@ -292,18 +293,18 @@ const Features = () => {
             {[
               {
                 step: 1,
-                title: "Upload Floor Plan",
-                description: "Simply drag and drop your floor plan image. We support all common formats including hand-drawn sketches, PDFs, and digital plans. Our AI works with any quality image."
+                title: t("Upload Floor Plan"),
+                description: t("Simply drag and drop your floor plan image. We support all common formats including hand-drawn sketches, PDFs, and digital plans. Our AI works with any quality image.")
               },
               {
                 step: 2,
-                title: "AI Analysis",
-                description: "Our advanced AI analyzes your floor plan, identifies all rooms, and calculates precise surface areas for floors, walls, and ceilings. Review and adjust as needed."
+                title: t("AI Analysis"),
+                description: t("Our advanced AI analyzes your floor plan, identifies all rooms, and calculates precise surface areas for floors, walls, and ceilings. Review and adjust as needed.")
               },
               {
                 step: 3,
-                title: "Generate Quote",
-                description: "Review calculations, adjust pricing, and generate a beautiful PDF quote with your company branding that's ready to send to clients. Track opens and responses."
+                title: t("Generate Quote"),
+                description: t("Review calculations, adjust pricing, and generate a beautiful PDF quote with your company branding that's ready to send to clients. Track opens and responses.")
               }
             ].map((item, index) => (
               <div key={index} className="text-center">
@@ -325,59 +326,59 @@ const Features = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Why Paint Quote Pro vs Manual Quoting?
+              {t('Why Paint Quote Pro vs Manual Quoting?')}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="bg-red-50 border border-red-200 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-red-700 mb-6">Manual Quoting</h3>
+              <h3 className="text-2xl font-bold text-red-700 mb-6">{t('Manual Quoting')}</h3>
               <ul className="space-y-4">
                 <li className="flex items-center text-red-600">
                   <X className="h-5 w-5 mr-3" />
-                  <span>2-4 hours per quote</span>
+                  <span>{t('2-4 hours per quote')}</span>
                 </li>
                 <li className="flex items-center text-red-600">
                   <X className="h-5 w-5 mr-3" />
-                  <span>Prone to measurement errors</span>
+                  <span>{t('Prone to measurement errors')}</span>
                 </li>
                 <li className="flex items-center text-red-600">
                   <X className="h-5 w-5 mr-3" />
-                  <span>Inconsistent pricing</span>
+                  <span>{t('Inconsistent pricing')}</span>
                 </li>
                 <li className="flex items-center text-red-600">
                   <X className="h-5 w-5 mr-3" />
-                  <span>Basic, unprofessional appearance</span>
+                  <span>{t('Basic, unprofessional appearance')}</span>
                 </li>
                 <li className="flex items-center text-red-600">
                   <X className="h-5 w-5 mr-3" />
-                  <span>No project tracking</span>
+                  <span>{t('No project tracking')}</span>
                 </li>
               </ul>
             </div>
 
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-[#4bb4f5] mb-6">Paint Quote Pro</h3>
+              <h3 className="text-2xl font-bold text-[#4bb4f5] mb-6">{t('Paint Quote Pro')}</h3>
               <ul className="space-y-4">
                 <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
-                  <span>15-30 minutes per quote</span>
+                  <span>{t('15-30 minutes per quote')}</span>
                 </li>
                 <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
-                  <span>95% measurement accuracy</span>
+                  <span>{t('95% measurement accuracy')}</span>
                 </li>
                 <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
-                  <span>Consistent, competitive pricing</span>
+                  <span>{t('Consistent, competitive pricing')}</span>
                 </li>
                 <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
-                  <span>Professional, branded quotes</span>
+                  <span>{t('Professional, branded quotes')}</span>
                 </li>
                 <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />
-                  <span>Complete project management</span>
+                  <span>{t('Complete project management')}</span>
                 </li>
               </ul>
             </div>

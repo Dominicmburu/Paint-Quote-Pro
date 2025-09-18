@@ -81,12 +81,14 @@ import TermsOfService from './pages/TermsofService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TestimonialsPage from './pages/Testimonials';
 import PaymentHistory from './components/subscription/PaymentHistory';
+import { TranslationProvider } from './hooks/useTranslation';
 
 function App() {
   return (
-    <AuthProvider>
-      <SubscriptionProvider>
-        {/* <ClientProvider> */}
+    <TranslationProvider>
+      <AuthProvider>
+        <SubscriptionProvider>
+          {/* <ClientProvider> */}
           <Router>
             <div className="App min-h-screen bg-yellow-50">
               <Routes>
@@ -125,7 +127,7 @@ function App() {
                   <>
                     <Header />
                     <main className="flex-1">
-                      <TestimonialsPage/>
+                      <TestimonialsPage />
                     </main>
                     <Footer />
                   </>
@@ -155,7 +157,7 @@ function App() {
                   <>
                     <Header />
                     <main className="flex-1">
-                      <PrivacyPolicy/>
+                      <PrivacyPolicy />
                     </main>
                     <Footer />
                   </>
@@ -165,7 +167,7 @@ function App() {
                   <>
                     <Header />
                     <main className="flex-1">
-                      <TermsOfService/>
+                      <TermsOfService />
                     </main>
                     <Footer />
                   </>
@@ -175,7 +177,7 @@ function App() {
                   <>
                     <Header />
                     <main className="flex-1">
-                      <CookiePolicy/>
+                      <CookiePolicy />
                     </main>
                     <Footer />
                   </>
@@ -364,7 +366,7 @@ function App() {
 
                         <Route path="/subscription/billing" element={
                           <ProtectedRoute>
-                            <PaymentHistory/>
+                            <PaymentHistory />
                           </ProtectedRoute>
                         } />
 
@@ -382,9 +384,10 @@ function App() {
               </Routes>
             </div>
           </Router>
-        {/* </ClientProvider> */}
-      </SubscriptionProvider>
-    </AuthProvider>
+          {/* </ClientProvider> */}
+        </SubscriptionProvider>
+      </AuthProvider>
+    </TranslationProvider>
   );
 }
 

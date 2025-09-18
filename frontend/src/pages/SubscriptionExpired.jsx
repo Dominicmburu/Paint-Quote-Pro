@@ -1,70 +1,72 @@
 import React, { useState } from 'react';
 import { Clock, CreditCard, ArrowRight, Download, Lock, Unlock, CheckCircle } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
 
 const SubscriptionExpired = () => {
   const [selectedPlan, setSelectedPlan] = useState('professional');
+  const { t } = useTranslation();
 
   const plans = [
     {
       id: 'starter',
-      name: 'Starter',
+      name: t('Starter'),
       price: 29,
       yearlyPrice: 290,
-      description: 'Perfect for small painting businesses',
+      description: t('Perfect for small painting businesses'),
       features: [
-        'Up to 5 projects per month',
-        'Basic floor plan analysis',
-        'PDF quote generation',
-        '2 team members',
-        'Email support'
+        t('Up to 5 projects per month'),
+        t('Basic floor plan analysis'),
+        t('PDF quote generation'),
+        t('2 team members'),
+        t('Email support')
       ]
     },
     {
       id: 'professional',
-      name: 'Professional',
+      name: t('Professional'),
       price: 79,
       yearlyPrice: 790,
-      description: 'Most popular for growing businesses',
+      description: t('Most popular for growing businesses'),
       features: [
-        'Up to 25 projects per month',
-        'Advanced AI floor plan analysis',
-        'Custom quote templates',
-        '10 team members',
-        'Priority support',
-        'Custom paint brand settings'
+        t('Up to 25 projects per month'),
+        t('Advanced AI floor plan analysis'),
+        t('Custom quote templates'),
+        t('10 team members'),
+        t('Priority support'),
+        t('Custom paint brand settings')
       ],
       popular: true
     },
     {
       id: 'enterprise',
-      name: 'Enterprise',
+      name: t('Enterprise'),
       price: 199,
       yearlyPrice: 1990,
-      description: 'For large painting contractors',
+      description: t('For large painting contractors'),
       features: [
-        'Unlimited projects',
-        'Unlimited team members',
-        'Advanced AI analysis',
-        'White-label options',
-        'API access',
-        'Dedicated account manager'
+        t('Unlimited projects'),
+        t('Unlimited team members'),
+        t('Advanced AI analysis'),
+        t('White-label options'),
+        t('API access'),
+        t('Dedicated account manager')
       ]
     }
   ];
 
   const lockedFeatures = [
-    'Create new projects',
-    'Generate new quotes',
-    'Access AI floor plan analysis',
-    'Download existing quotes',
-    'Team collaboration features'
+    t('Create new projects'),
+    t('Generate new quotes'),
+    t('Access AI floor plan analysis'),
+    t('Download existing quotes'),
+    t('Team collaboration features')
   ];
 
   const availableFeatures = [
-    'View existing projects (read-only)',
-    'Access account settings',
-    'View billing history',
-    'Contact support'
+    t('View existing projects (read-only)'),
+    t('Access account settings'),
+    t('View billing history'),
+    t('Contact support')
   ];
 
   const handleReactivate = () => {
@@ -81,7 +83,7 @@ const SubscriptionExpired = () => {
             <div className="bg-white rounded-full p-3 mr-4">
               <Clock className="h-8 w-8 text-orange-500" />
             </div>
-            <h1 className="text-3xl font-bold text-white">Subscription Expired</h1>
+            <h1 className="text-3xl font-bold text-white">{t('Subscription Expired')}</h1>
           </div>
         </div>
       </div>
@@ -95,10 +97,10 @@ const SubscriptionExpired = () => {
               <Clock className="h-12 w-12 text-orange-500 mx-auto" />
             </div>
             <h2 className="text-2xl font-bold text-purple-700 mb-4">
-              Your subscription has expired
+              {t('Your subscription has expired')}
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Don't worry - your data is safe! Reactivate your subscription to continue creating professional paint quotes and access all your projects.
+              {t('Don\'t worry - your data is safe! Reactivate your subscription to continue creating professional paint quotes and access all your projects.')}
             </p>
           </div>
 
@@ -108,7 +110,7 @@ const SubscriptionExpired = () => {
             <div className="bg-red-50 border border-red-200 rounded-xl p-6">
               <div className="flex items-center mb-4">
                 <Lock className="h-6 w-6 text-red-500 mr-3" />
-                <h3 className="text-lg font-semibold text-red-700">Currently Unavailable</h3>
+                <h3 className="text-lg font-semibold text-red-700">{t('Currently Unavailable')}</h3>
               </div>
               <ul className="space-y-2">
                 {lockedFeatures.map((feature, index) => (
@@ -124,7 +126,7 @@ const SubscriptionExpired = () => {
             <div className="bg-green-50 border border-green-200 rounded-xl p-6">
               <div className="flex items-center mb-4">
                 <Unlock className="h-6 w-6 text-green-500 mr-3" />
-                <h3 className="text-lg font-semibold text-green-700">Still Available</h3>
+                <h3 className="text-lg font-semibold text-green-700">{t('Still Available')}</h3>
               </div>
               <ul className="space-y-2">
                 {availableFeatures.map((feature, index) => (
@@ -144,11 +146,11 @@ const SubscriptionExpired = () => {
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors flex items-center justify-center mx-auto"
             >
               <CreditCard className="h-5 w-5 mr-2" />
-              Reactivate Subscription
+              {t('Reactivate Subscription')}
               <ArrowRight className="h-5 w-5 ml-2" />
             </button>
             <p className="text-gray-500 text-sm mt-3">
-              Resume where you left off in just a few clicks
+              {t('Resume where you left off in just a few clicks')}
             </p>
           </div>
         </div>
@@ -156,7 +158,7 @@ const SubscriptionExpired = () => {
         {/* Plan Selection */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8">
           <h3 className="text-xl font-bold text-purple-700 mb-6 text-center">
-            Choose your plan to continue
+            {t('Choose your plan to continue')}
           </h3>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -173,7 +175,7 @@ const SubscriptionExpired = () => {
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      Most Popular
+                      {t('Most Popular')}
                     </span>
                   </div>
                 )}
@@ -212,30 +214,29 @@ const SubscriptionExpired = () => {
               onClick={handleReactivate}
               className="bg-purple-600 hover:bg-purple-700 text-white px-12 py-4 rounded-lg font-semibold text-lg transition-colors"
             >
-              Continue with {plans.find(p => p.id === selectedPlan)?.name} Plan
+              {t('Continue with')} {plans.find(p => p.id === selectedPlan)?.name} {t('Plan')}
             </button>
           </div>
         </div>
 
         {/* Special Offer */}
         <div className="bg-gradient-to-r from-purple-600 to-green-600 rounded-2xl p-8 text-white text-center">
-          <h3 className="text-xl font-bold mb-4">Welcome Back Offer!</h3>
+          <h3 className="text-xl font-bold mb-4">{t('Welcome Back Offer!')}</h3>
           <p className="text-purple-100 mb-6">
-            Reactivate your subscription today and get your first month at 20% off. 
-            Plus, all your previous data and settings are exactly as you left them.
+            {t('Reactivate your subscription today and get your first month at 20% off. Plus, all your previous data and settings are exactly as you left them.')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleReactivate}
               className="bg-yellow-400 hover:bg-yellow-500 text-purple-900 px-8 py-3 rounded-lg font-semibold transition-colors"
             >
-              Claim 20% Discount
+              {t('Claim 20% Discount')}
             </button>
             <button
               onClick={() => window.location.href = '/subscription/billing'}
               className="border-2 border-white text-white hover:bg-white hover:text-purple-700 px-8 py-3 rounded-lg font-semibold transition-colors"
             >
-              View Billing History
+              {t('View Billing History')}
             </button>
           </div>
         </div>
@@ -244,37 +245,36 @@ const SubscriptionExpired = () => {
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
           <div className="flex items-center justify-center mb-4">
             <Download className="h-6 w-6 text-blue-600 mr-2" />
-            <h4 className="font-semibold text-blue-800">Your Data is Safe</h4>
+            <h4 className="font-semibold text-blue-800">{t('Your Data is Safe')}</h4>
           </div>
           <p className="text-blue-700 text-sm">
-            All your projects, quotes, and settings are preserved and will be immediately available when you reactivate. 
-            We keep your data secure for 90 days after subscription expiry.
+            {t('All your projects, quotes, and settings are preserved and will be immediately available when you reactivate. We keep your data secure for 90 days after subscription expiry.')}
           </p>
         </div>
 
         {/* Support Section */}
         <div className="mt-8 text-center">
-          <p className="text-gray-600 mb-4">Questions about reactivating your subscription?</p>
+          <p className="text-gray-600 mb-4">{t('Questions about reactivating your subscription?')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => window.location.href = '/contact'}
               className="text-purple-600 hover:text-purple-700 font-semibold"
             >
-              Contact Support
+              {t('Contact Support')}
             </button>
             <span className="text-gray-400 hidden sm:block">•</span>
             <button
               onClick={() => window.location.href = '/help/billing'}
               className="text-purple-600 hover:text-purple-700 font-semibold"
             >
-              Billing Help
+              {t('Billing Help')}
             </button>
             <span className="text-gray-400 hidden sm:block">•</span>
             <button
               onClick={() => window.location.href = '/features'}
               className="text-purple-600 hover:text-purple-700 font-semibold"
             >
-              See All Features
+              {t('See All Features')}
             </button>
           </div>
         </div>

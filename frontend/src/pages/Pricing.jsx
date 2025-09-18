@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { 
   Check, 
   X, 
@@ -22,61 +23,62 @@ import {
 const Pricing = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isYearly, setIsYearly] = useState(false);
+  const { t } = useTranslation();
 
   const plans = [
     {
-      name: 'Pure Invoice',
+      name: t('Pure Invoice'),
       price: 7.50,
       yearlyPrice: 75,
-      description: 'More quotes, but not really extensive project management? Then you can quote away',
+      description: t('More quotes, but not really extensive project management? Then you can quote away'),
       features: [
-        'Send unlimited quotes (with iDEAL link) and estimates',
-        'Enter 5 expenses per month',
-        'Hours & project time tracking',
-        'Send VAT return directly'
+        t('Send unlimited quotes (with iDEAL link) and estimates'),
+        t('Enter 5 expenses per month'),
+        t('Hours & project time tracking'),
+        t('Send VAT return directly')
       ],
       limitations: [
-        'Advanced project management',
-        'Team collaboration',
-        'Custom integrations'
+        t('Advanced project management'),
+        t('Team collaboration'),
+        t('Custom integrations')
       ],
       popular: false,
       color: 'border-amber-300',
       bgColor: 'bg-amber-50'
     },
     {
-      name: 'Basic',
+      name: t('Basic'),
       price: 12.50,
       yearlyPrice: 125,
-      description: 'This is the package for when you have left the starter phase behind you. All the basics for serious project management',
+      description: t('This is the package for when you have left the starter phase behind you. All the basics for serious project management'),
       features: [
-        'Send 10 quotes (with iDEAL link) and 80 estimates per month',
-        'Enter 10 expenses per month',
-        'Hours & project time tracking',
-        'Send VAT return directly',
-        '10 Scan & Recognize credits per month'
+        t('Send 10 quotes (with iDEAL link) and 80 estimates per month'),
+        t('Enter 10 expenses per month'),
+        t('Hours & project time tracking'),
+        t('Send VAT return directly'),
+        t('10 Scan & Recognize credits per month')
       ],
       limitations: [
-        'Unlimited projects',
-        'Advanced team features',
-        'White-label options'
+        t('Unlimited projects'),
+        t('Advanced team features'),
+        t('White-label options')
       ],
       popular: true,
       color: 'border-[#4bb4f5]',
       bgColor: 'bg-blue-50'
     },
     {
-      name: 'Professional',
+      name: t('Professional'),
       price: 25,
       yearlyPrice: 250,
-      description: 'The complete package to ensure you have everything in order and can devote maximum attention to your customers',
+      description: t('The complete package to ensure you have everything in order and can devote maximum attention to your customers'),
       features: [
-        'Everything from Basic, plus:',
-        'Send unlimited quotes and estimates',
-        'Enter unlimited expenses',
-        'SEPA direct debit',
-        '30 Scan & Recognize credits per month',
-        'Easy inventory management'
+        t('Everything from Basic, plus:'),
+        t('Send unlimited quotes and estimates'),
+        t('Enter unlimited expenses'),
+        t('SEPA direct debit'),
+        t('30 Scan & Recognize credits per month'),
+        t('Easy inventory management')
       ],
       limitations: [],
       popular: false,
@@ -87,28 +89,28 @@ const Pricing = () => {
 
   const featureComparison = [
     {
-      category: 'Quotes',
+      category: t('Quotes'),
       features: [
         {
-          name: 'Create and send quotes',
-          pure: 'Unlimited',
-          basic: '10 per month',
-          professional: 'Unlimited'
+          name: t('Create and send quotes'),
+          pure: t('Unlimited'),
+          basic: t('10 per month'),
+          professional: t('Unlimited')
         },
         {
-          name: 'Get paid via iDEAL',
+          name: t('Get paid via iDEAL'),
           pure: true,
           basic: true,
           professional: true
         },
         {
-          name: 'Send reminders automatically',
+          name: t('Send reminders automatically'),
           pure: true,
           basic: true,
           professional: true
         },
         {
-          name: 'Custom quote templates',
+          name: t('Custom quote templates'),
           pure: true,
           basic: true,
           professional: true
@@ -116,39 +118,39 @@ const Pricing = () => {
       ]
     },
     {
-      category: 'Project Management',
+      category: t('Project Management'),
       features: [
         {
-          name: 'Record expenses',
-          pure: '5 per month',
-          basic: '10 per month',
-          professional: 'Unlimited'
+          name: t('Record expenses'),
+          pure: t('5 per month'),
+          basic: t('10 per month'),
+          professional: t('Unlimited')
         },
         {
-          name: 'Digital shoebox',
+          name: t('Digital shoebox'),
           pure: true,
           basic: true,
           professional: true
         },
         {
-          name: 'Scan & Recognize',
+          name: t('Scan & Recognize'),
           pure: false,
-          basic: '10 credits',
-          professional: '30 credits'
+          basic: t('10 credits'),
+          professional: t('30 credits')
         }
       ]
     },
     {
-      category: 'Team & Collaboration',
+      category: t('Team & Collaboration'),
       features: [
         {
-          name: 'Team members',
-          pure: '1 user',
-          basic: '1 user',
-          professional: '2 additional users'
+          name: t('Team members'),
+          pure: t('1 user'),
+          basic: t('1 user'),
+          professional: t('2 additional users')
         },
         {
-          name: 'Mobile app access',
+          name: t('Mobile app access'),
           pure: true,
           basic: true,
           professional: true
@@ -160,23 +162,23 @@ const Pricing = () => {
   const whyChooseFeatures = [
     {
       icon: <Brain className="h-12 w-12 text-[#4bb4f5]" />,
-      title: "AI-Powered Floor Plan Analysis",
-      description: "Upload any floor plan and get instant room identification, measurements, and surface area calculations with 95% accuracy."
+      title: t("AI-Powered Floor Plan Analysis"),
+      description: t("Upload any floor plan and get instant room identification, measurements, and surface area calculations with 95% accuracy.")
     },
     {
       icon: <Clock className="h-8 w-8 text-amber-600" />,
-      title: "5x Faster Quote Creation",
-      description: "Reduce quote creation time from hours to minutes with automated calculations and professional templates."
+      title: t("5x Faster Quote Creation"),
+      description: t("Reduce quote creation time from hours to minutes with automated calculations and professional templates.")
     },
     {
       icon: <PaintBucket className="h-8 w-8 text-blue-600" />,
-      title: "Professional Branded Quotes",
-      description: "Impress clients with stunning PDF quotes featuring your company branding and detailed breakdowns."
+      title: t("Professional Branded Quotes"),
+      description: t("Impress clients with stunning PDF quotes featuring your company branding and detailed breakdowns.")
     },
     {
       icon: <Award className="h-8 w-8 text-[#4bb4f5]" />,
-      title: "Complete Business Management",
-      description: "Track projects, manage teams, process payments, and grow your painting business all in one platform."
+      title: t("Complete Business Management"),
+      description: t("Track projects, manage teams, process payments, and grow your painting business all in one platform.")
     }
   ];
 
@@ -187,16 +189,16 @@ const Pricing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
-              Why Choose Paint Quote Pro?
+              {t('Why Choose Paint Quote Pro?')}
             </h1>
             <p className="text-xl text-slate-600 max-w-4xl mx-auto">
-              Transform your painting business with AI-powered quoting, professional project management, and tools that help you win more jobs faster.
+              {t('Transform your painting business with AI-powered quoting, professional project management, and tools that help you win more jobs faster.')}
             </p>
           </div>
           <div className="text-center mt-12">
             <div className="inline-flex items-center bg-white rounded-full px-6 py-3 shadow-lg">
               <CheckCircle className="h-5 w-5 text-[#4bb4f5] mr-2" />
-              <span className="text-slate-700 font-medium">14-day free trial • No credit card required • Cancel anytime</span>
+              <span className="text-slate-700 font-medium">{t('14-day free trial • No credit card required • Cancel anytime')}</span>
             </div>
           </div>
         </div>
@@ -207,16 +209,16 @@ const Pricing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-              Simple, Transparent Pricing
+              {t('Simple, Transparent Pricing')}
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
-              Choose the perfect plan for your painting business. All plans include a 14-day free trial.
+              {t('Choose the perfect plan for your painting business. All plans include a 14-day free trial.')}
             </p>
             
             {/* Billing toggle */}
             <div className="flex items-center justify-center mb-8">
               <span className={`mr-3 ${!isYearly ? 'font-semibold text-slate-800' : 'text-slate-500'}`}>
-                Monthly
+                {t('Monthly')}
               </span>
               <button
                 onClick={() => setIsYearly(!isYearly)}
@@ -231,9 +233,9 @@ const Pricing = () => {
                 />
               </button>
               <span className={`ml-3 ${isYearly ? 'font-semibold text-slate-800' : 'text-slate-500'}`}>
-                Yearly
+                {t('Yearly')}
                 <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-400 text-slate-800">
-                  Save 17%
+                  {t('Save 17%')}
                 </span>
               </span>
             </div>
@@ -251,7 +253,7 @@ const Pricing = () => {
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#4bb4f5] text-white text-sm font-medium shadow-lg">
                       <Star className="h-4 w-4 mr-1 fill-current" />
-                      Most Popular
+                      {t('Most Popular')}
                     </div>
                   </div>
                 )}
@@ -264,12 +266,12 @@ const Pricing = () => {
                         £{isYearly ? plan.yearlyPrice : plan.price}
                       </span>
                       <span className="text-slate-600 ml-2">
-                        /p/m {isYearly ? 'excl. VAT' : 'excl. VAT'}
+                        {t('/p/m')} {isYearly ? t('excl. VAT') : t('excl. VAT')}
                       </span>
                     </div>
                     {isYearly && (
                       <p className="text-sm text-[#4bb4f5] mt-1">
-                        Save £{(plan.price * 12) - plan.yearlyPrice} per year
+                        {t('Save')} £{(plan.price * 12) - plan.yearlyPrice} {t('per year')}
                       </p>
                     )}
                   </div>
@@ -278,7 +280,7 @@ const Pricing = () => {
                 <div className="p-8">
                   <p className="text-slate-600 mb-6 leading-relaxed">{plan.description}</p>
                   <div className="mt-8">
-                    <h4 className="text-sm font-semibold text-slate-800 mb-4 uppercase tracking-wide">Main features</h4>
+                    <h4 className="text-sm font-semibold text-slate-800 mb-4 uppercase tracking-wide">{t('Main features')}</h4>
                     <ul className="space-y-3">
                       {plan.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-start">
@@ -300,10 +302,10 @@ const Pricing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-              View and compare all the features of our packages
+              {t('View and compare all the features of our packages')}
             </h2>
             <p className="text-lg text-slate-600">
-              Do you have a moment? There are quite a few.
+              {t('Do you have a moment? There are quite a few.')}
             </p>
           </div>
 
@@ -311,18 +313,18 @@ const Pricing = () => {
             <table className="w-full bg-white rounded-2xl shadow-lg overflow-hidden">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-800 w-1/2">Features</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800">Pure Invoice</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800 bg-blue-50">Basic</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800">Professional</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-800 w-1/2">{t('Features')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800">{t('Pure Invoice')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800 bg-blue-50">{t('Basic')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-slate-800">{t('Professional')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 <tr className="bg-amber-50">
-                  <td className="px-6 py-4 text-sm font-semibold text-slate-800">Price</td>
-                  <td className="px-6 py-4 text-center text-sm text-slate-600">£7.50 p/m excl. VAT</td>
-                  <td className="px-6 py-4 text-center text-sm text-slate-600 bg-blue-50">£12.50 p/m excl. VAT</td>
-                  <td className="px-6 py-4 text-center text-sm text-slate-600">£25.- p/m excl. VAT</td>
+                  <td className="px-6 py-4 text-sm font-semibold text-slate-800">{t('Price')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-slate-600">{t('£7.50 p/m excl. VAT')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-slate-600 bg-blue-50">{t('£12.50 p/m excl. VAT')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-slate-600">{t('£25.- p/m excl. VAT')}</td>
                 </tr>
                 {featureComparison.map((category, categoryIndex) => (
                   <React.Fragment key={categoryIndex}>
@@ -381,38 +383,35 @@ const Pricing = () => {
       <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-800 text-center mb-16">
-            Frequently Asked Questions
+            {t('Frequently Asked Questions')}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-8">
               <div className="bg-white p-6 rounded-xl shadow-sm">
                 <h3 className="text-lg font-bold text-slate-800 mb-3">
-                  Can I change plans at any time?
+                  {t('Can I change plans at any time?')}
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, 
-                  and we'll prorate any billing differences.
+                  {t('Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we\'ll prorate any billing differences.')}
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm">
                 <h3 className="text-lg font-bold text-slate-800 mb-3">
-                  Is there a free trial?
+                  {t('Is there a free trial?')}
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Yes! All plans come with a 14-day free trial. No credit card required to start. 
-                  You can explore all features during your trial period.
+                  {t('Yes! All plans come with a 14-day free trial. No credit card required to start. You can explore all features during your trial period.')}
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm">
                 <h3 className="text-lg font-bold text-slate-800 mb-3">
-                  Can I cancel at any time?
+                  {t('Can I cancel at any time?')}
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Yes, you can cancel your subscription at any time. Your access will continue until 
-                  the end of your current billing period.
+                  {t('Yes, you can cancel your subscription at any time. Your access will continue until the end of your current billing period.')}
                 </p>
               </div>
             </div>
@@ -420,31 +419,28 @@ const Pricing = () => {
             <div className="space-y-8">
               <div className="bg-white p-6 rounded-xl shadow-sm">
                 <h3 className="text-lg font-bold text-slate-800 mb-3">
-                  What happens if I exceed my project limit?
+                  {t('What happens if I exceed my project limit?')}
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  If you reach your monthly project limit, you'll be prompted to upgrade your plan. 
-                  You can also wait until the next billing cycle when your limit resets.
+                  {t('If you reach your monthly project limit, you\'ll be prompted to upgrade your plan. You can also wait until the next billing cycle when your limit resets.')}
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm">
                 <h3 className="text-lg font-bold text-slate-800 mb-3">
-                  Do you offer refunds?
+                  {t('Do you offer refunds?')}
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  We offer a 30-day money-back guarantee. If you're not satisfied within the first 30 days, 
-                  we'll provide a full refund, no questions asked.
+                  {t('We offer a 30-day money-back guarantee. If you\'re not satisfied within the first 30 days, we\'ll provide a full refund, no questions asked.')}
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm">
                 <h3 className="text-lg font-bold text-slate-800 mb-3">
-                  What payment methods do you accept?
+                  {t('What payment methods do you accept?')}
                 </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  We accept all major credit cards, PayPal, and bank transfers. All payments are processed 
-                  securely with enterprise-grade encryption.
+                  {t('We accept all major credit cards, PayPal, and bank transfers. All payments are processed securely with enterprise-grade encryption.')}
                 </p>
               </div>
             </div>

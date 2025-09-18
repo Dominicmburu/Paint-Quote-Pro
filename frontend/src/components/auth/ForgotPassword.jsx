@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import api from '../../services/api';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ const ForgotPassword = () => {
       await api.post('/auth/forgot-password', { email });
       setSent(true);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to send reset email');
+      setError(err.response?.data?.error || t('Failed to send reset email'));
     } finally {
       setLoading(false);
     }
@@ -31,18 +33,18 @@ const ForgotPassword = () => {
           <div className="text-center">
             <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
             <h2 className="mt-6 text-3xl font-bold text-purple-700">
-              Check your email
+              {t('Check your email')}
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              We've sent a password reset link to <strong>{email}</strong>
+              {t('We\'ve sent a password reset link to')} <strong>{email}</strong>
             </p>
             <p className="mt-4 text-sm text-gray-500">
-              Didn't receive the email? Check your spam folder or{' '}
+              {t('Didn\'t receive the email? Check your spam folder or')}{' '}
               <button
                 onClick={() => setSent(false)}
                 className="text-purple-600 hover:text-purple-500 font-medium"
               >
-                try again
+                {t('try again')}
               </button>
             </p>
           </div>
@@ -52,7 +54,7 @@ const ForgotPassword = () => {
               className="inline-flex items-center text-purple-600 hover:text-purple-500"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to sign in
+              {t('Back to sign in')}
             </Link>
           </div>
         </div>
@@ -65,10 +67,10 @@ const ForgotPassword = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold text-purple-700">
-            Forgot your password?
+            {t('Forgot your password?')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your email address and we'll send you a link to reset your password.
+            {t('Enter your email address and we\'ll send you a link to reset your password.')}
           </p>
         </div>
 
@@ -81,7 +83,7 @@ const ForgotPassword = () => {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email address
+              {t('Email address')}
             </label>
             <div className="mt-1 relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -96,7 +98,7 @@ const ForgotPassword = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Enter your email"
+                placeholder={t('Enter your email')}
               />
             </div>
           </div>
@@ -107,7 +109,7 @@ const ForgotPassword = () => {
               disabled={loading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Sending...' : 'Send reset link'}
+              {loading ? t('Sending...') : t('Send reset link')}
             </button>
           </div>
 
@@ -117,7 +119,7 @@ const ForgotPassword = () => {
               className="inline-flex items-center text-purple-600 hover:text-purple-500"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to sign in
+              {t('Back to sign in')}
             </Link>
           </div>
         </form>

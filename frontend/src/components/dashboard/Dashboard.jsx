@@ -17,6 +17,7 @@ import {
   TrendingUp,
   FileCheck
 } from 'lucide-react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -36,15 +37,7 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-
-  console.log('Projects remaining:', getProjectsRemaining());
-  console.log('Can create project:', canCreateProject());
-  console.log('Subscription:', subscription);
-  console.log('User:', user);
-  console.log('Company:', company);
-  console.log('Stats:', stats);
-  console.log('Projects:', projects);
-  console.log('Status Filter:', statusFilter);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadDashboardData();
@@ -78,7 +71,7 @@ const Dashboard = () => {
 
   const handleCreateProject = () => {
     if (!canCreateProject()) {
-      alert('You have reached your project limit for this period. Please upgrade your plan.');
+      alert(t('You have reached your project limit for this period. Please upgrade your plan.'));
       return;
     }
     navigate('/projects/new');
@@ -114,12 +107,12 @@ const Dashboard = () => {
   };
 
   const statusOptions = [
-    { value: 'all', label: 'All Projects' },
-    { value: 'draft', label: 'Draft' },
-    { value: 'analyzing', label: 'Analyzing' },
-    { value: 'ready', label: 'Ready' },
-    { value: 'quoted', label: 'Quoted' },
-    { value: 'completed', label: 'Completed' }
+    { value: 'all', label: t('All Projects') },
+    { value: 'draft', label: t('Draft') },
+    { value: 'analyzing', label: t('Analyzing') },
+    { value: 'ready', label: t('Ready') },
+    { value: 'quoted', label: t('Quoted') },
+    { value: 'completed', label: t('Completed') }
   ];
 
   if (loading && !projects.length) {
@@ -137,11 +130,11 @@ const Dashboard = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-slate-800">
-                Welcome back, {user?.first_name}!
+                {t('Welcome back')}, {user?.first_name}!
               </h1>
               <p className="text-slate-800 mt-1">
-                {company?.name} • {subscription?.plan_name || 'No Plan'} Plan
-                {isTrialActive() && ` (Trial - ${trialDaysRemaining} days left)`}
+                {company?.name} • {subscription?.plan_name || t('No Plan')} {t('Plan')}
+                {isTrialActive() && ` (${t('Trial')} - ${trialDaysRemaining} ${t('days left')})`}
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
@@ -150,7 +143,7 @@ const Dashboard = () => {
                 className="inline-flex items-center px-4 py-2 border border-purple-300 rounded-md text-[#4bb4f5] hover:bg-purple-50 transition-colors"
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
-                Upgrade Plan
+                {t('Upgrade Plan')}
               </Link>
               <button
                 onClick={handleCreateProject}
@@ -158,7 +151,7 @@ const Dashboard = () => {
                 className="inline-flex items-center px-6 py-2 bg-[#4bb4f5] hover:bg-[#4bb4f5] disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                New Project
+                {t('New Project')}
               </button>
             </div>
           </div>
@@ -170,17 +163,17 @@ const Dashboard = () => {
                 <AlertCircle className="h-5 w-5 text-red-400 mr-3" />
                 <div className="flex-1">
                   <h3 className="text-sm font-medium text-red-800">
-                    Subscription Required
+                    {t('Subscription Required')}
                   </h3>
                   <p className="text-sm text-red-700 mt-1">
-                    Your trial has expired. Upgrade to continue creating projects.
+                    {t('Your trial has expired. Upgrade to continue creating projects.')}
                   </p>
                 </div>
                 <Link
                   to="/subscription"
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Upgrade Now
+                  {t('Upgrade Now')}
                 </Link>
               </div>
             </div>
@@ -196,17 +189,17 @@ const Dashboard = () => {
                 <AlertCircle className="h-5 w-5 text-yellow-400 mr-3" />
                 <div className="flex-1">
                   <h3 className="text-sm font-medium text-yellow-800">
-                    Approaching Project Limit
+                    {t('Approaching Project Limit')}
                   </h3>
                   <p className="text-sm text-yellow-700 mt-1">
-                    You've used {currentUsage.projects.used} of {currentUsage.projects.allowed} projects this period.
+                    {t('You\'ve used')} {currentUsage.projects.used} {t('of')} {currentUsage.projects.allowed} {t('projects this period.')}
                   </p>
                 </div>
                 <Link
                   to="/subscription"
                   className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Upgrade
+                  {t('Upgrade')}
                 </Link>
               </div>
             </div>
@@ -225,7 +218,7 @@ const Dashboard = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search projects..."
+                  placeholder={t("Search projects...")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -265,12 +258,12 @@ const Dashboard = () => {
           <div className="text-center py-12">
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {searchTerm || statusFilter !== 'all' ? 'No projects found' : 'No projects yet'}
+              {searchTerm || statusFilter !== 'all' ? t('No projects found') : t('No projects yet')}
             </h3>
             <p className="text-gray-500 mb-6">
               {searchTerm || statusFilter !== 'all' 
-                ? 'Try adjusting your search or filter criteria.'
-                : 'Create your first project to get started with Paint Quote Pro.'
+                ? t('Try adjusting your search or filter criteria.')
+                : t('Create your first project to get started with Paint Quote Pro.')
               }
             </p>
             {(!searchTerm && statusFilter === 'all') && (
@@ -280,7 +273,7 @@ const Dashboard = () => {
                 className="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors"
               >
                 <Plus className="h-5 w-5 mr-2" />
-                Create Your First Project
+                {t('Create Your First Project')}
               </button>
             )}
           </div>
@@ -293,7 +286,7 @@ const Dashboard = () => {
               onClick={() => setCurrentPage(currentPage + 1)}
               className="px-6 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              Load More Projects
+              {t('Load More Projects')}
             </button>
           </div>
         )}

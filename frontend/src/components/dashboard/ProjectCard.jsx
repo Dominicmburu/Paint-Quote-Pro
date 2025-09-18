@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { FileText, Clock, CheckCircle, MoreVertical, Edit2, ExternalLink, FileCheck } from 'lucide-react';
 import { formatDate, formatCurrency } from '../../utils/helpers';
 import api from '../../services/api';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const ProjectCard = ({ project }) => {
   const [quoteSignature, setQuoteSignature] = useState(null);
   const [loadingSignature, setLoadingSignature] = useState(false);
+  const { t } = useTranslation();
 
   // Load quote signature status if project has quotes
   useEffect(() => {
@@ -62,10 +64,10 @@ const ProjectCard = ({ project }) => {
       try {
         await navigator.clipboard.writeText(signatureUrl);
         // You could add a toast notification here
-        alert('Signature link copied to clipboard!');
+        alert(t('Signature link copied to clipboard!'));
       } catch (err) {
         console.error('Failed to copy link:', err);
-        alert('Failed to copy link');
+        alert(t('Failed to copy link'));
       }
     }
   };
@@ -87,7 +89,7 @@ const ProjectCard = ({ project }) => {
           <div className="flex items-center space-x-2">
             <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
               {getStatusIcon(project.status)}
-              <span className="capitalize">{project.status}</span>
+              <span className="capitalize">{t(project.status)}</span>
             </span>
 
             <button className="text-gray-400 hover:text-gray-500">
@@ -99,7 +101,7 @@ const ProjectCard = ({ project }) => {
         {/* Client Info */}
         {project.client_name && (
           <p className="text-gray-600 mb-2">
-            <span className="font-medium">Client:</span> {project.client_name}
+            <span className="font-medium">{t('Client')}:</span> {project.client_name}
           </p>
         )}
 
@@ -112,7 +114,7 @@ const ProjectCard = ({ project }) => {
         {/* Project Meta */}
         <div className="flex items-center justify-between text-sm text-gray-500">
           <span>
-            {project.project_type} • {project.property_type}
+            {t(project.project_type)} • {t(project.property_type)}
           </span>
           <span>
             {formatDate(project.created_at)}
@@ -124,7 +126,7 @@ const ProjectCard = ({ project }) => {
       {project.quote_data && (
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-600">Quote Total:</span>
+            <span className="text-sm text-gray-600">{t('Quote Total')}:</span>
             <span className="text-lg font-semibold text-slate-900">
               {formatCurrency(project.quote_data.total_amount)}
             </span>
@@ -137,10 +139,10 @@ const ProjectCard = ({ project }) => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm">
                     <FileCheck className="h-4 w-4 text-slate-900 mr-1" />
-                    <span className="text-slate-900 font-medium">Signed</span>
+                    <span className="text-slate-900 font-medium">{t('Signed')}</span>
                     {quoteSignature.signature && (
                       <span className="text-gray-500 ml-2">
-                        by {quoteSignature.signature.client_name}
+                        {t('by')} {quoteSignature.signature.client_name}
                       </span>
                     )}
                   </div>
@@ -152,7 +154,7 @@ const ProjectCard = ({ project }) => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-orange-600 font-medium flex items-center">
                     <Edit2 className="h-4 w-4 mr-1" />
-                    Awaiting Signature
+                    {t('Awaiting Signature')}
                   </span>
                   {/* <button
                     onClick={copySignatureLink}
@@ -176,7 +178,7 @@ const ProjectCard = ({ project }) => {
             to={`/projects/${project.id}`}
             className="flex-1 text-center px-3 py-2 border border-slate-800 text-slate-900 hover:bg-slate-100 rounded-md text-sm font-medium transition-colors"
           >
-            View Details
+            {t('View Details')}
           </Link>
 
           {/* Quote/Signature Action Button */}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../hooks/useTranslation';
 import {
   ArrowRight,
   Zap,
@@ -36,6 +37,7 @@ import {
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, loading } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleTryForFree = () => {
@@ -82,7 +84,6 @@ const Home = () => {
               <div className="relative">
                 {/* Main character placeholder - replace with your image */}
                 <div className="rounded-lg flex items-center justify-center">
-                  {/* <span className="text-gray-600">CHARACTER IMAGE PLACEHOLDER</span> */}
                   <img src="./images/hero.png" alt="hero image" />
                 </div>
               </div>
@@ -91,19 +92,17 @@ const Home = () => {
             {/* Right side - Content */}
             <div className="order-1 lg:order-2">
               <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 leading-tight">
-                Quotes That Took Hours
-                <span className="block">Now Done in Minutes</span>
+                {t('Quotes That Took Hours')}
+                <span className="block">{t('Now Done in Minutes')}</span>
               </h1>
               <p className="text-lg text-slate-700 mb-8 leading-relaxed">
-                Meet the ultimate quoting tool for painters and plasterers. With built-in AI to read floor plans,
-                calculate costs, and capture digital signatures, Flotto helps you win jobs faster—without
-                sacrificing your evenings.
+                {t('Meet the ultimate quoting tool for painters and plasterers. With built-in AI to read floor plans, calculate costs, and capture digital signatures, Flotto helps you win jobs faster—without sacrificing your evenings.')}
               </p>
 
               <button className="mybtn"
                 onClick={handleTryForFree}
                 disabled={loading}>
-                {loading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Try it for free!'}
+                {loading ? t('Loading...') : isAuthenticated ? t('Go to Dashboard') : t('Try it for free!')}
               </button>
             </div>
           </div>
@@ -116,17 +115,17 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-                Why do painters and plasterers choose Flotto?
+                {t('Why do painters and plasterers choose Flotto?')}
               </h2>
               <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                Find out how other contractors get started with Flotto and be convinced.
+                {t('Find out how other contractors get started with Flotto and be convinced.')}
               </p>
               <button
                 onClick={handleExperienceBenefits}
                 disabled={loading}
                 className="mybtn"
               >
-                {loading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Experience the benefits yourself'}
+                {loading ? t('Loading...') : isAuthenticated ? t('Go to Dashboard') : t('Experience the benefits yourself')}
               </button>
 
             </div>
@@ -147,7 +146,7 @@ const Home = () => {
                   <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-[#4bb4f5] rounded-full animate-pulse"></div>
                   <div className="absolute top-1/2 -right-6 w-4 h-4 bg-blue-400 rounded-full opacity-70"></div>
                   <div className="absolute bottom-4 left-4 bg-[#4bb4f5] text-slate-800 px-4 py-2 rounded-lg font-bold text-sm">
-                    "As a painter, I work about 5 hours a day on quotes. I'm done in 30 minutes now!"
+                    {t('"As a painter, I work about 5 hours a day on quotes. I\'m done in 30 minutes now!"')}
                   </div>
                 </div>
               </div>
@@ -161,28 +160,20 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="mb-8">
-                {/* <h2 className="text-2xl font-bold text-slate-500 mb-2">Red tape:</h2> */}
-                <h3 className="text-3xl font-bold text-slate-900 mb-6">Super simple AI quoting!</h3>
+                <h3 className="text-3xl font-bold text-slate-900 mb-6">{t('Super simple AI quoting!')}</h3>
               </div>
 
               <p className="text-lg text-slate-600 leading-relaxed">
-                Flotto is the ultimate quoting tool built for painters and plasterers who'd rather be
-                working than paperwork-ing. With Flotto, creating detailed, professional quotes becomes
-                fast, easy, and even enjoyable.
+                {t('Flotto is the ultimate quoting tool built for painters and plasterers who\'d rather be working than paperwork-ing. With Flotto, creating detailed, professional quotes becomes fast, easy, and even enjoyable.')}
               </p>
               <p className="text-lg text-slate-600 leading-relaxed">
-                Flotto isn't just another generic quoting platform. It's built specifically for the trades—simple
-                where it should be, smart where it matters. Whether you're a one-person operation or a growing team,
-                Flotto helps you handle quoting without hassle.
+                {t('Flotto isn\'t just another generic quoting platform. It\'s built specifically for the trades—simple where it should be, smart where it matters. Whether you\'re a one-person operation or a growing team, Flotto helps you handle quoting without hassle.')}
               </p>
               <p className="text-lg text-slate-600 leading-relaxed">
-                Generate accurate quotes using our AI-powered floor plan reader and cost calculator. Add woodwork,
-                walls, ceilings, and more in seconds. Your customer can sign digitally—no printing, scanning,
-                or back-and-forth emails.
+                {t('Generate accurate quotes using our AI-powered floor plan reader and cost calculator. Add woodwork, walls, ceilings, and more in seconds. Your customer can sign digitally—no printing, scanning, or back-and-forth emails.')}
               </p>
               <p className="text-lg text-slate-600 leading-relaxed">
-                Use Flotto on your laptop, tablet, or right from your phone while you're still on-site.
-                By the time you leave the client's house, the quote is already in their inbox.
+                {t('Use Flotto on your laptop, tablet, or right from your phone while you\'re still on-site. By the time you leave the client\'s house, the quote is already in their inbox.')}
               </p>
             </div>
             <div className="flex justify-center">
@@ -223,11 +214,10 @@ const Home = () => {
               </div>
               <div className="p-12">
                 <h3 className="text-3xl font-bold text-slate-800 mb-6">
-                  Create invoices for free and easily
+                  {t('Create invoices for free and easily')}
                 </h3>
                 <p className="text-lg text-slate-600 leading-relaxed mb-8">
-                  With Flotto's accounting software, creating invoices and managing your online bookkeeping is a breeze!
-                  Discover for yourself how easy Flotto's accounting software is for freelancers, entrepreneurs, and freelancers.
+                  {t('With Flotto\'s accounting software, creating invoices and managing your online bookkeeping is a breeze! Discover for yourself how easy Flotto\'s accounting software is for freelancers, entrepreneurs, and freelancers.')}
                 </p>
                 <button
                   onClick={() => {
@@ -241,7 +231,7 @@ const Home = () => {
                   disabled={loading}
                   className="mybtn"
                 >
-                  {loading ? 'Loading...' : isAuthenticated ? 'Create Invoice' : 'Create your first invoice now'}
+                  {loading ? t('Loading...') : isAuthenticated ? t('Create Invoice') : t('Create your first invoice now')}
                 </button>
               </div>
             </div>
@@ -254,7 +244,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-              The possibilities of the Flotto program
+              {t('The possibilities of the Flotto program')}
             </h2>
           </div>
 
@@ -267,11 +257,10 @@ const Home = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">
-                Quotes & Invoices
+                {t('Quotes & Invoices')}
               </h3>
               <p className="text-slate-600 leading-relaxed mb-6">
-                Send professional quotes your clients can sign digitally with ease. Generate and send invoices
-                instantly, complete with secure payment links for fast and simple transactions.
+                {t('Send professional quotes your clients can sign digitally with ease. Generate and send invoices instantly, complete with secure payment links for fast and simple transactions.')}
               </p>
             </div>
 
@@ -283,11 +272,10 @@ const Home = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">
-                AI Floor Plan Reader
+                {t('AI Floor Plan Reader')}
               </h3>
               <p className="text-slate-600 leading-relaxed mb-6">
-                Upload a floor plan and let our AI do the rest. It automatically calculates wall and ceiling
-                dimensions in seconds—no measuring or manual input required.
+                {t('Upload a floor plan and let our AI do the rest. It automatically calculates wall and ceiling dimensions in seconds—no measuring or manual input required.')}
               </p>
             </div>
 
@@ -299,11 +287,10 @@ const Home = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">
-                Cost Calculator
+                {t('Cost Calculator')}
               </h3>
               <p className="text-slate-600 leading-relaxed mb-6">
-                Easily build accurate quotes with our intuitive calculator. Select interior and exterior
-                surfaces, woodwork types, and preparation steps—we handle the rest.
+                {t('Easily build accurate quotes with our intuitive calculator. Select interior and exterior surfaces, woodwork types, and preparation steps—we handle the rest.')}
               </p>
             </div>
           </div>
@@ -318,11 +305,10 @@ const Home = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">
-                Photo documentation
+                {t('Photo documentation')}
               </h3>
               <p className="text-slate-600 leading-relaxed mb-6">
-                Just take a picture of your job site. You put it directly in the Flotto app via your phone,
-                after which documenting your work becomes a piece of cake.
+                {t('Just take a picture of your job site. You put it directly in the Flotto app via your phone, after which documenting your work becomes a piece of cake.')}
               </p>
             </div>
 
@@ -334,11 +320,10 @@ const Home = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">
-                Hours & project time tracking
+                {t('Hours & project time tracking')}
               </h3>
               <p className="text-slate-600 leading-relaxed mb-6">
-                As a painting contractor, you regularly track down hours for your projects. With Flotto,
-                you can easily keep track of your hours and convert them into an invoice.
+                {t('As a painting contractor, you regularly track down hours for your projects. With Flotto, you can easily keep track of your hours and convert them into an invoice.')}
               </p>
             </div>
 
@@ -350,11 +335,10 @@ const Home = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">
-                Android & iPhone app
+                {t('Android & iPhone app')}
               </h3>
               <p className="text-slate-600 leading-relaxed mb-6">
-                You want to be able to do your project management anywhere, that's why it's handy that
-                Flotto works on any device. Download our Android or iPhone app.
+                {t('You want to be able to do your project management anywhere, that\'s why it\'s handy that Flotto works on any device. Download our Android or iPhone app.')}
               </p>
             </div>
           </div>
@@ -362,7 +346,7 @@ const Home = () => {
           <div className="text-center">
             <Link to="/features">
               <button className="mybtn">
-                View all options
+                {t('View all options')}
               </button>
             </Link>
           </div>
@@ -374,7 +358,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-              These users are already fans!
+              {t('These users are already fans!')}
             </h2>
           </div>
 
@@ -387,21 +371,19 @@ const Home = () => {
                       <span className="text-white font-bold text-lg">PP</span>
                     </div>
                     <div className="ml-4">
-                      <h3 className="text-xl font-bold text-slate-800">Premium Painters Ltd</h3>
+                      <h3 className="text-xl font-bold text-slate-800">{t('Premium Painters Ltd')}</h3>
                     </div>
                   </div>
                   <p className="text-lg italic text-slate-600 mb-6">
-                    "Finally an affordable and smart solution for everything you don't really want to do."
+                    {t('"Finally an affordable and smart solution for everything you don\'t really want to do."')}
                   </p>
                   <p className="text-slate-600 leading-relaxed">
-                    Flotto is an ideal solution for me. As a painting contractor I can quote very quickly and
-                    keep an eye on project costs. Quotes look professional and can be sent immediately.
-                    Excellent solution!
+                    {t('Flotto is an ideal solution for me. As a painting contractor I can quote very quickly and keep an eye on project costs. Quotes look professional and can be sent immediately. Excellent solution!')}
                   </p>
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <span className="text-sm font-semibold text-slate-600">General judgment</span>
+                    <span className="text-sm font-semibold text-slate-600">{t('General judgment')}</span>
                     <div className="flex items-center mt-1">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
@@ -409,7 +391,7 @@ const Home = () => {
                     </div>
                   </div>
                   <div>
-                    <span className="text-sm font-semibold text-slate-600">Reliability</span>
+                    <span className="text-sm font-semibold text-slate-600">{t('Reliability')}</span>
                     <div className="flex items-center mt-1">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className={`h-4 w-4 ${i < 5 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
@@ -417,7 +399,7 @@ const Home = () => {
                     </div>
                   </div>
                   <div>
-                    <span className="text-sm font-semibold text-slate-600">Ease of use</span>
+                    <span className="text-sm font-semibold text-slate-600">{t('Ease of use')}</span>
                     <div className="flex items-center mt-1">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
@@ -425,7 +407,7 @@ const Home = () => {
                     </div>
                   </div>
                   <div>
-                    <span className="text-sm font-semibold text-slate-600">Price/quality</span>
+                    <span className="text-sm font-semibold text-slate-600">{t('Price/quality')}</span>
                     <div className="flex items-center mt-1">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
@@ -440,7 +422,7 @@ const Home = () => {
           <div className="text-center">
             <Link to="/testimonials">
               <button className="mybtn">
-                Read more experiences
+                {t('Read more experiences')}
               </button>
             </Link>
           </div>

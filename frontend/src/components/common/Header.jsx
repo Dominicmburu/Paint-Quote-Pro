@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from '../../hooks/useTranslation';
 import { Menu, X, User, Settings, LogOut, Palette } from 'lucide-react';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
   const { user, company, isAuthenticated, logout } = useAuth();
+  const translation = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Header - Translation context:', translation);
+    console.log('Header - Current language:', translation?.currentLanguage);
+    console.log('Header - t function:', typeof translation?.t);
+  }, [translation]);
 
   const handleLogout = () => {
     logout();
@@ -19,6 +29,18 @@ const Header = () => {
 
   const isActive = (path) => {
     return location.pathname === path;
+  };
+
+  // Fallback if translation is not available
+  const t = translation?.t || ((text) => {
+    console.warn('Translation function not available, returning original text:', text);
+    return text;
+  });
+
+  // Test translation function
+  const testTranslation = (key) => {
+    console.log(`Translating "${key}":`, t(key));
+    return t(key);
   };
 
   return (
@@ -37,8 +59,6 @@ const Header = () => {
                   e.target.nextSibling.style.display = 'inline';
                 }}
               />
-              {/* <span className="text-2xl font-bold text-slate-800 sm:block hidden">FLOTTO</span> */}
-              {/* <span className="text-xl font-bold text-slate-800 sm:hidden">FLOTTO</span> */}
             </Link>
           </div>
 
@@ -52,7 +72,7 @@ const Header = () => {
                     isActive('/features') ? 'text-[#4bb4f5] bg-blue-50' : 'text-slate-700 hover:text-[#6bc5f7]'
                   }`}
                 >
-                  Features
+                  {testTranslation('Features')}
                 </Link>
                 <Link
                   to="/pricing"
@@ -60,7 +80,7 @@ const Header = () => {
                     isActive('/pricing') ? 'text-[#4bb4f5] bg-blue-50' : 'text-slate-700 hover:text-[#6bc5f7]'
                   }`}
                 >
-                  Pricing
+                  {testTranslation('Pricing')}
                 </Link>
                 <Link
                   to="/about"
@@ -68,7 +88,7 @@ const Header = () => {
                     isActive('/about') ? 'text-[#4bb4f5] bg-blue-50' : 'text-slate-700 hover:text-[#6bc5f7]'
                   }`}
                 >
-                  About
+                  {testTranslation('About')}
                 </Link>
                 <Link
                   to="/contact"
@@ -76,7 +96,7 @@ const Header = () => {
                     isActive('/contact') ? 'text-[#4bb4f5] bg-blue-50' : 'text-slate-700 hover:text-[#6bc5f7]'
                   }`}
                 >
-                  Contact
+                  {testTranslation('Contact')}
                 </Link>
               </>
             ) : (
@@ -87,29 +107,32 @@ const Header = () => {
                     isActive('/dashboard') ? 'text-[#4bb4f5] bg-blue-50' : 'text-slate-700 hover:text-[#6bc5f7]'
                   }`}
                 >
-                  Dashboard
+                  {testTranslation('Dashboard')}
                 </Link>
               </>
             )}
           </nav>
 
-          {/* Auth Buttons / User Menu */}
+          {/* Right side - Language Switcher + Auth Buttons / User Menu */}
           <div className="flex items-center space-x-2">
+            {/* Language Switcher - Only show if translation is available */}
+            {translation && <LanguageSwitcher />}
+
             {!isAuthenticated ? (
               <>
                 <Link
                   to="/login"
                   className="text-slate-700 hover:text-[#6bc5f7] px-2 py-2 rounded-md font-medium text-sm transition-colors"
                 >
-                  <span className="hidden sm:inline">Sign In</span>
-                  <span className="sm:hidden">Login</span>
+                  <span className="hidden sm:inline">{testTranslation('Sign In')}</span>
+                  <span className="sm:hidden">{testTranslation('Login')}</span>
                 </Link>
                 <Link
                   to="/register"
                   className="mybtn-sm"
                 >
-                  <span className="hidden sm:inline">Get Started</span>
-                  <span className="sm:hidden">Join</span>
+                  <span className="hidden sm:inline">{testTranslation('Get Started')}</span>
+                  <span className="sm:hidden">{testTranslation('Join')}</span>
                 </Link>
               </>
             ) : (
@@ -134,14 +157,14 @@ const Header = () => {
                       onClick={() => setIsProfileOpen(false)}
                     >
                       <Settings className="h-4 w-4" />
-                      <span>Settings</span>
+                      <span>{testTranslation('Settings')}</span>
                     </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 transition-colors"
                     >
                       <LogOut className="h-4 w-4" />
-                      <span>Sign Out</span>
+                      <span>{testTranslation('Sign Out')}</span>
                     </button>
                   </div>
                 )}
@@ -173,7 +196,7 @@ const Header = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Features
+                    {testTranslation('Features')}
                   </Link>
                   <Link
                     to="/pricing"
@@ -184,7 +207,7 @@ const Header = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Pricing
+                    {testTranslation('Pricing')}
                   </Link>
                   <Link
                     to="/about"
@@ -195,7 +218,7 @@ const Header = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    About
+                    {testTranslation('About')}
                   </Link>
                   <Link
                     to="/contact"
@@ -206,7 +229,7 @@ const Header = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Contact
+                    {testTranslation('Contact')}
                   </Link>
                   <div className="pt-3 mt-3 border-t border-gray-200">
                     <Link
@@ -214,14 +237,14 @@ const Header = () => {
                       className="block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:text-[#6bc5f7] hover:bg-gray-100 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Sign In
+                      {testTranslation('Sign In')}
                     </Link>
                     <Link
                       to="/register"
                       className="mybtn-sm"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Get Started
+                      {testTranslation('Get Started')}
                     </Link>
                   </div>
                 </>
@@ -236,7 +259,7 @@ const Header = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Dashboard
+                    {testTranslation('Dashboard')}
                   </Link>
                   <Link
                     to="/settings"
@@ -247,7 +270,7 @@ const Header = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Settings
+                    {testTranslation('Settings')}
                   </Link>
                   <div className="pt-3 mt-3 border-t border-gray-200">
                     <button
@@ -257,7 +280,7 @@ const Header = () => {
                       }}
                       className="w-full text-left block px-3 py-3 rounded-md text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
                     >
-                      Sign Out
+                      {testTranslation('Sign Out')}
                     </button>
                   </div>
                 </>

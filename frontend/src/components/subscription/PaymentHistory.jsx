@@ -16,12 +16,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useSubscription } from '../../hooks/useSubscription';
+import { useTranslation } from '../../hooks/useTranslation';
 import api from '../../services/api';
 
 const PaymentHistory = () => {
   const navigate = useNavigate();
   const { user, company } = useAuth();
   const { subscription } = useSubscription();
+  const { t } = useTranslation();
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,7 +45,7 @@ const PaymentHistory = () => {
       const response = await api.get('/subscriptions/payment-history');
       setPaymentHistory(response.data.payment_history || []);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load payment history');
+      setError(err.response?.data?.error || t('Failed to load payment history'));
       console.error('Payment history error:', err);
     } finally {
       setLoading(false);
@@ -60,9 +62,9 @@ const PaymentHistory = () => {
       // In a real implementation, this would download a receipt
       console.log('Downloading receipt for payment:', paymentId);
       // For demo purposes, show an alert
-      alert('Receipt download would start here');
+      alert(t('Receipt download would start here'));
     } catch (err) {
-      setError('Failed to download receipt');
+      setError(t('Failed to download receipt'));
     }
   };
 
@@ -103,7 +105,7 @@ const PaymentHistory = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return t('N/A');
     return new Date(dateString).toLocaleDateString('en-GB', {
       year: 'numeric',
       month: 'short',
@@ -114,7 +116,7 @@ const PaymentHistory = () => {
   };
 
   const formatCurrency = (amount, currency = 'GBP') => {
-    if (!amount) return '£0.00';
+    if (!amount) return t('£0.00');
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: currency
@@ -126,12 +128,12 @@ const PaymentHistory = () => {
     
     // Fallback description based on plan and billing cycle
     if (payment.plan_name && payment.billing_cycle) {
-      const planName = payment.plan_name.charAt(0).toUpperCase() + payment.plan_name.slice(1);
-      const cycle = payment.billing_cycle.charAt(0).toUpperCase() + payment.billing_cycle.slice(1);
-      return `${planName} - ${cycle} Subscription`;
+      const planName = t(payment.plan_name.charAt(0).toUpperCase() + payment.plan_name.slice(1));
+      const cycle = t(payment.billing_cycle.charAt(0).toUpperCase() + payment.billing_cycle.slice(1));
+      return t('{{planName}} - {{cycle}} Subscription', { planName, cycle });
     }
     
-    return 'Subscription Payment';
+    return t('Subscription Payment');
   };
 
   const calculateTotalSpent = () => {
@@ -168,10 +170,10 @@ const PaymentHistory = () => {
             <div>
               <h1 className="text-3xl font-bold text-[#4bb4f5] flex items-center">
                 <Receipt className="h-8 w-8 mr-3" />
-                Payment History
+                {t('Payment History')}
               </h1>
               <p className="text-gray-600 mt-2">
-                View all your payment transactions and download receipts
+                {t('View all your payment transactions and download receipts')}
               </p>
             </div>
           </div>
@@ -181,7 +183,7 @@ const PaymentHistory = () => {
             className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md font-medium transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
+            {t('Refresh')}
           </button>
         </div>
       </div>
@@ -202,7 +204,7 @@ const PaymentHistory = () => {
             <div className="flex items-center">
               <DollarSign className="h-8 w-8 text-green-500" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Spent</p>
+                <p className="text-sm font-medium text-gray-500">{t('Total Spent')}</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {formatCurrency(calculateTotalSpent())}
                 </p>
@@ -214,7 +216,7 @@ const PaymentHistory = () => {
             <div className="flex items-center">
               <Receipt className="h-8 w-8 text-blue-500" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Payments</p>
+                <p className="text-sm font-medium text-gray-500">{t('Total Payments')}</p>
                 <p className="text-2xl font-bold text-gray-900">{paymentHistory.length}</p>
               </div>
             </div>
@@ -224,7 +226,7 @@ const PaymentHistory = () => {
             <div className="flex items-center">
               <CheckCircle className="h-8 w-8 text-green-500" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Successful</p>
+                <p className="text-sm font-medium text-gray-500">{t('Successful')}</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {paymentHistory.filter(p => p.status?.toLowerCase() === 'succeeded').length}
                 </p>
@@ -236,9 +238,9 @@ const PaymentHistory = () => {
             <div className="flex items-center">
               <Building className="h-8 w-8 text-purple-500" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Current Plan</p>
+                <p className="text-sm font-medium text-gray-500">{t('Current Plan')}</p>
                 <p className="text-lg font-bold text-gray-900">
-                  {subscription?.plan_name?.charAt(0).toUpperCase() + subscription?.plan_name?.slice(1) || 'Trial'}
+                  {subscription?.plan_name ? t(subscription.plan_name.charAt(0).toUpperCase() + subscription.plan_name.slice(1)) : t('Trial')}
                 </p>
               </div>
             </div>
@@ -250,16 +252,16 @@ const PaymentHistory = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center">
               <Calendar className="h-5 w-5 mr-2" />
-              Transaction History
+              {t('Transaction History')}
             </h3>
           </div>
 
           {paymentHistory.length === 0 ? (
             <div className="text-center py-12">
               <Receipt className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-gray-900 mb-2">No Payment History</h4>
+              <h4 className="text-lg font-medium text-gray-900 mb-2">{t('No Payment History')}</h4>
               <p className="text-gray-600">
-                Your payment transactions will appear here once you make your first payment.
+                {t('Your payment transactions will appear here once you make your first payment.')}
               </p>
               {subscription?.status === 'trial' && (
                 <button
@@ -267,7 +269,7 @@ const PaymentHistory = () => {
                   className="mt-4 inline-flex items-center px-4 py-2 bg-[#4bb4f5] hover:bg-blue-600 text-white rounded-md font-medium transition-colors"
                 >
                   <CreditCard className="h-4 w-4 mr-2" />
-                  Subscribe Now
+                  {t('Subscribe Now')}
                 </button>
               )}
             </div>
@@ -277,22 +279,22 @@ const PaymentHistory = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
+                      {t('Date')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Description
+                      {t('Description')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Plan
+                      {t('Plan')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Amount
+                      {t('Amount')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
+                      {t('Status')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                      {t('Actions')}
                     </th>
                   </tr>
                 </thead>
@@ -313,17 +315,17 @@ const PaymentHistory = () => {
                         )}
                         {payment.stripe_payment_intent_id && (
                           <div className="text-xs text-gray-500 mt-1">
-                            ID: {payment.stripe_payment_intent_id}
+                            {t('ID: {{id}}', { id: payment.stripe_payment_intent_id })}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {payment.plan_name?.charAt(0).toUpperCase() + payment.plan_name?.slice(1) || 'N/A'}
+                          {payment.plan_name ? t(payment.plan_name.charAt(0).toUpperCase() + payment.plan_name.slice(1)) : t('N/A')}
                         </div>
                         {payment.billing_cycle && (
                           <div className="text-xs text-gray-500">
-                            {payment.billing_cycle.charAt(0).toUpperCase() + payment.billing_cycle.slice(1)}
+                            {t(payment.billing_cycle.charAt(0).toUpperCase() + payment.billing_cycle.slice(1))}
                           </div>
                         )}
                       </td>
@@ -333,7 +335,7 @@ const PaymentHistory = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(payment.status)}`}>
                           {getStatusIcon(payment.status)}
-                          <span className="ml-1 capitalize">{payment.status || 'Unknown'}</span>
+                          <span className="ml-1 capitalize">{t(payment.status || 'Unknown')}</span>
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -343,7 +345,7 @@ const PaymentHistory = () => {
                             className="text-[#4bb4f5] hover:text-blue-600 flex items-center"
                           >
                             <Download className="h-4 w-4 mr-1" />
-                            Receipt
+                            {t('Receipt')}
                           </button>
                         ) : (
                           <span className="text-gray-400">-</span>
@@ -360,13 +362,13 @@ const PaymentHistory = () => {
         {/* Additional Information */}
         {paymentHistory.length > 0 && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h4 className="text-sm font-medium text-blue-900 mb-3">Payment Information:</h4>
+            <h4 className="text-sm font-medium text-blue-900 mb-3">{t('Payment Information:')}</h4>
             <ul className="text-sm text-blue-800 space-y-2">
-              <li>• <strong>Receipts:</strong> Download receipts for successful payments for your records</li>
-              <li>• <strong>Failed Payments:</strong> Contact support if you need help with failed transactions</li>
-              <li>• <strong>Billing Cycles:</strong> Monthly plans bill on the same date each month, yearly plans bill annually</li>
-              <li>• <strong>Refunds:</strong> Contact our support team if you need assistance with refunds</li>
-              <li>• All payments are processed securely through Stripe</li>
+              <li>• <strong>{t('Receipts:')}</strong> {t('Download receipts for successful payments for your records')}</li>
+              <li>• <strong>{t('Failed Payments:')}</strong> {t('Contact support if you need help with failed transactions')}</li>
+              <li>• <strong>{t('Billing Cycles:')}</strong> {t('Monthly plans bill on the same date each month, yearly plans bill annually')}</li>
+              <li>• <strong>{t('Refunds:')}</strong> {t('Contact our support team if you need assistance with refunds')}</li>
+              <li>{t('All payments are processed securely through Stripe')}</li>
             </ul>
           </div>
         )}
@@ -374,13 +376,13 @@ const PaymentHistory = () => {
         {/* Contact Support */}
         <div className="text-center py-6">
           <p className="text-gray-600 mb-4">
-            Need help with your payments or have questions about billing?
+            {t('Need help with your payments or have questions about billing?')}
           </p>
           <button
             onClick={() => navigate('/support')}
             className="inline-flex items-center px-6 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md font-medium transition-colors"
           >
-            Contact Support
+            {t('Contact Support')}
           </button>
         </div>
       </div>

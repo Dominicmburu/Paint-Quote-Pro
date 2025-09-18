@@ -16,10 +16,12 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const UserProfile = () => {
   const { user, refreshAuth } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('profile');
   
   // Profile form state
@@ -84,7 +86,7 @@ const UserProfile = () => {
         setPreferences({ ...preferences, ...response.data.preferences });
       }
     } catch (err) {
-      console.log('No saved preferences found, using defaults');
+      console.log(t('No saved preferences found, using defaults'));
     }
   };
 
@@ -98,7 +100,7 @@ const UserProfile = () => {
       await api.put('/auth/update-profile', profileData);
       setSuccessMessages(prev => ({ 
         ...prev, 
-        profile: 'Profile updated successfully!' 
+        profile: t('Profile updated successfully!') 
       }));
       
       if (refreshAuth) {
@@ -111,7 +113,7 @@ const UserProfile = () => {
     } catch (err) {
       setErrors(prev => ({ 
         ...prev, 
-        profile: err.response?.data?.error || 'Failed to update profile' 
+        profile: err.response?.data?.error || t('Failed to update profile') 
       }));
     } finally {
       setLoading(prev => ({ ...prev, profile: false }));
@@ -126,7 +128,7 @@ const UserProfile = () => {
 
     // Validate passwords match
     if (passwordData.new_password !== passwordData.confirm_password) {
-      setErrors(prev => ({ ...prev, password: 'New passwords do not match' }));
+      setErrors(prev => ({ ...prev, password: t('New passwords do not match') }));
       setLoading(prev => ({ ...prev, password: false }));
       return;
     }
@@ -139,7 +141,7 @@ const UserProfile = () => {
       
       setSuccessMessages(prev => ({ 
         ...prev, 
-        password: 'Password changed successfully!' 
+        password: t('Password changed successfully!') 
       }));
       
       // Clear form
@@ -155,7 +157,7 @@ const UserProfile = () => {
     } catch (err) {
       setErrors(prev => ({ 
         ...prev, 
-        password: err.response?.data?.error || 'Failed to change password' 
+        password: err.response?.data?.error || t('Failed to change password') 
       }));
     } finally {
       setLoading(prev => ({ ...prev, password: false }));
@@ -172,7 +174,7 @@ const UserProfile = () => {
       await api.put('/user/preferences', preferences);
       setSuccessMessages(prev => ({ 
         ...prev, 
-        preferences: 'Preferences saved successfully!' 
+        preferences: t('Preferences saved successfully!') 
       }));
       
       setTimeout(() => {
@@ -181,7 +183,7 @@ const UserProfile = () => {
     } catch (err) {
       setErrors(prev => ({ 
         ...prev, 
-        preferences: err.response?.data?.error || 'Failed to save preferences' 
+        preferences: err.response?.data?.error || t('Failed to save preferences') 
       }));
     } finally {
       setLoading(prev => ({ ...prev, preferences: false }));
@@ -196,9 +198,9 @@ const UserProfile = () => {
   };
 
   const tabs = [
-    { id: 'profile', name: 'Profile', icon: User },
-    { id: 'security', name: 'Security', icon: Shield },
-    { id: 'preferences', name: 'Preferences', icon: Bell }
+    { id: 'profile', name: t('Profile'), icon: User },
+    { id: 'security', name: t('Security'), icon: Shield },
+    { id: 'preferences', name: t('Preferences'), icon: Bell }
   ];
 
   return (
@@ -214,11 +216,11 @@ const UserProfile = () => {
           </button>
           <h1 className="text-3xl font-bold text-purple-700 flex items-center">
             <User className="h-8 w-8 mr-3" />
-            User Profile
+            {t('User Profile')}
           </h1>
         </div>
         <p className="text-gray-600 mt-2">
-          Manage your personal information and account preferences
+          {t('Manage your personal information and account preferences')}
         </p>
       </div>
 
@@ -248,7 +250,7 @@ const UserProfile = () => {
       {/* Profile Tab */}
       {activeTab === 'profile' && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-medium text-purple-700 mb-6">Personal Information</h3>
+          <h3 className="text-lg font-medium text-purple-700 mb-6">{t('Personal Information')}</h3>
           
           {errors.profile && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
@@ -266,7 +268,7 @@ const UserProfile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  First Name *
+                  {t('First Name *')}
                 </label>
                 <input
                   type="text"
@@ -277,13 +279,13 @@ const UserProfile = () => {
                     first_name: e.target.value 
                   }))}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="John"
+                  placeholder={t('John')}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Name *
+                  {t('Last Name *')}
                 </label>
                 <input
                   type="text"
@@ -294,13 +296,13 @@ const UserProfile = () => {
                     last_name: e.target.value 
                   }))}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Smith"
+                  placeholder={t('Smith')}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address *
+                  {t('Email Address *')}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -313,14 +315,14 @@ const UserProfile = () => {
                       email: e.target.value 
                     }))}
                     className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="john@example.com"
+                    placeholder={t('john@example.com')}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
+                  {t('Phone Number')}
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -332,7 +334,7 @@ const UserProfile = () => {
                       phone: e.target.value 
                     }))}
                     className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="+44 7700 900123"
+                    placeholder={t('+44 7700 900123')}
                   />
                 </div>
               </div>
@@ -347,12 +349,12 @@ const UserProfile = () => {
                 {loading.profile ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Saving...
+                    {t('Saving...')}
                   </>
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    Save Changes
+                    {t('Save Changes')}
                   </>
                 )}
               </button>
@@ -364,7 +366,7 @@ const UserProfile = () => {
       {/* Security Tab */}
       {activeTab === 'security' && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-medium text-purple-700 mb-6">Change Password</h3>
+          <h3 className="text-lg font-medium text-purple-700 mb-6">{t('Change Password')}</h3>
           
           {errors.password && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
@@ -381,7 +383,7 @@ const UserProfile = () => {
           <form onSubmit={handlePasswordSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Current Password *
+                {t('Current Password *')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -394,7 +396,7 @@ const UserProfile = () => {
                     current_password: e.target.value 
                   }))}
                   className="w-full border border-gray-300 rounded-md pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Enter current password"
+                  placeholder={t('Enter current password')}
                 />
                 <button
                   type="button"
@@ -408,7 +410,7 @@ const UserProfile = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                New Password *
+                {t('New Password *')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -421,7 +423,7 @@ const UserProfile = () => {
                     new_password: e.target.value 
                   }))}
                   className="w-full border border-gray-300 rounded-md pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Enter new password"
+                  placeholder={t('Enter new password')}
                 />
                 <button
                   type="button"
@@ -435,7 +437,7 @@ const UserProfile = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm New Password *
+                {t('Confirm New Password *')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -448,7 +450,7 @@ const UserProfile = () => {
                     confirm_password: e.target.value 
                   }))}
                   className="w-full border border-gray-300 rounded-md pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Confirm new password"
+                  placeholder={t('Confirm new password')}
                 />
                 <button
                   type="button"
@@ -469,12 +471,12 @@ const UserProfile = () => {
                 {loading.password ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Updating...
+                    {t('Updating...')}
                   </>
                 ) : (
                   <>
                     <Lock className="h-4 w-4 mr-2" />
-                    Change Password
+                    {t('Change Password')}
                   </>
                 )}
               </button>
@@ -483,12 +485,12 @@ const UserProfile = () => {
 
           {/* Password Requirements */}
           <div className="mt-6 bg-gray-50 border border-gray-200 rounded-md p-4">
-            <h4 className="text-sm font-medium text-gray-900 mb-2">Password Requirements:</h4>
+            <h4 className="text-sm font-medium text-gray-900 mb-2">{t('Password Requirements:')}</h4>
             <ul className="text-sm text-gray-600 space-y-1">
-              <li>• At least 8 characters long</li>
-              <li>• Contains uppercase and lowercase letters</li>
-              <li>• Contains at least one number</li>
-              <li>• Contains at least one special character</li>
+              <li>• {t('At least 8 characters long')}</li>
+              <li>• {t('Contains uppercase and lowercase letters')}</li>
+              <li>• {t('Contains at least one number')}</li>
+              <li>• {t('Contains at least one special character')}</li>
             </ul>
           </div>
         </div>
@@ -514,14 +516,14 @@ const UserProfile = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-medium text-purple-700 mb-6 flex items-center">
                 <Bell className="h-5 w-5 mr-2" />
-                Notifications
+                {t('Notifications')}
               </h3>
               
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">Email Notifications</h4>
-                    <p className="text-sm text-gray-500">Receive email updates about your account</p>
+                    <h4 className="text-sm font-medium text-gray-900">{t('Email Notifications')}</h4>
+                    <p className="text-sm text-gray-500">{t('Receive email updates about your account')}</p>
                   </div>
                   <input
                     type="checkbox"
@@ -536,8 +538,8 @@ const UserProfile = () => {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">Quote Reminders</h4>
-                    <p className="text-sm text-gray-500">Get reminded about pending quotes and follow-ups</p>
+                    <h4 className="text-sm font-medium text-gray-900">{t('Quote Reminders')}</h4>
+                    <p className="text-sm text-gray-500">{t('Get reminded about pending quotes and follow-ups')}</p>
                   </div>
                   <input
                     type="checkbox"
@@ -552,8 +554,8 @@ const UserProfile = () => {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">Project Updates</h4>
-                    <p className="text-sm text-gray-500">Notifications when projects are analyzed or completed</p>
+                    <h4 className="text-sm font-medium text-gray-900">{t('Project Updates')}</h4>
+                    <p className="text-sm text-gray-500">{t('Notifications when projects are analyzed or completed')}</p>
                   </div>
                   <input
                     type="checkbox"
@@ -568,8 +570,8 @@ const UserProfile = () => {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">Marketing Emails</h4>
-                    <p className="text-sm text-gray-500">Receive tips, updates, and promotional content</p>
+                    <h4 className="text-sm font-medium text-gray-900">{t('Marketing Emails')}</h4>
+                    <p className="text-sm text-gray-500">{t('Receive tips, updates, and promotional content')}</p>
                   </div>
                   <input
                     type="checkbox"
@@ -582,6 +584,26 @@ const UserProfile = () => {
                   />
                 </div>
               </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={loading.preferences}
+                className="inline-flex items-center px-6 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-md font-medium transition-colors"
+              >
+                {loading.preferences ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    {t('Saving...')}
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    {t('Save Preferences')}
+                  </>
+                )}
+              </button>
             </div>
           </form>
         </div>

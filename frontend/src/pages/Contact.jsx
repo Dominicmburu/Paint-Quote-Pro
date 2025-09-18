@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Send, 
-  Menu, 
-  X, 
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  Menu,
+  X,
   CheckCircle,
   Clock,
   MessageCircle,
@@ -14,6 +14,7 @@ import {
   Users,
   Star
 } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
 
 const Contact = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,10 +27,11 @@ const Contact = () => {
   });
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = async () => {
     setLoading(true);
-    
+
     // Simulate form submission
     setTimeout(() => {
       setLoading(false);
@@ -52,16 +54,15 @@ const Contact = () => {
             <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="h-10 w-10 text-[#4bb4f5]" />
             </div>
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Thank you for your message!</h2>
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">{t('Thank you for your message!')}</h2>
             <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-              We've received your message and our team will get back to you within 24 hours 
-              during business days. We look forward to helping you with Paint Quote Pro!
+              {t("We've received your message and our team will get back to you within 24 hours during business days. We look forward to helping you with Paint Quote Pro!")}
             </p>
             <button
               onClick={() => setSent(false)}
               className="mybtn"
             >
-              Send Another Message
+              {t('Send Another Message')}
             </button>
           </div>
         </div>
@@ -76,89 +77,27 @@ const Contact = () => {
       <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
-            Get in Touch with Paint Quote Pro
+            {t('Get in Touch with Paint Quote Pro')}
           </h1>
           <p className="text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto leading-relaxed mb-8">
-            Have questions about revolutionizing your painting business? We're here to help you succeed. 
-            Our team of painting industry experts is ready to support your journey.
+            {t("Have questions about revolutionizing your painting business? We're here to help you succeed. Our team of painting industry experts is ready to support your journey.")}
           </p>
           <div className="flex items-center justify-center space-x-6 text-slate-600">
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-slate-700" />
-              <span className="font-medium">Expert support team</span>
+              <span className="font-medium">{t('Expert support team')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-slate-700" />
-              <span className="font-medium">24-hour response time</span>
+              <span className="font-medium">{t('24-hour response time')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-slate-700" />
-              <span className="font-medium">Free consultation</span>
+              <span className="font-medium">{t('Free consultation')}</span>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Quick Contact Options */}
-      {/* <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-              Choose Your Preferred Contact Method
-            </h2>
-            <p className="text-xl text-slate-600">
-              We're here to help in whatever way works best for you
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 group">
-              <div className="w-16 h-16 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-100 transition-colors">
-                <Mail className="h-8 w-8 text-[#4bb4f5]" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3 text-center">Email Support</h3>
-              <p className="text-slate-600 mb-6 text-center">Perfect for detailed questions and technical support</p>
-              <div className="text-center">
-                <p className="font-bold text-slate-800 text-lg mb-2">hello@paintquotepro.com</p>
-                <div className="flex items-center justify-center space-x-2 text-sm text-slate-500">
-                  <Clock className="h-4 w-4" />
-                  <span>Response within 24 hours</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 group">
-              <div className="w-16 h-16 bg-amber-50 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-100 transition-colors">
-                <Phone className="h-8 w-8 text-amber-600" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3 text-center">Phone Support</h3>
-              <p className="text-slate-600 mb-6 text-center">Speak directly with our painting industry experts</p>
-              <div className="text-center">
-                <p className="font-bold text-slate-800 text-lg mb-2">+44 20 7123 4567</p>
-                <div className="flex items-center justify-center space-x-2 text-sm text-slate-500">
-                  <Clock className="h-4 w-4" />
-                  <span>Mon-Fri 9am-6pm GMT</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 group">
-              <div className="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-100 transition-colors">
-                <MessageCircle className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3 text-center">Live Chat</h3>
-              <p className="text-slate-600 mb-6 text-center">Get instant answers to your questions</p>
-              <div className="text-center">
-                <p className="font-bold text-slate-800 text-lg mb-2">Available in app</p>
-                <div className="flex items-center justify-center space-x-2 text-sm text-slate-500">
-                  <Clock className="h-4 w-4" />
-                  <span>Mon-Fri 9am-6pm GMT</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
 
       {/* Main Content */}
       <section className="py-20 bg-white">
@@ -167,14 +106,14 @@ const Contact = () => {
             {/* Contact Form */}
             <div className="order-2 lg:order-1">
               <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
-                <h2 className="text-3xl font-bold text-slate-800 mb-2">Send us a Message</h2>
-                <p className="text-slate-600 mb-8">Tell us about your painting business and how we can help you succeed</p>
-                
+                <h2 className="text-3xl font-bold text-slate-800 mb-2">{t('Send us a Message')}</h2>
+                <p className="text-slate-600 mb-8">{t("Tell us about your painting business and how we can help you succeed")}</p>
+
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="name" className="block text-sm font-semibold text-slate-700 mb-2">
-                        Full Name *
+                        {t('Full Name *')}
                       </label>
                       <input
                         type="text"
@@ -184,13 +123,13 @@ const Contact = () => {
                         value={formData.name}
                         onChange={handleChange}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                        placeholder="Enter your full name"
+                        placeholder={t("Enter your full name")}
                       />
                     </div>
 
                     <div>
                       <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
-                        Email Address *
+                        {t('Email Address *')}
                       </label>
                       <input
                         type="email"
@@ -208,7 +147,7 @@ const Contact = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="company" className="block text-sm font-semibold text-slate-700 mb-2">
-                        Company Name
+                        {t('Company Name')}
                       </label>
                       <input
                         type="text"
@@ -217,13 +156,13 @@ const Contact = () => {
                         value={formData.company}
                         onChange={handleChange}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                        placeholder="Your painting company"
+                        placeholder={t("Your painting company")}
                       />
                     </div>
 
                     <div>
                       <label htmlFor="subject" className="block text-sm font-semibold text-slate-700 mb-2">
-                        I'm interested in *
+                        {t("I'm interested in *")}
                       </label>
                       <select
                         id="subject"
@@ -233,21 +172,21 @@ const Contact = () => {
                         onChange={handleChange}
                         className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                       >
-                        <option value="">Select an option</option>
-                        <option value="demo">Requesting a demo</option>
-                        <option value="pricing">Learning about pricing</option>
-                        <option value="features">Understanding features</option>
-                        <option value="support">Technical support</option>
-                        <option value="billing">Billing questions</option>
-                        <option value="partnership">Partnership opportunities</option>
-                        <option value="general">General inquiry</option>
+                        <option value="">{t("Select an option")}</option>
+                        <option value="demo">{t("Requesting a demo")}</option>
+                        <option value="pricing">{t("Learning about pricing")}</option>
+                        <option value="features">{t("Understanding features")}</option>
+                        <option value="support">{t("Technical support")}</option>
+                        <option value="billing">{t("Billing questions")}</option>
+                        <option value="partnership">{t("Partnership opportunities")}</option>
+                        <option value="general">{t("General inquiry")}</option>
                       </select>
                     </div>
                   </div>
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-semibold text-slate-700 mb-2">
-                      Tell us about your business *
+                      {t('Tell us about your business *')}
                     </label>
                     <textarea
                       id="message"
@@ -257,7 +196,7 @@ const Contact = () => {
                       value={formData.message}
                       onChange={handleChange}
                       className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none"
-                      placeholder="Tell us about your painting business, current challenges, and how we might be able to help you grow..."
+                      placeholder={t("Tell us about your painting business, current challenges, and how we might be able to help you grow...")}
                     />
                   </div>
 
@@ -269,18 +208,18 @@ const Contact = () => {
                     {loading ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                        Sending Message...
+                        {t('Sending Message...')}
                       </>
                     ) : (
                       <>
                         <Send className="h-5 w-5 mr-3" />
-                        Send Message
+                        {t('Send Message')}
                       </>
                     )}
                   </button>
 
                   <p className="text-sm text-slate-500 text-center">
-                    We'll respond within 24 hours during business days
+                    {t("We'll respond within 24 hours during business days")}
                   </p>
                 </div>
               </div>
@@ -289,19 +228,19 @@ const Contact = () => {
             {/* Contact Info & FAQ */}
             <div className="order-1 lg:order-2 space-y-12">
               <div>
-                <h2 className="text-3xl font-bold text-slate-800 mb-8">Our Office</h2>
-                
+                <h2 className="text-3xl font-bold text-slate-800 mb-8">{t('Our Office')}</h2>
+
                 <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                   <div className="flex items-start mb-6">
                     <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                       <MapPin className="h-6 w-6 text-[#4bb4f5]" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-800 text-lg mb-2">Paint Quote Pro Ltd</h3>
+                      <h3 className="font-bold text-slate-800 text-lg mb-2">{t('Paint Quote Pro Ltd')}</h3>
                       <p className="text-slate-600 leading-relaxed">
-                        Innovation Street 15 - 5B<br />
-                        London W1A 0AX<br />
-                        United Kingdom
+                        {t('Innovation Street 15 - 5B')}<br />
+                        {t('London W1A 0AX')}<br />
+                        {t('United Kingdom')}
                       </p>
                     </div>
                   </div>
@@ -311,11 +250,11 @@ const Contact = () => {
                       <Clock className="h-6 w-6 text-amber-600" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-800 text-lg mb-2">Business Hours</h3>
+                      <h3 className="font-bold text-slate-800 text-lg mb-2">{t('Business Hours')}</h3>
                       <p className="text-slate-600 leading-relaxed">
-                        <strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM GMT<br />
-                        <strong>Saturday:</strong> 10:00 AM - 4:00 PM GMT<br />
-                        <strong>Sunday:</strong> Closed
+                        <strong>{t('Monday - Friday:')}</strong> {t('9:00 AM - 6:00 PM GMT')}<br />
+                        <strong>{t('Saturday:')}</strong> {t('10:00 AM - 4:00 PM GMT')}<br />
+                        <strong>{t('Sunday:')}</strong> {t('Closed')}
                       </p>
                     </div>
                   </div>
@@ -323,14 +262,14 @@ const Contact = () => {
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-6">Frequently Asked Questions</h3>
+                <h3 className="text-2xl font-bold text-slate-800 mb-6">{t('Frequently Asked Questions')}</h3>
                 <div className="space-y-4">
                   <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <div className="flex items-start">
                       <HelpCircle className="h-5 w-5 text-[#4bb4f5] mt-1 mr-3 flex-shrink-0" />
                       <div>
-                        <h4 className="font-bold text-slate-800 mb-2">How quickly can I get started?</h4>
-                        <p className="text-slate-600 leading-relaxed">You can sign up and start creating professional quotes within minutes. Our simple onboarding process guides you through everything you need to know.</p>
+                        <h4 className="font-bold text-slate-800 mb-2">{t('How quickly can I get started?')}</h4>
+                        <p className="text-slate-600 leading-relaxed">{t("You can sign up and start creating professional quotes within minutes. Our simple onboarding process guides you through everything you need to know.")}</p>
                       </div>
                     </div>
                   </div>
@@ -339,8 +278,8 @@ const Contact = () => {
                     <div className="flex items-start">
                       <Users className="h-5 w-5 text-amber-600 mt-1 mr-3 flex-shrink-0" />
                       <div>
-                        <h4 className="font-bold text-slate-800 mb-2">Do you provide training and support?</h4>
-                        <p className="text-slate-600 leading-relaxed">Absolutely! We offer comprehensive onboarding calls, video tutorials, and ongoing support to ensure you get the most out of Paint Quote Pro.</p>
+                        <h4 className="font-bold text-slate-800 mb-2">{t('Do you provide training and support?')}</h4>
+                        <p className="text-slate-600 leading-relaxed">{t("Absolutely! We offer comprehensive onboarding calls, video tutorials, and ongoing support to ensure you get the most out of Paint Quote Pro.")}</p>
                       </div>
                     </div>
                   </div>
@@ -349,8 +288,8 @@ const Contact = () => {
                     <div className="flex items-start">
                       <Star className="h-5 w-5 text-blue-600 mt-1 mr-3 flex-shrink-0" />
                       <div>
-                        <h4 className="font-bold text-slate-800 mb-2">Can I import my existing client data?</h4>
-                        <p className="text-slate-600 leading-relaxed">Yes! Our support team will help you migrate your existing client and project data seamlessly so you can get up and running quickly.</p>
+                        <h4 className="font-bold text-slate-800 mb-2">{t('Can I import my existing client data?')}</h4>
+                        <p className="text-slate-600 leading-relaxed">{t("Yes! Our support team will help you migrate your existing client and project data seamlessly so you can get up and running quickly.")}</p>
                       </div>
                     </div>
                   </div>
@@ -359,8 +298,8 @@ const Contact = () => {
                     <div className="flex items-start">
                       <CheckCircle className="h-5 w-5 text-[#4bb4f5] mt-1 mr-3 flex-shrink-0" />
                       <div>
-                        <h4 className="font-bold text-slate-800 mb-2">Is there a free trial?</h4>
-                        <p className="text-slate-600 leading-relaxed">Yes! Every plan comes with a 14-day free trial. No credit card required to start exploring all the features.</p>
+                        <h4 className="font-bold text-slate-800 mb-2">{t('Is there a free trial?')}</h4>
+                        <p className="text-slate-600 leading-relaxed">{t("Yes! Every plan comes with a 14-day free trial. No credit card required to start exploring all the features.")}</p>
                       </div>
                     </div>
                   </div>
@@ -375,8 +314,8 @@ const Contact = () => {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Join Hundreds of Successful Painters</h2>
-            <p className="text-xl text-slate-600">See what Paint Quote Pro customers are saying</p>
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">{t('Join Hundreds of Successful Painters')}</h2>
+            <p className="text-xl text-slate-600">{t('See what Paint Quote Pro customers are saying')}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -386,9 +325,9 @@ const Contact = () => {
                   <Star key={i} className="h-4 w-4 text-amber-400 fill-current" />
                 ))}
               </div>
-              <p className="text-slate-600 italic mb-4">"Paint Quote Pro has completely transformed my business. I'm creating quotes 5x faster and winning more jobs than ever before."</p>
-              <p className="font-semibold text-slate-800">Sarah Mitchell</p>
-              <p className="text-slate-500 text-sm">Mitchell Painting Services</p>
+              <p className="text-slate-600 italic mb-4">{t('"Paint Quote Pro has completely transformed my business. I\'m creating quotes 5x faster and winning more jobs than ever before."')}</p>
+              <p className="font-semibold text-slate-800">{t('Sarah Mitchell')}</p>
+              <p className="text-slate-500 text-sm">{t('Mitchell Painting Services')}</p>
             </div>
 
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -397,9 +336,9 @@ const Contact = () => {
                   <Star key={i} className="h-4 w-4 text-amber-400 fill-current" />
                 ))}
               </div>
-              <p className="text-slate-600 italic mb-4">"The support team is fantastic. They helped me get set up and even imported all my existing client data. Outstanding service!"</p>
-              <p className="font-semibold text-slate-800">David Thompson</p>
-              <p className="text-slate-500 text-sm">Thompson Decorators</p>
+              <p className="text-slate-600 italic mb-4">{t('"The support team is fantastic. They helped me get set up and even imported all my existing client data. Outstanding service!"')}</p>
+              <p className="font-semibold text-slate-800">{t('David Thompson')}</p>
+              <p className="text-slate-500 text-sm">{t('Thompson Decorators')}</p>
             </div>
 
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -408,9 +347,9 @@ const Contact = () => {
                   <Star key={i} className="h-4 w-4 text-amber-400 fill-current" />
                 ))}
               </div>
-              <p className="text-slate-600 italic mb-4">"The AI analysis is incredibly accurate and my quotes look so professional. I've won every job I've quoted since switching!"</p>
-              <p className="font-semibold text-slate-800">Lisa Rodriguez</p>
-              <p className="text-slate-500 text-sm">Precision Painters</p>
+              <p className="text-slate-600 italic mb-4">{t('"The AI analysis is incredibly accurate and my quotes look so professional. I\'ve won every job I\'ve quoted since switching!"')}</p>
+              <p className="font-semibold text-slate-800">{t('Lisa Rodriguez')}</p>
+              <p className="text-slate-500 text-sm">{t('Precision Painters')}</p>
             </div>
           </div>
         </div>

@@ -3,10 +3,12 @@ import { Save, Building, Mail, Phone, Globe, MapPin, FileText, ArrowLeft } from 
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const CompanySettings = () => {
   const { company, refreshAuth } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -56,7 +58,7 @@ const CompanySettings = () => {
 
     try {
       await api.put('/companies/settings', formData);
-      setSuccessMessage('Company settings updated successfully!');
+      setSuccessMessage(t('Company settings updated successfully!'));
       
       // Refresh auth to get updated company data
       if (refreshAuth) {
@@ -66,7 +68,7 @@ const CompanySettings = () => {
       // Clear success message after 3 seconds
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update company settings');
+      setError(err.response?.data?.error || t('Failed to update company settings'));
     } finally {
       setLoading(false);
     }
@@ -85,11 +87,11 @@ const CompanySettings = () => {
           </button>
           <h1 className="text-3xl font-bold text-purple-700 flex items-center">
             <Building className="h-8 w-8 mr-3" />
-            Company Settings
+            {t('Company Settings')}
           </h1>
         </div>
         <p className="text-gray-600 mt-2">
-          Manage your company information and business details
+          {t('Manage your company information and business details')}
         </p>
       </div>
 
@@ -108,12 +110,12 @@ const CompanySettings = () => {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Company Information */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-medium text-purple-700 mb-6">Basic Information</h3>
+          <h3 className="text-lg font-medium text-purple-700 mb-6">{t('Basic Information')}</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Name *
+                {t('Company Name *')}
               </label>
               <input
                 type="text"
@@ -121,13 +123,13 @@ const CompanySettings = () => {
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Your Company Name"
+                placeholder={t('Your Company Name')}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address *
+                {t('Email Address *')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -144,7 +146,7 @@ const CompanySettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
+                {t('Phone Number')}
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -160,7 +162,7 @@ const CompanySettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Website
+                {t('Website')}
               </label>
               <div className="relative">
                 <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -176,7 +178,7 @@ const CompanySettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Logo URL
+                {t('Company Logo URL')}
               </label>
               <input
                 type="url"
@@ -189,7 +191,7 @@ const CompanySettings = () => {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Address
+                {t('Address')}
               </label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -198,21 +200,21 @@ const CompanySettings = () => {
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="123 Business Street, City, Postal Code, Country"
+                  placeholder={t('123 Business Street, City, Postal Code, Country')}
                 />
               </div>
             </div>
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Description
+                {t('Company Description')}
               </label>
               <textarea
                 rows={4}
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="Brief description of your painting business, services offered, years of experience, etc."
+                placeholder={t('Brief description of your painting business, services offered, years of experience, etc.')}
               />
             </div>
           </div>
@@ -220,12 +222,12 @@ const CompanySettings = () => {
 
         {/* Business Registration */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-medium text-purple-700 mb-6">Business Registration</h3>
+          <h3 className="text-lg font-medium text-purple-700 mb-6">{t('Business Registration')}</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                VAT Number
+                {t('VAT Number')}
               </label>
               <div className="relative">
                 <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -241,22 +243,22 @@ const CompanySettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                VAT Rate (%)
+                {t('VAT Rate (%)')}
               </label>
               <select
                 value={formData.vat_rate}
                 onChange={(e) => handleInputChange('vat_rate', parseFloat(e.target.value))}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
-                <option value="0.00">0% (VAT Exempt)</option>
-                <option value="0.05">5% (Reduced Rate)</option>
-                <option value="0.20">20% (Standard Rate)</option>
+                <option value="0.00">{t('0% (VAT Exempt)')}</option>
+                <option value="0.05">{t('5% (Reduced Rate)')}</option>
+                <option value="0.20">{t('20% (Standard Rate)')}</option>
               </select>
             </div>
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Registration Number
+                {t('Company Registration Number')}
               </label>
               <input
                 type="text"
@@ -272,11 +274,11 @@ const CompanySettings = () => {
         {/* Logo Preview */}
         {formData.logo_url && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-medium text-purple-700 mb-4">Logo Preview</h3>
+            <h3 className="text-lg font-medium text-purple-700 mb-4">{t('Logo Preview')}</h3>
             <div className="flex items-center space-x-4">
               <img
                 src={formData.logo_url}
-                alt="Company Logo"
+                alt={t('Company Logo')}
                 className="h-16 w-16 object-contain border border-gray-200 rounded"
                 onError={(e) => {
                   e.target.style.display = 'none';
@@ -284,7 +286,7 @@ const CompanySettings = () => {
                 }}
               />
               <div className="hidden text-gray-500 text-sm">
-                Unable to load logo from the provided URL
+                {t('Unable to load logo from the provided URL')}
               </div>
             </div>
           </div>
@@ -300,12 +302,12 @@ const CompanySettings = () => {
             {loading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Saving...
+                {t('Saving...')}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4 mr-2" />
-                Save Changes
+                {t('Save Changes')}
               </>
             )}
           </button>
@@ -314,13 +316,13 @@ const CompanySettings = () => {
 
       {/* Help Section */}
       <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h4 className="text-sm font-medium text-blue-900 mb-3">💡 Company Settings Tips:</h4>
+        <h4 className="text-sm font-medium text-blue-900 mb-3">💡 {t('Company Settings Tips:')}</h4>
         <ul className="text-sm text-blue-800 space-y-2">
-          <li>• Complete company information helps build trust with clients</li>
-          <li>• VAT number and registration details are used for invoice generation</li>
-          <li>• Company logo appears on quotes and professional documents</li>
-          <li>• Address information is used for quote headers and contact details</li>
-          <li>• Keep your information up-to-date for professional correspondence</li>
+          <li>• {t('Complete company information helps build trust with clients')}</li>
+          <li>• {t('VAT number and registration details are used for invoice generation')}</li>
+          <li>• {t('Company logo appears on quotes and professional documents')}</li>
+          <li>• {t('Address information is used for quote headers and contact details')}</li>
+          <li>• {t('Keep your information up-to-date for professional correspondence')}</li>
         </ul>
       </div>
     </div>

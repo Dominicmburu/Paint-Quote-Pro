@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, FileText, Download, AlertCircle } from 'lucide-react';
 import { API_BASE_URL } from '../../services/api';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const PublicQuoteSignature = () => {
     const { quoteId } = useParams();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const canvasRef = useRef(null);
     const [quote, setQuote] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ const PublicQuoteSignature = () => {
             const response = await fetch(`${API_BASE_URL}/quotes/${quoteId}/public`);
 
             if (!response.ok) {
-                throw new Error('Quote not found');
+                throw new Error(t('Quote not found'));
             }
 
             const data = await response.json();
@@ -54,8 +56,8 @@ const PublicQuoteSignature = () => {
                 }));
             }
         } catch (error) {
-            console.error('Failed to load quote:', error);
-            setError('Failed to load quote. Please check the link and try again.');
+            console.error(t('Failed to load quote:'), error);
+            setError(t('Failed to load quote. Please check the link and try again.'));
         } finally {
             setLoading(false);
         }
@@ -80,12 +82,12 @@ const PublicQuoteSignature = () => {
         script.src = 'https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js';
         script.async = true;
         script.onload = () => {
-            console.log('✅ SignaturePad script loaded');
+            console.log(t('✅ SignaturePad script loaded'));
             setScriptLoaded(true);
         };
         script.onerror = () => {
-            console.error('❌ Failed to load SignaturePad script');
-            setError('Failed to load signature functionality. Please refresh the page.');
+            console.error(t('❌ Failed to load SignaturePad script'));
+            setError(t('Failed to load signature functionality. Please refresh the page.'));
         };
         document.head.appendChild(script);
     };
@@ -96,7 +98,7 @@ const PublicQuoteSignature = () => {
         }
 
         try {
-            console.log('🎨 Initializing signature pad...');
+            console.log(t('🎨 Initializing signature pad...'));
 
             // Set canvas size first
             const canvas = canvasRef.current;
@@ -134,11 +136,11 @@ const PublicQuoteSignature = () => {
             });
 
             setSignaturePad(pad);
-            console.log('✅ Signature pad initialized successfully');
+            console.log(t('✅ Signature pad initialized successfully'));
 
         } catch (error) {
-            console.error('❌ Failed to initialize signature pad:', error);
-            setError('Failed to initialize signature pad. Please refresh the page.');
+            console.error(t('❌ Failed to initialize signature pad:'), error);
+            setError(t('Failed to initialize signature pad. Please refresh the page.'));
         }
     };
 
@@ -176,7 +178,7 @@ const PublicQuoteSignature = () => {
     const clearSignature = () => {
         if (signaturePad) {
             signaturePad.clear();
-            console.log('🧹 Signature cleared');
+            console.log(t('🧹 Signature cleared'));
         }
     };
 
@@ -192,34 +194,34 @@ const PublicQuoteSignature = () => {
         setError(''); // Clear previous errors
 
         if (!formData.clientName.trim()) {
-            setError('Please enter your full name.');
+            setError(t('Please enter your full name.'));
             return false;
         }
 
         if (!formData.clientEmail.trim()) {
-            setError('Please enter your email address.');
+            setError(t('Please enter your email address.'));
             return false;
         }
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.clientEmail)) {
-            setError('Please enter a valid email address.');
+            setError(t('Please enter a valid email address.'));
             return false;
         }
 
         if (!signaturePad) {
-            setError('Signature pad is not ready. Please wait a moment and try again.');
+            setError(t('Signature pad is not ready. Please wait a moment and try again.'));
             return false;
         }
 
         if (signaturePad.isEmpty()) {
-            setError('Please provide your digital signature.');
+            setError(t('Please provide your digital signature.'));
             return false;
         }
 
         if (!formData.acceptTerms) {
-            setError('Please accept the terms and conditions.');
+            setError(t('Please accept the terms and conditions.'));
             return false;
         }
 
@@ -239,7 +241,7 @@ const PublicQuoteSignature = () => {
             setSigning(true);
 
             const signatureData = signaturePad.toDataURL('image/png');
-            console.log('📝 Signature data length:', signatureData.length);
+            console.log(t('📝 Signature data length:'), signatureData.length);
 
             const response = await fetch(`${API_BASE_URL}/quotes/${quoteId}/sign`, {
                 method: 'POST',
@@ -256,19 +258,19 @@ const PublicQuoteSignature = () => {
             const result = await response.json();
 
             if (response.ok) {
-                setSuccess('Quote signed successfully! You will receive a confirmation email shortly.');
+                setSuccess(t('Quote signed successfully! You will receive a confirmation email shortly.'));
 
                 // Redirect to confirmation page after 3 seconds
                 setTimeout(() => {
                     window.location.href = `/quotes/${quoteId}/signed`;
                 }, 3000);
             } else {
-                setError(result.error || 'Failed to sign quote. Please try again.');
+                setError(result.error || t('Failed to sign quote. Please try again.'));
             }
 
         } catch (error) {
-            console.error('❌ Signing error:', error);
-            setError('Network error. Please check your connection and try again.');
+            console.error(t('❌ Signing error:'), error);
+            setError(t('Network error. Please check your connection and try again.'));
         } finally {
             setSigning(false);
         }
@@ -288,13 +290,13 @@ const PublicQuoteSignature = () => {
                 <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
                     <div className="text-center">
                         <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-                        <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Quote</h2>
+                        <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('Error Loading Quote')}</h2>
                         <p className="text-gray-600">{error}</p>
                         <button
                             onClick={() => window.location.reload()}
                             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                         >
-                            Refresh Page
+                            {t('Refresh Page')}
                         </button>
                     </div>
                 </div>
@@ -308,14 +310,18 @@ const PublicQuoteSignature = () => {
                 <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
                     <div className="text-center">
                         <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                        <h2 className="text-xl font-semibold text-gray-900 mb-2">Quote Already Signed</h2>
+                        <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('Quote Already Signed')}</h2>
                         <p className="text-gray-600 mb-4">
-                            This quote was digitally signed on {new Date(quote.signed_at).toLocaleDateString()}.
+                            {t('This quote was digitally signed on {{date}}.', {
+                                date: new Date(quote.signed_at).toLocaleDateString()
+                            })}
                         </p>
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <p className="text-sm text-gray-600">Quote #{quote.quote_number}</p>
-                            <p className="text-sm text-gray-600">Project: {quote.project_name}</p>
-                            <p className="text-lg font-semibold">Total: £{quote.total_amount.toLocaleString()}</p>
+                            <p className="text-sm text-gray-600">{t('Quote #{{number}}', { number: quote.quote_number })}</p>
+                            <p className="text-sm text-gray-600">{t('Project: {{name}}', { name: quote.project_name })}</p>
+                            <p className="text-lg font-semibold">{t('Total: £{{amount}}', { 
+                                amount: quote.total_amount.toLocaleString() 
+                            })}</p>
                         </div>
                     </div>
                 </div>
@@ -329,28 +335,30 @@ const PublicQuoteSignature = () => {
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                     {/* Header */}
                     <div className="bg-green-600 text-white p-6">
-                        <h1 className="text-2xl font-bold">Digital Quote Signature</h1>
-                        <p className="text-blue-100 mt-1">Please review and sign the quote below</p>
+                        <h1 className="text-2xl font-bold">{t('Digital Quote Signature')}</h1>
+                        <p className="text-blue-100 mt-1">{t('Please review and sign the quote below')}</p>
                     </div>
 
                     {/* Quote Summary */}
                     <div className="p-6 bg-gray-50 border-b">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quote Summary</h2>
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('Quote Summary')}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <p className="text-sm text-gray-600">Quote Number</p>
+                                <p className="text-sm text-gray-600">{t('Quote Number')}</p>
                                 <p className="font-medium">{quote.quote_number}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Project</p>
+                                <p className="text-sm text-gray-600">{t('Project')}</p>
                                 <p className="font-medium">{quote.project_name}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Total Amount</p>
-                                <p className="text-xl font-bold text-blue-600">£{quote.total_amount.toLocaleString()}</p>
+                                <p className="text-sm text-gray-600">{t('Total Amount')}</p>
+                                <p className="text-xl font-bold text-blue-600">
+                                    {t('£{{amount}}', { amount: quote.total_amount.toLocaleString() })}
+                                </p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">Valid Until</p>
+                                <p className="text-sm text-gray-600">{t('Valid Until')}</p>
                                 <p className="font-medium">{new Date(quote.valid_until).toLocaleDateString()}</p>
                             </div>
                         </div>
@@ -363,7 +371,7 @@ const PublicQuoteSignature = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="clientName" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Full Name *
+                                        {t('Full Name *')}
                                     </label>
                                     <input
                                         type="text"
@@ -378,7 +386,7 @@ const PublicQuoteSignature = () => {
 
                                 <div>
                                     <label htmlFor="clientEmail" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Email Address *
+                                        {t('Email Address *')}
                                     </label>
                                     <input
                                         type="email"
@@ -395,16 +403,16 @@ const PublicQuoteSignature = () => {
                             {/* Signature Pad */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Digital Signature *
+                                    {t('Digital Signature *')}
                                 </label>
                                 <p className="text-sm text-gray-600 mb-2">
-                                    Please sign in the box below using your mouse, trackpad, or finger on mobile devices.
+                                    {t('Please sign in the box below using your mouse, trackpad, or finger on mobile devices.')}
                                 </p>
 
                                 {/* Signature Status */}
                                 {!scriptLoaded && (
                                     <div className="mb-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
-                                        Loading signature functionality...
+                                        {t('Loading signature functionality...')}
                                     </div>
                                 )}
 
@@ -422,7 +430,7 @@ const PublicQuoteSignature = () => {
                                     />
                                     {!signaturePad && scriptLoaded && (
                                         <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm pointer-events-none">
-                                            Initializing signature pad...
+                                            {t('Initializing signature pad...')}
                                         </div>
                                     )}
                                 </div>
@@ -434,11 +442,11 @@ const PublicQuoteSignature = () => {
                                         disabled={!signaturePad}
                                         className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        Clear Signature
+                                        {t('Clear Signature')}
                                     </button>
                                     {signaturePad && !signaturePad.isEmpty() && (
                                         <span className="px-3 py-2 text-sm text-green-600 bg-green-50 rounded-md">
-                                            ✓ Signature captured
+                                            ✓ {t('Signature captured')}
                                         </span>
                                     )}
                                 </div>
@@ -456,8 +464,7 @@ const PublicQuoteSignature = () => {
                                         className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                     />
                                     <span className="text-sm text-gray-700">
-                                        I accept the terms and conditions of this quotation and authorize the work to proceed as specified.
-                                        I understand this digital signature has the same legal effect as a handwritten signature.
+                                        {t('I accept the terms and conditions of this quotation and authorize the work to proceed as specified. I understand this digital signature has the same legal effect as a handwritten signature.')}
                                     </span>
                                 </label>
                             </div>
@@ -482,10 +489,10 @@ const PublicQuoteSignature = () => {
                                     disabled={signing || !signaturePad || !scriptLoaded}
                                     className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                                 >
-                                    {signing ? 'Signing...' :
-                                        !scriptLoaded ? 'Loading...' :
-                                            !signaturePad ? 'Initializing...' :
-                                                'Sign Quote Digitally'}
+                                    {signing ? t('Signing...') :
+                                        !scriptLoaded ? t('Loading...') :
+                                            !signaturePad ? t('Initializing...') :
+                                                t('Sign Quote Digitally')}
                                 </button>
                             </div>
                         </div>

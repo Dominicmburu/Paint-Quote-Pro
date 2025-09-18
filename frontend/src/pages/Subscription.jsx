@@ -12,33 +12,35 @@ import {
 } from 'lucide-react';
 import { useSubscription } from '../hooks/useSubscription';
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../hooks/useTranslation';
 
 const Subscription = () => {
   const navigate = useNavigate();
   const { subscription } = useSubscription();
   const { company } = useAuth();
+  const { t } = useTranslation();
 
   console.log('Subscription Data:', subscription);
 
   const subscriptionSections = [
     {
       id: 'plans',
-      name: 'Pricing Plans',
-      description: 'View and upgrade your subscription plan, compare features and pricing',
+      name: t('Pricing Plans'),
+      description: t('View and upgrade your subscription plan, compare features and pricing'),
       icon: TrendingUp,
       path: '/subscription/plans'
     },
     // {
     //   id: 'status',
-    //   name: 'Subscription Status',
-    //   description: 'Check your current plan, usage statistics, and subscription details',
+    //   name: t('Subscription Status'),
+    //   description: t('Check your current plan, usage statistics, and subscription details'),
     //   icon: FileText,
     //   path: '/subscription/status'
     // },
     {
       id: 'billing',
-      name: 'Billing Information',
-      description: 'Manage payment methods, view invoices, and update billing details',
+      name: t('Billing Information'),
+      description: t('Manage payment methods, view invoices, and update billing details'),
       icon: Receipt,
       path: '/subscription/billing'
     }
@@ -62,28 +64,28 @@ const Subscription = () => {
   };
 
   const getStatusText = () => {
-    if (!subscription) return 'No Active Subscription';
+    if (!subscription) return t('No Active Subscription');
     
     switch (subscription.status) {
       case 'active':
-        return 'Active Subscription';
+        return t('Active Subscription');
       case 'trial':
-        return `Free Trial (${subscription.days_remaining} days left)`;
+        return t('Free Trial ({{days}} days left)', { days: subscription.days_remaining });
       case 'past_due':
-        return 'Payment Required';
+        return t('Payment Required');
       case 'cancelled':
-        return 'Cancelled';
+        return t('Cancelled');
       default:
-        return 'Unknown Status';
+        return t('Unknown Status');
     }
   };
 
   const planDisplayNames = {
-    trial: 'Trial',
-    starter: 'Starter',
-    professional: 'Professional',
-    business: 'Business',
-    enterprise: 'Enterprise'
+    trial: t('Trial'),
+    starter: t('Starter'),
+    professional: t('Professional'),
+    business: t('Business'),
+    enterprise: t('Enterprise')
   };
 
   return (
@@ -99,11 +101,11 @@ const Subscription = () => {
           </button>
           <h1 className="text-3xl font-bold text-[#4bb4f5] flex items-center">
             <Crown className="h-8 w-8 mr-3" />
-            Subscription
+            {t('Subscription')}
           </h1>
         </div>
         <p className="text-gray-600">
-          Manage your subscription, billing, and account preferences
+          {t('Manage your subscription, billing, and account preferences')}
         </p>
       </div>
 
@@ -111,7 +113,7 @@ const Subscription = () => {
       {subscription && (
         <div className="mb-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Current Subscription</h3>
+            <h3 className="text-lg font-medium text-gray-900">{t('Current Subscription')}</h3>
             <div className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor()}`}>
               {getStatusText()}
             </div>
@@ -119,21 +121,21 @@ const Subscription = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-gray-500">Plan</p>
+              <p className="text-sm text-gray-500">{t('Plan')}</p>
               <p className="text-lg font-semibold text-gray-900">
                 {planDisplayNames[subscription.plan_name]} - {subscription.billing_cycle}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Projects Used</p>
+              <p className="text-sm text-gray-500">{t('Projects Used')}</p>
               <p className="text-lg font-semibold text-gray-900">
                 {subscription.projects_used_this_month} / {subscription.max_projects === -1 ? '∞' : subscription.max_projects}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Company</p>
+              <p className="text-sm text-gray-500">{t('Company')}</p>
               <p className="text-lg font-semibold text-gray-900">
-                {company?.name || 'N/A'}
+                {company?.name || t('N/A')}
               </p>
             </div>
           </div>
@@ -146,9 +148,9 @@ const Subscription = () => {
           <div className="flex items-center">
             <Crown className="h-8 w-8 text-[#4bb4f5] mr-4" />
             <div>
-              <h3 className="text-lg font-medium text-[#4bb4f5]">Start Your Journey</h3>
+              <h3 className="text-lg font-medium text-[#4bb4f5]">{t('Start Your Journey')}</h3>
               <p className="text-[#4bb4f5]">
-                Choose a subscription plan to unlock all features and start creating professional quotes.
+                {t('Choose a subscription plan to unlock all features and start creating professional quotes.')}
               </p>
             </div>
           </div>
@@ -193,16 +195,17 @@ const Subscription = () => {
           <div className="flex items-start">
             <TrendingUp className="h-5 w-5 text-yellow-400 mt-0.5 mr-3" />
             <div>
-              <h4 className="text-sm font-medium text-yellow-900">Usage Alert</h4>
+              <h4 className="text-sm font-medium text-yellow-900">{t('Usage Alert')}</h4>
               <p className="text-sm text-yellow-800 mt-1">
-                You're using {Math.round((subscription.projects_used_this_month / subscription.max_projects) * 100)}% 
-                of your monthly project limit. Consider upgrading to avoid hitting your limit.
+                {t('You\'re using {{percentage}}% of your monthly project limit. Consider upgrading to avoid hitting your limit.', {
+                  percentage: Math.round((subscription.projects_used_this_month / subscription.max_projects) * 100)
+                })}
               </p>
               <button
                 onClick={() => navigate('/subscription/plans')}
                 className="inline-flex items-center mt-2 text-sm font-medium text-yellow-600 hover:text-yellow-700"
               >
-                View Upgrade Options
+                {t('View Upgrade Options')}
                 <ChevronRight className="h-4 w-4 ml-1" />
               </button>
             </div>
@@ -212,11 +215,11 @@ const Subscription = () => {
 
       {/* Help Section */}
       <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h4 className="text-sm font-medium text-[#4bb4f5] mb-3">💡 Subscription Help:</h4>
+        <h4 className="text-sm font-medium text-[#4bb4f5] mb-3">{t('💡 Subscription Help:')}</h4>
         <ul className="text-sm text-[#4bb4f5] space-y-2">
-          <li>• <strong>Pricing Plans:</strong> Compare features and upgrade or downgrade your plan anytime</li>
-          <li>• <strong>Billing Information:</strong> Manage payment methods and access your invoice history</li>
-          <li>• Need help? Contact our support team for assistance with your subscription</li>
+          <li>• <strong>{t('Pricing Plans:')}</strong> {t('Compare features and upgrade or downgrade your plan anytime')}</li>
+          <li>• <strong>{t('Billing Information:')}</strong> {t('Manage payment methods and access your invoice history')}</li>
+          <li>{t('Need help? Contact our support team for assistance with your subscription')}</li>
         </ul>
       </div>
     </div>

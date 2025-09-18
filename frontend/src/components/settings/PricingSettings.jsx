@@ -1,11 +1,12 @@
-// 6. UPDATED PricingSettings.jsx - Ensure Wall/Ceiling Simple Pricing Updates Database
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, ArrowLeft, RefreshCw, Settings, RotateCcw } from 'lucide-react';
 import api from '../../services/api';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const PricingSettings = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [pricing, setPricing] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -24,7 +25,7 @@ const PricingSettings = () => {
       const response = await api.get('/settings/pricing');
       setPricing(response.data.pricing);
     } catch (error) {
-      setError('Failed to load pricing settings: ' + (error.response?.data?.message || error.message));
+      setError(t('Failed to load pricing settings:') + ' ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -41,7 +42,7 @@ const PricingSettings = () => {
     }));
   };
 
-  const updatePrice = (category, type, subtype, newPrice) => {
+  const updatePrice = (category, type, subtype, newPrice) =>{
     setPricing(prev => {
       const updated = { ...prev };
       if (subtype) {
@@ -73,17 +74,17 @@ const PricingSettings = () => {
       setSaving(true);
       setError('');
       await api.post('/settings/pricing', { pricing });
-      setSuccessMessage('Pricing settings saved successfully! Wall and ceiling pricing updated.');
+      setSuccessMessage(t('Pricing settings saved successfully! Wall and ceiling pricing updated.'));
       setTimeout(() => setSuccessMessage(''), 5000);
     } catch (err) {
-      setError('Failed to save pricing settings: ' + (err.response?.data?.message || err.message));
+      setError(t('Failed to save pricing settings:') + ' ' + (err.response?.data?.message || err.message));
     } finally {
       setSaving(false);
     }
   };
 
   const resetToDefaults = async () => {
-    if (!window.confirm('Are you sure you want to reset all pricing to defaults? This action cannot be undone.')) {
+    if (!window.confirm(t('Are you sure you want to reset all pricing to defaults? This action cannot be undone.'))) {
       return;
     }
 
@@ -92,10 +93,10 @@ const PricingSettings = () => {
       setError('');
       const response = await api.post('/settings/pricing/reset');
       setPricing(response.data.pricing);
-      setSuccessMessage('Pricing settings reset to defaults successfully!');
+      setSuccessMessage(t('Pricing settings reset to defaults successfully!'));
       setTimeout(() => setSuccessMessage(''), 5000);
     } catch (err) {
-      setError('Failed to reset pricing settings: ' + (err.response?.data?.message || err.message));
+      setError(t('Failed to reset pricing settings:') + ' ' + (err.response?.data?.message || err.message));
     } finally {
       setResetting(false);
     }
@@ -103,67 +104,67 @@ const PricingSettings = () => {
 
   const formatCategoryName = (category) => {
     const categoryNames = {
-      walls: 'Walls',
-      ceiling: 'Ceiling',
-      interior: 'Interior',
-      exterior: 'Exterior',
-      specialJobs: 'Special Jobs',
-      additional: 'Additional Fees'
+      walls: t('Walls'),
+      ceiling: t('Ceiling'),
+      interior: t('Interior'),
+      exterior: t('Exterior'),
+      specialJobs: t('Special Jobs'),
+      additional: t('Additional Fees')
     };
     return categoryNames[category] || category;
   };
 
   const formatTypeName = (type) => {
     const typeNames = {
-      sanding_filling: 'Sanding/Filling',
-      priming: 'Priming',
-      one_coat: 'One Coat',
-      two_coats: 'Two Coats',
-      sanding: 'Sanding',
-      painting: 'Painting',
-      preparation: 'Preparation',
-      doors: 'Doors',
-      fixedWindows: 'Fixed Windows',
-      turnWindows: 'Turn Windows',
-      dormerWindows: 'Dormer Windows',
-      fasciaBoards: 'Fascia Boards',
-      rainPipe: 'Rain Pipe',
-      stairs: 'Stairs',
-      radiators: 'Radiators',
-      skirtingBoards: 'Skirting Boards',
-      otherItems: 'Other Items',
-      special: 'Special Repairs',
-      woodwork: 'Woodwork'
+      sanding_filling: t('Sanding/Filling'),
+      priming: t('Priming'),
+      one_coat: t('One Coat'),
+      two_coats: t('Two Coats'),
+      sanding: t('Sanding'),
+      painting: t('Painting'),
+      preparation: t('Preparation'),
+      doors: t('Doors'),
+      fixedWindows: t('Fixed Windows'),
+      turnWindows: t('Turn Windows'),
+      dormerWindows: t('Dormer Windows'),
+      fasciaBoards: t('Fascia Boards'),
+      rainPipe: t('Rain Pipe'),
+      stairs: t('Stairs'),
+      radiators: t('Radiators'),
+      skirtingBoards: t('Skirting Boards'),
+      otherItems: t('Other Items'),
+      special: t('Special Repairs'),
+      woodwork: t('Woodwork')
     };
     return typeNames[type] || type.replace(/([A-Z])/g, ' $1').trim();
   };
 
   const formatSubtypeName = (subtype) => {
     const subtypeNames = {
-      light: 'Light',
-      medium: 'Medium',
-      heavy: 'Heavy',
-      one_coat: 'One Coat',
-      two_coat: 'Two Coats',
-      three_coat: 'Three Coats',
-      easy_prep: 'Easy Prep',
-      medium_prep: 'Medium Prep',
-      heavy_prep: 'Heavy Prep',
-      small: 'Small',
-      big: 'Large',
-      large: 'Large',
-      front_door: 'Front Door',
-      garage_door: 'Garage Door',
-      outside_door: 'Outside Door',
-      water_damage: 'Water Damage',
-      fire_smoke_damage: 'Fire/Smoke Damage',
-      mold_remediation: 'Mold Remediation',
-      nicotine_stained_walls: 'Nicotine Stained Walls',
-      uneven_wall_surfaces: 'Uneven Wall Surfaces',
-      level_1: 'Level 1',
-      level_2: 'Level 2',
-      level_3: 'Level 3',
-      level_4: 'Level 4'
+      light: t('Light'),
+      medium: t('Medium'),
+      heavy: t('Heavy'),
+      one_coat: t('One Coat'),
+      two_coat: t('Two Coats'),
+      three_coat: t('Three Coats'),
+      easy_prep: t('Easy Prep'),
+      medium_prep: t('Medium Prep'),
+      heavy_prep: t('Heavy Prep'),
+      small: t('Small'),
+      big: t('Large'),
+      large: t('Large'),
+      front_door: t('Front Door'),
+      garage_door: t('Garage Door'),
+      outside_door: t('Outside Door'),
+      water_damage: t('Water Damage'),
+      fire_smoke_damage: t('Fire/Smoke Damage'),
+      mold_remediation: t('Mold Remediation'),
+      nicotine_stained_walls: t('Nicotine Stained Walls'),
+      uneven_wall_surfaces: t('Uneven Wall Surfaces'),
+      level_1: t('Level 1'),
+      level_2: t('Level 2'),
+      level_3: t('Level 3'),
+      level_4: t('Level 4')
     };
     return subtypeNames[subtype] || subtype.replace(/([A-Z])/g, ' $1').trim();
   };
@@ -194,28 +195,27 @@ const PricingSettings = () => {
       <div key={`${category}_simple`} className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <div className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {formatCategoryName(category)} - Simple Pricing (Used in Real-time Calculator)
+            {formatCategoryName(category)} - {t('Simple Pricing (Used in Real-time Calculator)')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {simpleFields.map(field => (
               <div key={field}>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {formatTypeName(field)} (per m²)
+                  {formatTypeName(field)} ({t('per m²')})
                 </label>
                 <PriceInput
                   value={categoryData[field] || 0}
                   onChange={(e) => updateSimplePrice(category, field, e.target.value)}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Used in real-time calculation
+                  {t('Used in real-time calculation')}
                 </p>
               </div>
             ))}
           </div>
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
-              <strong>Note:</strong> These simple pricing fields are used in the real-time total calculator. 
-              Changes here will immediately affect project cost calculations.
+              <strong>{t('Note:')}</strong> {t('These simple pricing fields are used in the real-time total calculator. Changes here will immediately affect project cost calculations.')}
             </p>
           </div>
         </div>
@@ -235,24 +235,24 @@ const PricingSettings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cleanup Fee
+                    {t('Cleanup Fee')}
                   </label>
                   <PriceInput
                     value={categoryData.cleanup_fee || 0}
                     onChange={(e) => updateAdditionalFee('cleanup_fee', e.target.value)}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Fixed cleanup fee per project</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('Fixed cleanup fee per project')}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Materials Markup (%)
+                    {t('Materials Markup (%)')}
                   </label>
                   <PriceInput
                     value={(categoryData.materials_markup || 0) * 100}
                     onChange={(e) => updateAdditionalFee('materials_markup', e.target.value / 100)}
                     prefix="%"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Markup percentage on materials</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('Markup percentage on materials')}</p>
                 </div>
               </div>
             </div>
@@ -265,7 +265,7 @@ const PricingSettings = () => {
       <div key={category} className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {formatCategoryName(category)} - Advanced Pricing (Legacy Structure)
+            {formatCategoryName(category)} - {t('Advanced Pricing (Legacy Structure)')}
           </h3>
           <div className="space-y-6">
             {Object.entries(categoryData).map(([type, typeData]) => {
@@ -309,7 +309,7 @@ const PricingSettings = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 animate-spin text-teal-600 mx-auto mb-4" />
-          <p>Loading pricing settings...</p>
+          <p>{t('Loading pricing settings...')}</p>
         </div>
       </div>
     );
@@ -331,9 +331,9 @@ const PricingSettings = () => {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center">
                   <Settings className="h-6 w-6 mr-3 text-teal-600" />
-                  Pricing Settings
+                  {t('Pricing Settings')}
                 </h1>
-                <p className="text-gray-600">Configure pricing for real-time calculations and quotes</p>
+                <p className="text-gray-600">{t('Configure pricing for real-time calculations and quotes')}</p>
               </div>
             </div>
             <div className="flex space-x-3">
@@ -345,12 +345,12 @@ const PricingSettings = () => {
                 {resetting ? (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Resetting...
+                    {t('Resetting...')}
                   </>
                 ) : (
                   <>
                     <RotateCcw className="h-4 w-4 mr-2" />
-                    Reset to Defaults
+                    {t('Reset to Defaults')}
                   </>
                 )}
               </button>
@@ -362,12 +362,12 @@ const PricingSettings = () => {
                 {saving ? (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Saving...
+                    {t('Saving...')}
                   </>
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    Save Settings
+                    {t('Save Settings')}
                   </>
                 )}
               </button>
@@ -392,12 +392,12 @@ const PricingSettings = () => {
 
         {/* Real-time Calculation Info */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="text-lg font-medium text-blue-900 mb-2">🔄 Real-time Calculation Pricing</h3>
+          <h3 className="text-lg font-medium text-blue-900 mb-2">🔄 {t('Real-time Calculation Pricing')}</h3>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>• Simple wall and ceiling pricing is used for instant total calculations</li>
-            <li>• Changes take effect immediately in project calculators</li>
-            <li>• Advanced pricing structures provide backward compatibility</li>
-            <li>• All pricing is automatically saved to the database</li>
+            <li>• {t('Simple wall and ceiling pricing is used for instant total calculations')}</li>
+            <li>• {t('Changes take effect immediately in project calculators')}</li>
+            <li>• {t('Advanced pricing structures provide backward compatibility')}</li>
+            <li>• {t('All pricing is automatically saved to the database')}</li>
           </ul>
         </div>
 
@@ -423,9 +423,9 @@ const PricingSettings = () => {
         {/* Database Info */}
         {pricing.updated_at && (
           <div className="mt-8 text-center text-sm text-gray-500">
-            Last updated: {new Date(pricing.updated_at).toLocaleString()}
+            {t('Last updated:')} {new Date(pricing.updated_at).toLocaleString()}
             <br />
-            Wall and ceiling pricing updates real-time calculations
+            {t('Wall and ceiling pricing updates real-time calculations')}
           </div>
         )}
       </div>

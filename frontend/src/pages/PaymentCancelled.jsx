@@ -10,15 +10,16 @@ import {
     Users
 } from 'lucide-react';
 import api from '../services/api';
+import { useTranslation } from '../hooks/useTranslation';
 
 const PaymentCancelled = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-
                 const response = await api.fetch('/auth/me', {
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -30,7 +31,6 @@ const PaymentCancelled = () => {
                     const userData = await response.json();
                     setUserInfo(userData);
                 }
-
             } catch (error) {
                 console.error('Error fetching user info:', error);
             } finally {
@@ -41,28 +41,28 @@ const PaymentCancelled = () => {
         fetchUserInfo();
     }, []);
 
-    const firstName = userInfo?.first_name || 'there';
+    const firstName = userInfo?.first_name || t('there');
 
     const reasons = [
         {
             icon: <CreditCard className="h-6 w-6 text-blue-600" />,
-            title: 'Payment Method Issues',
-            description: 'Check if your card details are correct or try a different payment method.',
-            action: 'Update Payment Info',
+            title: t('Payment Method Issues'),
+            description: t('Check if your card details are correct or try a different payment method.'),
+            action: t('Update Payment Info'),
             redirect: '/subscription/billing'
         },
         {
             icon: <HelpCircle className="h-6 w-6 text-yellow-600" />,
-            title: 'Need More Information',
-            description: 'Want to learn more about our features before subscribing?',
-            action: 'View Features',
+            title: t('Need More Information'),
+            description: t('Want to learn more about our features before subscribing?'),
+            action: t('View Features'),
             redirect: '/features'
         },
         {
             icon: <MessageSquare className="h-6 w-6 text-green-600" />,
-            title: 'Have Questions',
-            description: 'Our support team is here to help with any concerns you might have.',
-            action: 'Contact Support',
+            title: t('Have Questions'),
+            description: t('Our support team is here to help with any concerns you might have.'),
+            action: t('Contact Support'),
             redirect: '/contact'
         }
     ];
@@ -70,39 +70,44 @@ const PaymentCancelled = () => {
     const plans = [
         {
             id: 'starter',
-            name: 'Starter',
+            name: t('Starter'),
             price: 29,
             yearlyPrice: 290,
-            description: 'Perfect for small painting businesses',
-            features: ['Up to 5 projects/month', 'Basic AI analysis', 'PDF quotes', '2 team members'],
+            description: t('Perfect for small painting businesses'),
+            features: [
+                t('Up to 5 projects/month'),
+                t('Basic AI analysis'),
+                t('PDF quotes'),
+                t('2 team members')
+            ],
             savings: 58
         },
         {
             id: 'professional',
-            name: 'Professional',
+            name: t('Professional'),
             price: 79,
             yearlyPrice: 790,
-            description: 'Most popular for growing businesses',
+            description: t('Most popular for growing businesses'),
             features: [
-                'Up to 25 projects/month',
-                'Advanced AI analysis',
-                'Custom templates',
-                '10 team members'
+                t('Up to 25 projects/month'),
+                t('Advanced AI analysis'),
+                t('Custom templates'),
+                t('10 team members')
             ],
             popular: true,
             savings: 158
         },
         {
             id: 'enterprise',
-            name: 'Enterprise',
+            name: t('Enterprise'),
             price: 199,
             yearlyPrice: 1990,
-            description: 'For large painting contractors',
+            description: t('For large painting contractors'),
             features: [
-                'Unlimited projects',
-                'Unlimited team members',
-                'White-label options',
-                'API access'
+                t('Unlimited projects'),
+                t('Unlimited team members'),
+                t('White-label options'),
+                t('API access')
             ],
             savings: 398
         }
@@ -120,7 +125,7 @@ const PaymentCancelled = () => {
                     <div className="bg-white rounded-full p-3 mr-4">
                         <XCircle className="h-8 w-8 text-orange-500" />
                     </div>
-                    <h1 className="text-3xl font-bold text-white">Payment Cancelled</h1>
+                    <h1 className="text-3xl font-bold text-white">{t('Payment Cancelled')}</h1>
                 </div>
             </div>
 
@@ -133,32 +138,32 @@ const PaymentCancelled = () => {
                             <XCircle className="h-12 w-12 text-orange-500 mx-auto" />
                         </div>
                         <h2 className="text-2xl font-bold text-purple-700 mb-4">
-                            No worries{firstName !== 'there' ? `, ${firstName}` : ''}!
+                            {t('No worries')}{firstName !== t('there') ? `, ${firstName}` : ''}!
                         </h2>
                         <p className="text-gray-600 text-lg">
-                            Your payment was cancelled and you haven’t been charged. We understand that sometimes you need more time to decide.
+                            {t('Your payment was cancelled and you haven\'t been charged. We understand that sometimes you need more time to decide.')}
                         </p>
                     </div>
 
                     {/* Retry CTA */}
                     <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8 text-center">
-                        <h3 className="text-lg font-semibold text-blue-800 mb-3">Ready to try again?</h3>
+                        <h3 className="text-lg font-semibold text-blue-800 mb-3">{t('Ready to try again?')}</h3>
                         <p className="text-blue-700 mb-4">
-                            If it was just a temporary issue, you can retry now.
+                            {t('If it was just a temporary issue, you can retry now.')}
                         </p>
                         <button
                             onClick={() => handleNavigate('/pricing')}
                             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
                         >
                             <CreditCard className="h-5 w-5 mr-2 inline" />
-                            Try Payment Again
+                            {t('Try Payment Again')}
                         </button>
                     </div>
 
                     {/* Reasons Grid */}
                     <div className="mb-8">
                         <h3 className="text-lg font-semibold text-purple-700 mb-6 text-center">
-                            Common reasons people cancel and how we can help:
+                            {t('Common reasons people cancel and how we can help:')}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {reasons.map((reason, index) => (
@@ -184,14 +189,14 @@ const PaymentCancelled = () => {
                             onClick={() => handleNavigate('/pricing')}
                             className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
                         >
-                            Try Again
+                            {t('Try Again')}
                         </button>
                         <button
                             onClick={() => handleNavigate('/')}
                             className="border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
                         >
                             <ArrowLeft className="h-5 w-5 mr-2" />
-                            Back to Home
+                            {t('Back to Home')}
                         </button>
                     </div>
                 </div>
@@ -199,7 +204,7 @@ const PaymentCancelled = () => {
                 {/* Plan Overview */}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8">
                     <h3 className="text-xl font-bold text-purple-700 mb-6 text-center">
-                        Choose the plan that’s right for you
+                        {t('Choose the plan that\'s right for you')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {plans.map((plan) => (
@@ -213,7 +218,7 @@ const PaymentCancelled = () => {
                                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                                         <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
                                             <Star className="h-3 w-3 mr-1" />
-                                            Most Popular
+                                            {t('Most Popular')}
                                         </span>
                                     </div>
                                 )}
@@ -222,9 +227,9 @@ const PaymentCancelled = () => {
                                     <h4 className="text-lg font-bold text-purple-700">{plan.name}</h4>
                                     <div className="text-3xl font-bold text-purple-700 mt-2">
                                         £{plan.price}
-                                        <span className="text-sm text-gray-500 font-normal">/month</span>
+                                        <span className="text-sm text-gray-500 font-normal">/{t('month')}</span>
                                     </div>
-                                    <p className="text-green-600 text-xs font-medium mt-1">Save £{plan.savings}/yr</p>
+                                    <p className="text-green-600 text-xs font-medium mt-1">{t('Save')} £{plan.savings}/{t('yr')}</p>
                                     <p className="text-gray-600 text-sm mt-2">{plan.description}</p>
                                 </div>
 
@@ -243,7 +248,7 @@ const PaymentCancelled = () => {
                                             : 'bg-purple-600 hover:bg-purple-700 text-white'
                                         }`}
                                 >
-                                    Choose {plan.name}
+                                    {t('Choose')} {plan.name}
                                 </button>
                             </div>
                         ))}
@@ -254,23 +259,23 @@ const PaymentCancelled = () => {
                 <div className="bg-gradient-to-r from-purple-600 to-green-600 rounded-2xl p-8 text-white text-center mb-8">
                     <div className="flex items-center justify-center mb-4">
                         <Clock className="h-8 w-8 mr-3" />
-                        <h3 className="text-xl font-bold">Remember: 14-Day Free Trial</h3>
+                        <h3 className="text-xl font-bold">{t('Remember: 14-Day Free Trial')}</h3>
                     </div>
                     <p className="text-purple-100 mb-6">
-                        You can try Paint Quote Pro free for 14 days. No credit card needed to start.
+                        {t('You can try Paint Quote Pro free for 14 days. No credit card needed to start.')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
                             onClick={() => handleNavigate('/register')}
                             className="bg-yellow-400 hover:bg-yellow-500 text-purple-900 px-6 py-3 rounded-lg font-semibold transition-colors"
                         >
-                            Start Free Trial
+                            {t('Start Free Trial')}
                         </button>
                         <button
                             onClick={() => handleNavigate('/contact')}
                             className="border-2 border-white text-white hover:bg-white hover:text-purple-700 px-6 py-3 rounded-lg font-semibold transition-colors"
                         >
-                            Contact Sales
+                            {t('Contact Sales')}
                         </button>
                     </div>
                 </div>
@@ -278,24 +283,24 @@ const PaymentCancelled = () => {
                 {/* Testimonials */}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8">
                     <h3 className="text-xl font-bold text-purple-700 mb-6 text-center">
-                        Why customers love Paint Quote Pro
+                        {t('Why customers love Paint Quote Pro')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
                             {
                                 icon: <Clock className="h-8 w-8 text-purple-600" />,
-                                title: 'Save Time',
-                                desc: 'Create quotes 10x faster with AI-powered floor plan analysis'
+                                title: t('Save Time'),
+                                desc: t('Create quotes 10x faster with AI-powered floor plan analysis')
                             },
                             {
                                 icon: <Star className="h-8 w-8 text-green-600" />,
-                                title: 'Look Professional',
-                                desc: 'Impress clients with beautifully formatted PDF quotes'
+                                title: t('Look Professional'),
+                                desc: t('Impress clients with beautifully formatted PDF quotes')
                             },
                             {
                                 icon: <Users className="h-8 w-8 text-blue-600" />,
-                                title: 'Scale Business',
-                                desc: 'Handle more projects with team collaboration tools'
+                                title: t('Scale Business'),
+                                desc: t('Handle more projects with team collaboration tools')
                             }
                         ].map((item, i) => (
                             <div key={i} className="text-center">
@@ -311,27 +316,27 @@ const PaymentCancelled = () => {
 
                 {/* Final Help */}
                 <div className="mt-8 text-center">
-                    <p className="text-gray-600 mb-4">Still have questions or concerns?</p>
+                    <p className="text-gray-600 mb-4">{t('Still have questions or concerns?')}</p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
                         <button
                             onClick={() => handleNavigate('/contact')}
                             className="text-purple-600 hover:text-purple-700 font-semibold"
                         >
-                            Contact our support team
+                            {t('Contact our support team')}
                         </button>
                         <span className="text-gray-400 hidden sm:block">•</span>
                         <button
                             onClick={() => handleNavigate('/features')}
                             className="text-purple-600 hover:text-purple-700 font-semibold"
                         >
-                            Learn more about features
+                            {t('Learn more about features')}
                         </button>
                         <span className="text-gray-400 hidden sm:block">•</span>
                         <button
                             onClick={() => handleNavigate('/demo')}
                             className="text-purple-600 hover:text-purple-700 font-semibold"
                         >
-                            Watch a demo
+                            {t('Watch a demo')}
                         </button>
                     </div>
                 </div>

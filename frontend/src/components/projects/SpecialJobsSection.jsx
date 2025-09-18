@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Plus, Trash2, Info, CheckSquare, Square, CheckCircle } from 'lucide-react';
 import { usePricing } from '../../hooks/usePricing';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
   const { 
@@ -10,57 +11,59 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
     error: pricingError, 
     refreshPricing 
   } = usePricing();
+  
+  const { t } = useTranslation();
 
   const [selectedJobTypes, setSelectedJobTypes] = useState({});
 
   const specialJobTypes = {
     water_damage: {
-      name: 'Water Damage/Leak Repair',
+      name: t('Water Damage/Leak Repair'),
       steps: [
-        'Identify and dry affected area completely (use moisture meter if needed)',
-        'Scrape off bubbling/loose paint',
-        'Treat any mold/mildew with anti-fungal wash',
-        'Fill any damaged plaster',
-        'Sand smooth and apply stain-block primer'
+        t('Identify and dry affected area completely (use moisture meter if needed)'),
+        t('Scrape off bubbling/loose paint'),
+        t('Treat any mold/mildew with anti-fungal wash'),
+        t('Fill any damaged plaster'),
+        t('Sand smooth and apply stain-block primer')
       ]
     },
     fire_smoke_damage: {
-      name: 'Fire/Smoke Damage',
+      name: t('Fire/Smoke Damage'),
       steps: [
-        'Wash all surfaces with degreaser/sugar soap',
-        'Remove soot and smoke residue',
-        'Sand walls if surface is uneven',
-        'Apply stain- and odour-blocking primer',
-        'Repaint with high-opacity paint'
+        t('Wash all surfaces with degreaser/sugar soap'),
+        t('Remove soot and smoke residue'),
+        t('Sand walls if surface is uneven'),
+        t('Apply stain- and odour-blocking primer'),
+        t('Repaint with high-opacity paint')
       ]
     },
     mold_remediation: {
-      name: 'Mold Remediation',
+      name: t('Mold Remediation'),
       steps: [
-        'Kill mold using specialist anti-mold treatment',
-        'Scrape and remove affected surface area',
-        'Fill any surface damage',
-        'Sand and apply mold-resistant primer',
-        'Use anti-mold paint where necessary'
+        t('Kill mold using specialist anti-mold treatment'),
+        t('Scrape and remove affected surface area'),
+        t('Fill any surface damage'),
+        t('Sand and apply mold-resistant primer'),
+        t('Use anti-mold paint where necessary')
       ]
     },
     nicotine_stained_walls: {
-      name: 'Nicotine Stained Walls',
+      name: t('Nicotine Stained Walls'),
       steps: [
-        'Degrease walls using sugar soap',
-        'Rinse thoroughly and allow to dry',
-        'Apply a stain-blocking primer',
-        'Use at least two coats of emulsion for coverage'
+        t('Degrease walls using sugar soap'),
+        t('Rinse thoroughly and allow to dry'),
+        t('Apply a stain-blocking primer'),
+        t('Use at least two coats of emulsion for coverage')
       ]
     },
     uneven_wall_surfaces: {
-      name: 'Uneven Wall Surfaces',
+      name: t('Uneven Wall Surfaces'),
       steps: [
-        'Assess whether skimming is needed or just filler',
-        'Fill deep imperfections',
-        'Sand smooth',
-        '(Optional) Apply bonding agent',
-        'If badly uneven, apply full skim coat and allow to dry before painting'
+        t('Assess whether skimming is needed or just filler'),
+        t('Fill deep imperfections'),
+        t('Sand smooth'),
+        t('(Optional) Apply bonding agent'),
+        t('If badly uneven, apply full skim coat and allow to dry before painting')
       ]
     }
   };
@@ -73,9 +76,6 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
     });
     setSelectedJobTypes(selected);
   }, [specialJobs]);
-
-  // REMOVED: Individual cost calculation - now handled by parent
-  // const calculateTotalCost = (jobs) => { ... }
 
   const getPrice = (type) => {
     if (!pricing?.specialJobs?.special) {
@@ -143,18 +143,18 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center">
           <AlertTriangle className="h-6 w-6 mr-3 text-orange-600" />
-          Special Jobs & Conditions
+          {t('Special Jobs & Conditions')}
         </h2>
         <div className="text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full flex items-center">
           <CheckCircle className="h-4 w-4 mr-1" />
-          Real-time calculation
+          {t('Real-time calculation')}
         </div>
       </div>
 
       {/* Pricing Display */}
       {pricing && !pricingLoading && (
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-          <h4 className="text-sm font-medium text-orange-900 mb-2">Current Special Job Pricing</h4>
+          <h4 className="text-sm font-medium text-orange-900 mb-2">{t('Current Special Job Pricing')}</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
             {Object.entries(specialJobTypes).map(([type, data]) => (
             <div
@@ -172,7 +172,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
                 )}
                 <div className="font-medium">{data.name}</div>
               </div>
-              <div className="text-xs text-orange-600">£{getPrice(type).toFixed(2)} per unit</div>
+              <div className="text-xs text-orange-600">{t('£{{price}} per unit', { price: getPrice(type).toFixed(2) })}</div>
             </div>
           ))}
         </div>
@@ -182,7 +182,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
 
       {specialJobs.length > 0 && (
         <div className="space-y-6">
-          <h3 className="text-lg font-medium text-gray-900">Added Special Jobs</h3>
+          <h3 className="text-lg font-medium text-gray-900">{t('Added Special Jobs')}</h3>
           {specialJobs.map((job) => (
             <div key={job.id} className="border border-gray-200 rounded-lg p-6">
               <div className="flex items-center justify-between mb-4">
@@ -190,7 +190,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
                 <button
                   onClick={() => removeSpecialJob(job.id)}
                   className="text-red-600 hover:text-red-700"
-                  title="Remove Job"
+                  title={t('Remove Job')}
                 >
                   <Trash2 className="h-5 w-5" />
                 </button>
@@ -199,17 +199,17 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
               {/* Job Details Form */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('Description')}</label>
                   <input
                     type="text"
                     value={job.description || ''}
                     onChange={(e) => updateSpecialJob(job.id, 'description', e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="Specific details"
+                    placeholder={t('Specific details')}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('Quantity')}</label>
                   <input
                     type="number"
                     step="0.1"
@@ -221,7 +221,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Unit Price (£)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('Unit Price (£)')}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -233,10 +233,12 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Calculated Total (£)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('Calculated Total (£)')}</label>
                   <input
                     type="text"
-                    value={`£${((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)).toFixed(2)}`}
+                    value={t('£{{total}}', { 
+                      total: ((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)).toFixed(2) 
+                    })}
                     readOnly
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50"
                   />
@@ -247,7 +249,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
               <div className="bg-gray-50 rounded-lg p-4">
                 <h5 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
                   <Info className="h-4 w-4 mr-2 text-gray-600" />
-                  Process Steps for {job.name}
+                  {t('Process Steps for {{jobName}}', { jobName: job.name })}
                 </h5>
                 <ol className="text-sm text-gray-700 space-y-1">
                   {job.steps.map((step, index) => (
@@ -263,7 +265,9 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
               <div className="mt-4 flex justify-end">
                 <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2">
                   <span className="text-sm font-medium text-orange-900">
-                    Job Total: £{((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)).toFixed(2)}
+                    {t('Job Total: £{{total}}', { 
+                      total: ((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)).toFixed(2) 
+                    })}
                   </span>
                 </div>
               </div>
@@ -273,9 +277,11 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
           {/* Total Special Jobs Cost */}
           <div className="bg-orange-50 rounded-lg p-4">
             <div className="flex items-center justify-between">
-              <span className="text-lg font-medium text-orange-900">Special Jobs Total:</span>
+              <span className="text-lg font-medium text-orange-900">{t('Special Jobs Total:')}</span>
               <span className="text-xl font-bold text-orange-900">
-                £{specialJobs.reduce((sum, job) => sum + ((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)), 0).toFixed(2)}
+                {t('£{{total}}', { 
+                  total: specialJobs.reduce((sum, job) => sum + ((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)), 0).toFixed(2) 
+                })}
               </span>
             </div>
           </div>
@@ -285,9 +291,9 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
       {specialJobs.length === 0 && (
         <div className="text-center py-12">
           <AlertTriangle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No special jobs added</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('No special jobs added')}</h3>
           <p className="text-gray-500 mb-6">
-            Add special conditions as needed for this project. Total price updates automatically.
+            {t('Add special conditions as needed for this project. Total price updates automatically.')}
           </p>
         </div>
       )}

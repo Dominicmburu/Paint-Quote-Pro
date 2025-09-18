@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Eye, EyeOff, Loader2, Mail, Lock, User, Building, Phone, Globe, Hash, Percent } from 'lucide-react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +25,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ const Register = () => {
 
     // Validate passwords match
     if (formData.password !== formData.confirm_password) {
-      setError('Passwords do not match');
+      setError(t('Passwords do not match'));
       setLoading(false);
       return;
     }
@@ -67,12 +69,12 @@ const Register = () => {
       <div className="max-w-4xl mx-auto">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-slate-800">
-            Start your free trial
+            {t('Start your free trial')}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Already have an account?{' '}
+            {t('Already have an account?')}{' '}
             <Link to="/login" className="font-medium text-[#4bb4f5] hover:text-[#4bb4f5]">
-              Sign in
+              {t('Sign in')}
             </Link>
           </p>
         </div>
@@ -88,12 +90,12 @@ const Register = () => {
             {/* Personal Information */}
             <div>
               <h3 className="text-lg font-medium text-slate-800 mb-6 pb-2 border-b border-purple-100">
-                Personal Information
+                {t('Personal Information')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name *
+                    {t('First Name *')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -107,14 +109,14 @@ const Register = () => {
                       value={formData.first_name}
                       onChange={handleChange}
                       className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
-                      placeholder="John"
+                      placeholder={t('John')}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name *
+                    {t('Last Name *')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -128,14 +130,14 @@ const Register = () => {
                       value={formData.last_name}
                       onChange={handleChange}
                       className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
-                      placeholder="Smith"
+                      placeholder={t('Smith')}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
+                    {t('Email Address *')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -157,7 +159,7 @@ const Register = () => {
 
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Personal Phone
+                    {t('Personal Phone')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -177,7 +179,7 @@ const Register = () => {
 
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                    Password *
+                    {t('Password *')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -209,7 +211,7 @@ const Register = () => {
 
                 <div>
                   <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password *
+                    {t('Confirm Password *')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -244,12 +246,12 @@ const Register = () => {
             {/* Company Information */}
             <div>
               <h3 className="text-lg font-medium text-slate-800 mb-6 pb-2 border-b border-purple-100">
-                Company Information
+                {t('Company Information')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Company Name *
+                    {t('Company Name *')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -263,14 +265,14 @@ const Register = () => {
                       value={formData.company_name}
                       onChange={handleChange}
                       className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
-                      placeholder="Smith Painting Services"
+                      placeholder={t('Smith Painting Services')}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="company_email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Company Email
+                    {t('Company Email')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -286,12 +288,12 @@ const Register = () => {
                       placeholder="info@smithpainting.com"
                     />
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">Leave blank to use your personal email</p>
+                  <p className="mt-1 text-xs text-gray-500">{t('Leave blank to use your personal email')}</p>
                 </div>
 
                 <div>
                   <label htmlFor="company_phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Company Phone
+                    {t('Company Phone')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -311,7 +313,7 @@ const Register = () => {
 
                 <div>
                   <label htmlFor="company_website" className="block text-sm font-medium text-gray-700 mb-2">
-                    Company Website
+                    {t('Company Website')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -331,7 +333,7 @@ const Register = () => {
 
                 <div>
                   <label htmlFor="preferred_paint_brand" className="block text-sm font-medium text-gray-700 mb-2">
-                    Preferred Paint Brand
+                    {t('Preferred Paint Brand')}
                   </label>
                   <select
                     id="preferred_paint_brand"
@@ -340,19 +342,19 @@ const Register = () => {
                     onChange={handleChange}
                     className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
                   >
-                    <option value="Dulux">Dulux</option>
-                    <option value="Farrow & Ball">Farrow & Ball</option>
-                    <option value="Crown">Crown</option>
-                    <option value="Little Greene">Little Greene</option>
-                    <option value="Benjamin Moore">Benjamin Moore</option>
-                    <option value="Sherwin-Williams">Sherwin-Williams</option>
-                    <option value="Other">Other</option>
+                    <option value="Dulux">{t('Dulux')}</option>
+                    <option value="Farrow & Ball">{t('Farrow & Ball')}</option>
+                    <option value="Crown">{t('Crown')}</option>
+                    <option value="Little Greene">{t('Little Greene')}</option>
+                    <option value="Benjamin Moore">{t('Benjamin Moore')}</option>
+                    <option value="Sherwin-Williams">{t('Sherwin-Williams')}</option>
+                    <option value="Other">{t('Other')}</option>
                   </select>
                 </div>
 
                 <div className="md:col-span-2">
                   <label htmlFor="company_address" className="block text-sm font-medium text-gray-700 mb-2">
-                    Company Address
+                    {t('Company Address')}
                   </label>
                   <textarea
                     id="company_address"
@@ -361,7 +363,7 @@ const Register = () => {
                     value={formData.company_address}
                     onChange={handleChange}
                     className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
-                    placeholder="123 High Street, London, SW1A 1AA"
+                    placeholder={t('123 High Street, London, SW1A 1AA')}
                   />
                 </div>
               </div>
@@ -370,12 +372,12 @@ const Register = () => {
             {/* VAT Information */}
             <div>
               <h3 className="text-lg font-medium text-slate-800 mb-6 pb-2 border-b border-purple-100">
-                VAT Information
+                {t('VAT Information')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="vat_number" className="block text-sm font-medium text-gray-700 mb-2">
-                    VAT Number
+                    {t('VAT Number')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -391,12 +393,12 @@ const Register = () => {
                       placeholder="GB123456789"
                     />
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">Optional - for VAT registered businesses</p>
+                  <p className="mt-1 text-xs text-gray-500">{t('Optional - for VAT registered businesses')}</p>
                 </div>
 
                 <div>
                   <label htmlFor="vat_rate" className="block text-sm font-medium text-gray-700 mb-2">
-                    VAT Rate (%)
+                    {t('VAT Rate (%)')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -415,7 +417,7 @@ const Register = () => {
                       placeholder="0.20"
                     />
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">Standard UK VAT rate is 0.20 (20%)</p>
+                  <p className="mt-1 text-xs text-gray-500">{t('Standard UK VAT rate is 0.20 (20%)')}</p>
                 </div>
               </div>
             </div>
@@ -427,16 +429,16 @@ const Register = () => {
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4bb4f5] hover:bg-[#4bb4f5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4bb4f5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Start Free Trial
+                {t('Start Free Trial')}
               </button>
             </div>
 
             <div className="text-center">
               <p className="text-xs text-gray-500">
-                By creating an account, you agree to our{' '}
-                <Link to="/terms-of-service" className="text-[#4bb4f5] hover:text-green-200">Terms of Service</Link>
-                {' '}and{' '}
-                <Link to="/privacy-policy" className="text-[#4bb4f5] hover:text-green-200">Privacy Policy</Link>
+                {t('By creating an account, you agree to our')}{' '}
+                <Link to="/terms-of-service" className="text-[#4bb4f5] hover:text-green-200">{t('Terms of Service')}</Link>
+                {' '}{t('and')}{' '}
+                <Link to="/privacy-policy" className="text-[#4bb4f5] hover:text-green-200">{t('Privacy Policy')}</Link>
               </p>
             </div>
           </form>

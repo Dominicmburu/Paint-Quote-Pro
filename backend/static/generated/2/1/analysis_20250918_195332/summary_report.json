@@ -1,0 +1,73 @@
+{
+    "analysis_summary": {
+        "timestamp": "2025-09-18T19:53:47.215845",
+        "analysis_method": "GPT-4 Vision with Total Wall Area",
+        "rooms_detected": 10,
+        "total_wall_area_m2": 190.52,
+        "total_ceiling_area_m2": 105.84,
+        "total_paintable_area_m2": 296.36
+    },
+    "room_breakdown": [
+        {
+            "name": "Entree",
+            "type": "entrance",
+            "walls_surface_m2": 17.93,
+            "ceiling_area_m2": 7.78
+        },
+        {
+            "name": "Eetkamer",
+            "type": "dining room",
+            "walls_surface_m2": 17.34,
+            "ceiling_area_m2": 6.41
+        },
+        {
+            "name": "Woonkamer",
+            "type": "living room",
+            "walls_surface_m2": 51.19,
+            "ceiling_area_m2": 48.29
+        },
+        {
+            "name": "Slaapkamer 1",
+            "type": "bedroom",
+            "walls_surface_m2": 22.46,
+            "ceiling_area_m2": 9.36
+        },
+        {
+            "name": "Slaapkamer 2",
+            "type": "bedroom",
+            "walls_surface_m2": 21.12,
+            "ceiling_area_m2": 8.8
+        },
+        {
+            "name": "Keuken",
+            "type": "kitchen",
+            "walls_surface_m2": 15.36,
+            "ceiling_area_m2": 6.4
+        },
+        {
+            "name": "Badkamer",
+            "type": "bathroom",
+            "walls_surface_m2": 13.44,
+            "ceiling_area_m2": 5.6
+        },
+        {
+            "name": "Toilet",
+            "type": "toilet",
+            "walls_surface_m2": 8.64,
+            "ceiling_area_m2": 3.6
+        },
+        {
+            "name": "Hal",
+            "type": "hall",
+            "walls_surface_m2": 10.56,
+            "ceiling_area_m2": 4.4
+        },
+        {
+            "name": "Waskamer",
+            "type": "laundry room",
+            "walls_surface_m2": 12.48,
+            "ceiling_area_m2": 5.2
+        }
+    ],
+    "notes": "Total wall area analysis - treatments to be selected by user"
+}

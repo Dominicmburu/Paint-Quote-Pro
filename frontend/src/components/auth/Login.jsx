@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -46,12 +48,12 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold text-slate-800">
-            Sign in to your account
+            {t('Sign in to your account')}
           </h2>
           <p className="mt-2 text-center text-sm text-slate-600">
-            Don't have an account?{' '}
+            {t("Don't have an account?")}{' '}
             <Link to="/register" className="font-medium text-[#4bb4f5] hover:[#4bb4f5]">
-              Get started free
+              {t('Get started free')}
             </Link>
           </p>
         </div>
@@ -66,7 +68,7 @@ const Login = () => {
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                Email address
+                {t('Email address')}
               </label>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -81,14 +83,14 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  placeholder="Enter your email"
+                  placeholder={t("Enter your email")}
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-                Password
+                {t('Password')}
               </label>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -103,7 +105,7 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   className="pl-10 pr-10 block w-full border border-gray-300 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  placeholder="Enter your password"
+                  placeholder={t("Enter your password")}
                 />
                 <button
                   type="button"
@@ -123,7 +125,7 @@ const Login = () => {
           <div className="flex items-center justify-between">
             <div className="text-sm">
               <Link to="/forgot-password" className="font-medium text-[#4bb4f5] hover:text-teal-200">
-                Forgot your password?
+                {t('Forgot your password?')}
               </Link>
             </div>
           </div>
@@ -135,16 +137,16 @@ const Login = () => {
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#4bb4f5] hover:bg-[#4bb4f5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Sign in
+              {t('Sign in')}
             </button>
           </div>
 
           <div className="text-center">
             <p className="text-xs text-slate-500">
-              By signing in, you agree to our{' '}
-              <Link to="/terms-of-service" className="text-[#4bb4f5] hover:text-teal-200">Terms of Service</Link>
-              {' '}and{' '}
-              <Link to="/privacy-policy" className="text-[#4bb4f5] hover:text-teal-200">Privacy Policy</Link>
+              {t('By signing in, you agree to our')}{' '}
+              <Link to="/terms-of-service" className="text-[#4bb4f5] hover:text-teal-200">{t('Terms of Service')}</Link>
+              {' '}{t('and')}{' '}
+              <Link to="/privacy-policy" className="text-[#4bb4f5] hover:text-teal-200">{t('Privacy Policy')}</Link>
             </p>
           </div>
         </form>

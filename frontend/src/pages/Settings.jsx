@@ -8,29 +8,31 @@ import {
   Settings as SettingsIcon,
   ChevronRight
 } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const settingsSections = [
     {
       id: 'company',
-      name: 'Company Settings',
-      description: 'Manage company information, contact details, and business registration',
+      name: t('Company Settings'),
+      description: t('Manage company information, contact details, and business registration'),
       icon: Building,
       path: '/settings/company'
     },
     {
       id: 'profile',
-      name: 'User Profile',
-      description: 'Update personal information, password, and account preferences',
+      name: t('User Profile'),
+      description: t('Update personal information, password, and account preferences'),
       icon: User,
       path: '/settings/profile'
     },
     // {
     //   id: 'paint',
-    //   name: 'Paint & Materials',
-    //   description: 'Configure paint brands, products, pricing, and material costs',
+    //   name: t('Paint & Materials'),
+    //   description: t('Configure paint brands, products, pricing, and material costs'),
     //   icon: Palette,
     //   path: '/settings/paint'
     // }
@@ -49,11 +51,11 @@ const Settings = () => {
           </button>
           <h1 className="text-3xl font-bold text-purple-700 flex items-center">
             <SettingsIcon className="h-8 w-8 mr-3" />
-            Settings
+            {t('Settings')}
           </h1>
         </div>
         <p className="text-gray-600">
-          Manage your account, company information, and application preferences
+          {t('Manage your account, company information, and application preferences')}
         </p>
       </div>
 
@@ -90,34 +92,34 @@ const Settings = () => {
 
       {/* Quick Links */}
       <div className="mt-12 bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Links</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('Quick Links')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             onClick={() => navigate('/subscription')}
             className="text-left p-4 bg-white rounded-md border border-gray-200 hover:border-purple-300 transition-colors"
           >
-            <h4 className="font-medium text-gray-900">Subscription & Billing</h4>
-            <p className="text-sm text-gray-500 mt-1">Manage your subscription plan and billing information</p>
+            <h4 className="font-medium text-gray-900">{t('Subscription & Billing')}</h4>
+            <p className="text-sm text-gray-500 mt-1">{t('Manage your subscription plan and billing information')}</p>
           </button>
           
           <button
             onClick={() => navigate('/quotes/settings')}
             className="text-left p-4 bg-white rounded-md border border-gray-200 hover:border-purple-300 transition-colors"
           >
-            <h4 className="font-medium text-gray-900">Quote Settings</h4>
-            <p className="text-sm text-gray-500 mt-1">Configure default values for quote generation</p>
+            <h4 className="font-medium text-gray-900">{t('Quote Settings')}</h4>
+            <p className="text-sm text-gray-500 mt-1">{t('Configure default values for quote generation')}</p>
           </button>
         </div>
       </div>
 
       {/* Help Section */}
       <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h4 className="text-sm font-medium text-blue-900 mb-3">💡 Settings Help:</h4>
+        <h4 className="text-sm font-medium text-blue-900 mb-3">💡 {t('Settings Help:')}</h4>
         <ul className="text-sm text-blue-800 space-y-2">
-          <li>• <strong>Company Settings:</strong> Keep your business information up-to-date for professional quotes</li>
-          <li>• <strong>User Profile:</strong> Manage your personal account and notification preferences</li>
-          {/* <li>• <strong>Paint & Materials:</strong> Configure accurate pricing for precise quote generation</li> */}
-          <li>• Changes are saved automatically and apply to all future quotes and projects</li>
+          <li>• <strong>{t('Company Settings:')}</strong> {t('Keep your business information up-to-date for professional quotes')}</li>
+          <li>• <strong>{t('User Profile:')}</strong> {t('Manage your personal account and notification preferences')}</li>
+          {/* <li>• <strong>{t('Paint & Materials:')}</strong> {t('Configure accurate pricing for precise quote generation')}</li> */}
+          <li>• {t('Changes are saved automatically and apply to all future quotes and projects')}</li>
         </ul>
       </div>
     </div>

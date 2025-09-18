@@ -2,6 +2,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { Plus, Trash2, Square, Building, AlertCircle, RefreshCw } from 'lucide-react';
 import { usePricing } from '../../hooks/usePricing';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
   const { 
@@ -10,11 +11,13 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
     error: pricingError, 
     refreshPricing 
   } = usePricing();
+  
+  const { t } = useTranslation();
 
   const addRoom = () => {
     const newRoom = {
       id: Date.now(),
-      name: `Room ${rooms.length + 1}`,
+      name: `${t('Room')} ${rooms.length + 1}`,
       type: 'general',
       walls_surface_m2: 0,
       area_m2: 0,
@@ -176,16 +179,16 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center">
           <Square className="h-6 w-6 mr-3 text-teal-800" />
-          Room Measurements
+          {t('Room Measurements')}
           <div className="ml-4 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
-            Total wall area approach
+            {t('Total wall area approach')}
           </div>
         </h2>
         <div className="flex items-center space-x-4">
           {pricingLoading && (
             <div className="flex items-center text-sm text-gray-500">
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-              Loading pricing...
+              {t('Loading pricing...')}
             </div>
           )}
           <button
@@ -193,7 +196,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
             className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Room
+            {t('Add Room')}
           </button>
         </div>
       </div>
@@ -205,14 +208,14 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
             <div className="flex items-center">
               <AlertCircle className="h-5 w-5 text-yellow-400 mr-3" />
               <div>
-                <p className="text-sm font-medium text-yellow-800">Pricing Error</p>
+                <p className="text-sm font-medium text-yellow-800">{t('Pricing Error')}</p>
                 <p className="text-sm text-yellow-600">{pricingError}</p>
               </div>
             </div>
             <button
               onClick={refreshPricing}
               className="text-yellow-600 hover:text-yellow-700"
-              title="Retry loading pricing"
+              title={t('Retry loading pricing')}
             >
               <RefreshCw className="h-4 w-4" />
             </button>
@@ -225,8 +228,8 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
         <div className="flex items-center text-sm text-blue-800">
           <Square className="h-4 w-4 mr-2" />
           <div>
-            <p className="font-medium">Total Wall Area Approach</p>
-            <p>Enter the total wall surface area (m²) and ceiling area (m²) for each room, then select treatments.</p>
+            <p className="font-medium">{t('Total Wall Area Approach')}</p>
+            <p>{t('Enter the total wall surface area (m²) and ceiling area (m²) for each room, then select treatments.')}</p>
           </div>
         </div>
       </div>
@@ -234,29 +237,29 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
       {/* Current Pricing Display */}
       {pricing && !pricingLoading && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">Current Pricing (per m²)</h4>
+          <h4 className="text-sm font-medium text-gray-900 mb-2">{t('Current Pricing (per m²)')}</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
             <div>
-              <span className="font-medium text-gray-800">Walls:</span>
+              <span className="font-medium text-gray-800">{t('Walls:')}</span>
               <div className="text-gray-600">
-                Sanding/Filling: {getPriceDisplay('walls', 'sanding_filling')}<br />
-                Priming: {getPriceDisplay('walls', 'priming')}<br />
-                1 Coat: {getPriceDisplay('walls', 'one_coat')}<br />
-                2 Coats: {getPriceDisplay('walls', 'two_coats')}
+                {t('Sanding/Filling:')} {getPriceDisplay('walls', 'sanding_filling')}<br />
+                {t('Priming:')} {getPriceDisplay('walls', 'priming')}<br />
+                {t('1 Coat:')} {getPriceDisplay('walls', 'one_coat')}<br />
+                {t('2 Coats:')} {getPriceDisplay('walls', 'two_coats')}
               </div>
             </div>
             <div>
-              <span className="font-medium text-gray-800">Ceiling:</span>
+              <span className="font-medium text-gray-800">{t('Ceiling:')}</span>
               <div className="text-gray-600">
-                Sanding/Filling: {getPriceDisplay('ceiling', 'sanding_filling')}<br />
-                Priming: {getPriceDisplay('ceiling', 'priming')}<br />
-                1 Coat: {getPriceDisplay('ceiling', 'one_coat')}<br />
-                2 Coats: {getPriceDisplay('ceiling', 'two_coats')}
+                {t('Sanding/Filling:')} {getPriceDisplay('ceiling', 'sanding_filling')}<br />
+                {t('Priming:')} {getPriceDisplay('ceiling', 'priming')}<br />
+                {t('1 Coat:')} {getPriceDisplay('ceiling', 'one_coat')}<br />
+                {t('2 Coats:')} {getPriceDisplay('ceiling', 'two_coats')}
               </div>
             </div>
             <div className="col-span-2">
               <span className="text-xs text-gray-700">
-                Pricing loaded • Real-time calculation enabled
+                {t('Pricing loaded • Real-time calculation enabled')}
               </span>
             </div>
           </div>
@@ -272,12 +275,12 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                 value={room.name}
                 onChange={(e) => updateRoom(room.id, 'name', e.target.value)}
                 className="text-xl font-semibold bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-500 rounded px-2 py-1"
-                placeholder="Room Name"
+                placeholder={t('Room Name')}
               />
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <div className="text-sm font-medium text-gray-900">Room Total</div>
+                <div className="text-sm font-medium text-gray-900">{t('Room Total')}</div>
                 <div className="text-lg font-bold text-teal-600">
                   £{calculateRoomCost(room).toFixed(2)}
                 </div>
@@ -285,7 +288,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
               <button
                 onClick={() => removeRoom(room.id)}
                 className="text-red-600 hover:text-red-700"
-                title="Remove Room"
+                title={t('Remove Room')}
               >
                 <Trash2 className="h-5 w-5" />
               </button>
@@ -297,12 +300,12 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
             <div className="bg-blue-50 rounded-lg p-4">
               <h4 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
                 <Square className="h-5 w-5 mr-2 text-blue-600" />
-                Total Wall Area
+                {t('Total Wall Area')}
               </h4>
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Total Wall Surface (m²)
+                    {t('Total Wall Surface (m²)')}
                   </label>
                   <input
                     type="number"
@@ -314,7 +317,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     placeholder="0.00"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Total wall surface area for all walls in this room
+                    {t('Total wall surface area for all walls in this room')}
                   </p>
                 </div>
               </div>
@@ -323,12 +326,12 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
             <div className="bg-green-50 rounded-lg p-4">
               <h4 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
                 <Building className="h-5 w-5 mr-2 text-green-600" />
-                Ceiling Area
+                {t('Ceiling Area')}
               </h4>
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ceiling Area (m²)
+                    {t('Ceiling Area (m²)')}
                   </label>
                   <input
                     type="number"
@@ -340,7 +343,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     placeholder="0.00"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Ceiling area (same as floor area)
+                    {t('Ceiling area (same as floor area)')}
                   </p>
                 </div>
               </div>
@@ -351,7 +354,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
           <div className="mb-6">
             <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
               <Square className="h-5 w-5 mr-2 text-blue-600" />
-              Wall Treatments
+              {t('Wall Treatments')}
               <span className="ml-2 text-sm text-gray-500">
                 ({(parseFloat(room.walls_surface_m2) || 0).toFixed(1)}m²)
               </span>
@@ -366,7 +369,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                   />
                   <div className="text-sm">
-                    <div className="font-medium">Sanding/Filling</div>
+                    <div className="font-medium">{t('Sanding/Filling')}</div>
                     <div className="text-gray-600">{getPriceDisplay('walls', 'sanding_filling')}/m²</div>
                     {room.wall_treatments?.sanding_filling && (
                       <div className="text-blue-600 font-medium">
@@ -384,7 +387,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                   />
                   <div className="text-sm">
-                    <div className="font-medium">Priming</div>
+                    <div className="font-medium">{t('Priming')}</div>
                     <div className="text-gray-600">{getPriceDisplay('walls', 'priming')}/m²</div>
                     {room.wall_treatments?.priming && (
                       <div className="text-blue-600 font-medium">
@@ -402,7 +405,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                   />
                   <div className="text-sm">
-                    <div className="font-medium">1 Coat Paint</div>
+                    <div className="font-medium">{t('1 Coat Paint')}</div>
                     <div className="text-gray-600">{getPriceDisplay('walls', 'one_coat')}/m²</div>
                     {room.wall_treatments?.one_coat && (
                       <div className="text-blue-600 font-medium">
@@ -420,7 +423,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                   />
                   <div className="text-sm">
-                    <div className="font-medium">2 Coats Paint</div>
+                    <div className="font-medium">{t('2 Coats Paint')}</div>
                     <div className="text-gray-600">{getPriceDisplay('walls', 'two_coats')}/m²</div>
                     {room.wall_treatments?.two_coats && (
                       <div className="text-blue-600 font-medium">
@@ -437,7 +440,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
           <div className="mb-4">
             <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
               <Building className="h-5 w-5 mr-2 text-green-600" />
-              Ceiling Treatments
+              {t('Ceiling Treatments')}
               <span className="ml-2 text-sm text-gray-500">
                 ({(parseFloat(room.area_m2) || 0).toFixed(1)}m²)
               </span>
@@ -452,7 +455,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                   />
                   <div className="text-sm">
-                    <div className="font-medium">Sanding/Filling</div>
+                    <div className="font-medium">{t('Sanding/Filling')}</div>
                     <div className="text-gray-600">{getPriceDisplay('ceiling', 'sanding_filling')}/m²</div>
                     {room.ceiling_treatments?.sanding_filling && (
                       <div className="text-green-600 font-medium">
@@ -470,7 +473,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                   />
                   <div className="text-sm">
-                    <div className="font-medium">Priming</div>
+                    <div className="font-medium">{t('Priming')}</div>
                     <div className="text-gray-600">{getPriceDisplay('ceiling', 'priming')}/m²</div>
                     {room.ceiling_treatments?.priming && (
                       <div className="text-green-600 font-medium">
@@ -488,7 +491,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                   />
                   <div className="text-sm">
-                    <div className="font-medium">1 Coat Paint</div>
+                    <div className="font-medium">{t('1 Coat Paint')}</div>
                     <div className="text-gray-600">{getPriceDisplay('ceiling', 'one_coat')}/m²</div>
                     {room.ceiling_treatments?.one_coat && (
                       <div className="text-green-600 font-medium">
@@ -506,7 +509,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                   />
                   <div className="text-sm">
-                    <div className="font-medium">2 Coats Paint</div>
+                    <div className="font-medium">{t('2 Coats Paint')}</div>
                     <div className="text-gray-600">{getPriceDisplay('ceiling', 'two_coats')}/m²</div>
                     {room.ceiling_treatments?.two_coats && (
                       <div className="text-green-600 font-medium">
@@ -524,17 +527,16 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
       {rooms.length === 0 && (
         <div className="text-center py-12">
           <Square className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No rooms added yet</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('No rooms added yet')}</h3>
           <p className="text-gray-500 mb-6">
-            Add rooms manually or they will be populated from AI analysis with total wall areas.
-            Each room will show total wall surface area and ceiling area.
+            {t('Add rooms manually or they will be populated from AI analysis with total wall areas. Each room will show total wall surface area and ceiling area.')}
           </p>
           <button
             onClick={addRoom}
             className="inline-flex items-center px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-md font-medium transition-colors"
           >
             <Plus className="h-5 w-5 mr-2" />
-            Add First Room
+            {t('Add First Room')}
           </button>
         </div>
       )}

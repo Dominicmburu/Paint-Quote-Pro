@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Plus, Check, AlertCircle, Eye } from 'lucide-react';
 import clientService from '../../services/clientService';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const ClientInformation = ({ project, onClientUpdate }) => {
     const [clients, setClients] = useState([]);
@@ -11,6 +12,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
     const [clientsLoading, setClientsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const { t } = useTranslation();
 
     const [manualClientData, setManualClientData] = useState({
         company_name: project?.client_name || '',
@@ -54,7 +56,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
             setClients(clientsData);
         } catch (err) {
             console.error('Failed to load clients:', err);
-            setError('Failed to load existing clients');
+            setError(t('Failed to load existing clients'));
             // Set empty array to allow manual entry
             setClients([]);
         } finally {
@@ -85,13 +87,13 @@ const ClientInformation = ({ project, onClientUpdate }) => {
         try {
             // Validate email is provided (only mandatory field)
             if (useManualEntry && !manualClientData.email) {
-                setError('Email is required');
+                setError(t('Email is required'));
                 setLoading(false);
                 return;
             }
 
             if (!useManualEntry && !selectedClientId) {
-                setError('Please select a client or enter client details manually');
+                setError(t('Please select a client or enter client details manually'));
                 setLoading(false);
                 return;
             }
@@ -118,7 +120,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
             const response = await clientService.updateProjectClient(project.id, updateData);
 
-            setSuccess('Client information updated successfully!');
+            setSuccess(t('Client information updated successfully!'));
 
             // If a new client was created, update the UI
             if (useManualEntry && response.client_id) {
@@ -133,7 +135,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
             console.error('Failed to update client information:', err);
-            setError(err.response?.data?.error || 'Failed to update client information');
+            setError(err.response?.data?.error || t('Failed to update client information'));
         } finally {
             setLoading(false);
         }
@@ -157,7 +159,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
             // The subscription will automatically update our state
         } catch (err) {
             console.error('Failed to refresh clients:', err);
-            setError('Failed to refresh client list');
+            setError(t('Failed to refresh client list'));
         } finally {
             setClientsLoading(false);
         }
@@ -167,7 +169,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
                 <Users className="h-6 w-6 mr-3 text-[#4bb4f5]" />
-                Client Information
+                {t('Client Information')}
             </h3>
 
             {error && (
@@ -192,7 +194,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 {/* Client Selection Method */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
-                        How would you like to add client information?
+                        {t('How would you like to add client information?')}
                     </label>
                     <div className="space-y-3">
                         <label className="flex items-center">
@@ -205,11 +207,11 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 className="h-4 w-4 text-[#4bb4f5] focus:ring-[#4bb4f5] border-gray-300"
                             />
                             <span className="ml-3 text-sm text-gray-700">
-                                Select from existing clients 
+                                {t('Select from existing clients')}
                                 {clientsLoading ? (
-                                    <span className="ml-2 text-gray-500">(Loading...)</span>
+                                    <span className="ml-2 text-gray-500">({t('Loading...')})</span>
                                 ) : (
-                                    <span className="ml-1">({clients.length} available)</span>
+                                    <span className="ml-1">({clients.length} {t('available')})</span>
                                 )}
                                 {!clientsLoading && clients.length > 0 && (
                                     <button
@@ -218,7 +220,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                         className="ml-2 text-[#4bb4f5] hover:text-[#4bb4f5] text-xs underline"
                                         disabled={clientsLoading}
                                     >
-                                        Refresh
+                                        {t('Refresh')}
                                     </button>
                                 )}
                             </span>
@@ -232,7 +234,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 className="h-4 w-4 text-[#4bb4f5] focus:ring-[#4bb4f5] border-gray-300"
                             />
                             <span className="ml-3 text-sm text-gray-700">
-                                Enter client details manually
+                                {t('Enter client details manually')}
                             </span>
                         </label>
                     </div>
@@ -242,7 +244,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                 {!useManualEntry && (
                     <div>
                         <label htmlFor="client_select" className="block text-sm font-medium text-gray-700 mb-2">
-                            Select Client
+                            {t('Select Client')}
                         </label>
                         <div className="flex space-x-3">
                             <select
@@ -254,7 +256,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 required={!useManualEntry}
                             >
                                 <option value="">
-                                    {clientsLoading ? 'Loading clients...' : 'Select a client...'}
+                                    {clientsLoading ? t('Loading clients...') : t('Select a client...')}
                                 </option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
@@ -268,7 +270,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                         {!clientsLoading && clients.length === 0 && (
                             <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                                 <p className="text-sm text-yellow-800">
-                                    No existing clients found. You can create a new client by selecting "Enter client details manually" above.
+                                    {t('No existing clients found. You can create a new client by selecting "Enter client details manually" above.')}
                                 </p>
                             </div>
                         )}
@@ -278,40 +280,40 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                 <div className="flex items-center mb-3">
                                     <Eye className="h-5 w-5 text-blue-600 mr-2" />
-                                    <h4 className="text-sm font-medium text-blue-900">Selected Client Details</h4>
+                                    <h4 className="text-sm font-medium text-blue-900">{t('Selected Client Details')}</h4>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                     {selectedClient.company_name && (
                                         <div>
-                                            <span className="font-medium text-gray-600">Company:</span>
+                                            <span className="font-medium text-gray-600">{t('Company')}:</span>
                                             <p className="text-gray-900">{selectedClient.company_name}</p>
                                         </div>
                                     )}
                                     {selectedClient.contact_name && (
                                         <div>
-                                            <span className="font-medium text-gray-600">Contact:</span>
+                                            <span className="font-medium text-gray-600">{t('Contact')}:</span>
                                             <p className="text-gray-900">{selectedClient.contact_name}</p>
                                         </div>
                                     )}
                                     <div>
-                                        <span className="font-medium text-gray-600">Email:</span>
+                                        <span className="font-medium text-gray-600">{t('Email')}:</span>
                                         <p className="text-gray-900">{selectedClient.email}</p>
                                     </div>
                                     {selectedClient.phone && (
                                         <div>
-                                            <span className="font-medium text-gray-600">Phone:</span>
+                                            <span className="font-medium text-gray-600">{t('Phone')}:</span>
                                             <p className="text-gray-900">{selectedClient.phone}</p>
                                         </div>
                                     )}
                                     {selectedClient.address && (
                                         <div className="md:col-span-2">
-                                            <span className="font-medium text-gray-600">Address:</span>
+                                            <span className="font-medium text-gray-600">{t('Address')}:</span>
                                             <p className="text-gray-900">{selectedClient.address}</p>
                                         </div>
                                     )}
                                     {selectedClient.website && (
                                         <div className="md:col-span-2">
-                                            <span className="font-medium text-gray-600">Website:</span>
+                                            <span className="font-medium text-gray-600">{t('Website')}:</span>
                                             <p className="text-gray-900">
                                                 <a 
                                                     href={selectedClient.website} 
@@ -336,8 +338,8 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                         {/* Email - REQUIRED FIELD */}
                         <div className="md:col-span-2">
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                Email Address *
-                                <span className="text-red-500 text-xs ml-1">(Required)</span>
+                                {t('Email Address')} *
+                                <span className="text-red-500 text-xs ml-1">({t('Required')})</span>
                             </label>
                             <input
                                 type="email"
@@ -350,14 +352,14 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                                 placeholder="client@example.com"
                             />
                             <p className="text-xs text-gray-500 mt-1">
-                                This is the only required field. All other information is optional.
+                                {t('This is the only required field. All other information is optional.')}
                             </p>
                         </div>
 
                         {/* Optional Fields */}
                         <div>
                             <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-2">
-                                Company Name <span className="text-gray-400">(Optional)</span>
+                                {t('Company Name')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="text"
@@ -372,7 +374,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div>
                             <label htmlFor="contact_name" className="block text-sm font-medium text-gray-700 mb-2">
-                                Contact Name <span className="text-gray-400">(Optional)</span>
+                                {t('Contact Name')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="text"
@@ -387,7 +389,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div>
                             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                                Phone <span className="text-gray-400">(Optional)</span>
+                                {t('Phone')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="tel"
@@ -402,7 +404,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div>
                             <label htmlFor="postcode" className="block text-sm font-medium text-gray-700 mb-2">
-                                Postcode <span className="text-gray-400">(Optional)</span>
+                                {t('Postcode')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="text"
@@ -417,7 +419,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div className="md:col-span-2">
                             <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                                Address <span className="text-gray-400">(Optional)</span>
+                                {t('Address')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <textarea
                                 id="address"
@@ -432,7 +434,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div>
                             <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                                City <span className="text-gray-400">(Optional)</span>
+                                {t('City')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="text"
@@ -447,7 +449,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div>
                             <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
-                                Website <span className="text-gray-400">(Optional)</span>
+                                {t('Website')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="url"
@@ -463,7 +465,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                         {/* Additional Business Fields */}
                         <div>
                             <label htmlFor="btw_number" className="block text-sm font-medium text-gray-700 mb-2">
-                                BTW Number <span className="text-gray-400">(Optional)</span>
+                                {t('BTW Number')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="text"
@@ -478,7 +480,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div>
                             <label htmlFor="kvk_number" className="block text-sm font-medium text-gray-700 mb-2">
-                                KVK Number <span className="text-gray-400">(Optional)</span>
+                                {t('KVK Number')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="text"
@@ -493,7 +495,7 @@ const ClientInformation = ({ project, onClientUpdate }) => {
 
                         <div className="md:col-span-2">
                             <label htmlFor="iban" className="block text-sm font-medium text-gray-700 mb-2">
-                                IBAN <span className="text-gray-400">(Optional)</span>
+                                {t('IBAN')} <span className="text-gray-400">({t('Optional')})</span>
                             </label>
                             <input
                                 type="text"
@@ -518,12 +520,12 @@ const ClientInformation = ({ project, onClientUpdate }) => {
                         {loading ? (
                             <>
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                Saving...
+                                {t('Saving...')}
                             </>
                         ) : (
                             <>
                                 <Check className="h-4 w-4 mr-2" />
-                                Save Client Information
+                                {t('Save Client Information')}
                             </>
                         )}
                     </button>
