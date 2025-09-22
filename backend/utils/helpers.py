@@ -9,7 +9,7 @@ def generate_unique_filename(original_filename: str) -> str:
     unique_name = f"{name}_{uuid.uuid4().hex}{ext}"
     return unique_name
 
-def format_currency(amount: float, currency: str = '£') -> str:
+def format_currency(amount: float, currency: str = '€') -> str:
     """Format currency amount"""
     return f"{currency}{amount:.2f}"
 

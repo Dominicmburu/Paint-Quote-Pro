@@ -39,6 +39,8 @@ def register():
         if password_error:
             return jsonify({'error': password_error}), 400
         
+        logo_url = data.get('logo_url', '')
+        
         # Create company first
         company = Company(
             name=data['company_name'],
@@ -46,6 +48,7 @@ def register():
             phone=data.get('company_phone'),
             address=data.get('company_address'),
             website=data.get('company_website'),
+            logo_url=logo_url,
             preferred_paint_brand=data.get('preferred_paint_brand', 'Dulux'),
             vat_number=data.get('vat_number'),
             vat_rate=float(data.get('vat_rate', 0.20)) 

@@ -1196,7 +1196,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                         'surface': 'walls',
                         'treatment': 'sanding_filling'
                     })
-                    current_app.logger.info(f"✅ Added wall sanding: {walls_surface_m2}m² × £{price}")
+                    current_app.logger.info(f"✅ Added wall sanding: {walls_surface_m2}m² × €{price}")
                 
                 if wall_treatments.get('priming') is True:
                     price = pricing['wall_priming_price']
@@ -1211,7 +1211,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                         'surface': 'walls',
                         'treatment': 'priming'
                     })
-                    current_app.logger.info(f"✅ Added wall priming: {walls_surface_m2}m² × £{price}")
+                    current_app.logger.info(f"✅ Added wall priming: {walls_surface_m2}m² × €{price}")
                 
                 if wall_treatments.get('one_coat') is True:
                     price = pricing['wall_one_coat_price']
@@ -1226,7 +1226,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                         'surface': 'walls',
                         'treatment': 'one_coat'
                     })
-                    current_app.logger.info(f"✅ Added wall one coat: {walls_surface_m2}m² × £{price}")
+                    current_app.logger.info(f"✅ Added wall one coat: {walls_surface_m2}m² × €{price}")
                 
                 if wall_treatments.get('two_coats') is True:
                     price = pricing['wall_two_coats_price']
@@ -1241,7 +1241,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                         'surface': 'walls',
                         'treatment': 'two_coats'
                     })
-                    current_app.logger.info(f"✅ Added wall two coats: {walls_surface_m2}m² × £{price}")
+                    current_app.logger.info(f"✅ Added wall two coats: {walls_surface_m2}m² × €{price}")
             
             # Process ceiling treatments for ceiling area
             ceiling_treatments = room_data.get('ceiling_treatments', {})
@@ -1259,7 +1259,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                         'surface': 'ceiling',
                         'treatment': 'sanding_filling'
                     })
-                    current_app.logger.info(f"✅ Added ceiling sanding/filling: {area_m2}m² × £{price}")
+                    current_app.logger.info(f"✅ Added ceiling sanding/filling: {area_m2}m² × €{price}")
                 
                 if ceiling_treatments.get('priming') is True:
                     price = pricing['ceiling_priming_price']
@@ -1274,7 +1274,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                         'surface': 'ceiling',
                         'treatment': 'priming'
                     })
-                    current_app.logger.info(f"✅ Added ceiling priming: {area_m2}m² × £{price}")
+                    current_app.logger.info(f"✅ Added ceiling priming: {area_m2}m² × €{price}")
                 
                 if ceiling_treatments.get('one_coat') is True:
                     price = pricing['ceiling_one_coat_price']
@@ -1289,7 +1289,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                         'surface': 'ceiling',
                         'treatment': 'one_coat'
                     })
-                    current_app.logger.info(f"✅ Added ceiling one coat: {area_m2}m² × £{price}")
+                    current_app.logger.info(f"✅ Added ceiling one coat: {area_m2}m² × €{price}")
                 
                 if ceiling_treatments.get('two_coats') is True:
                     price = pricing['ceiling_two_coats_price']
@@ -1304,7 +1304,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
                         'surface': 'ceiling',
                         'treatment': 'two_coats'
                     })
-                    current_app.logger.info(f"✅ Added ceiling two coats: {area_m2}m² × £{price}")
+                    current_app.logger.info(f"✅ Added ceiling two coats: {area_m2}m² × €{price}")
         
         # Process interior items with safe pricing
         interior_items_data = measurement_details.get('interior_items', {})
@@ -1424,7 +1424,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
         #         'total': cleanup_fee,
         #         'category': 'general'
         #     })
-        #     current_app.logger.info(f"✅ Added cleanup fee: £{cleanup_fee}")
+        #     current_app.logger.info(f"✅ Added cleanup fee: €{cleanup_fee}")
         
         if not line_items:
             current_app.logger.error("❌ No line items generated")
@@ -1436,7 +1436,7 @@ def generate_comprehensive_quote_total_wall_area(project_id):
         vat_amount = subtotal * vat_rate
         total_amount = subtotal + vat_amount
         
-        current_app.logger.info(f"💰 Quote totals: Subtotal £{subtotal:.2f}, VAT £{vat_amount:.2f}, Total £{total_amount:.2f}")
+        current_app.logger.info(f"💰 Quote totals: Subtotal €{subtotal:.2f}, VAT €{vat_amount:.2f}, Total €{total_amount:.2f}")
         
         # Import Quote model
         from models.quote import Quote

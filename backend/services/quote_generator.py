@@ -1,4 +1,4 @@
-# services/quote_generator.py - Complete Fixed Version with Logo and Full Interior/Exterior Details
+# services/quote_generator.py - Updated with Company-Specific Logo Support
 import os
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
@@ -9,24 +9,52 @@ import requests
 from io import BytesIO
 
 class QuoteGenerator:
-    """Enhanced quote PDF generator with logo and complete interior/exterior details"""
+    """Enhanced quote PDF generator with company-specific logo support"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logo_url = "https://flotto.jaytechprinterimports.co.ke/images/flotto_logo.png"
     
-    def _download_logo(self):
-        """Download and cache the logo image"""
+    def _download_company_logo(self, company):
+        """Download and cache the company's specific logo image"""
         try:
-            response = requests.get(self.logo_url, timeout=10)
+            # Check if company has a logo URL
+            if not company or not company.logo_url:
+                self.logger.info("No company logo URL found, proceeding without logo")
+                return None
+            
+            logo_url = company.logo_url.strip()
+            if not logo_url:
+                self.logger.info("Empty logo URL, proceeding without logo")
+                return None
+            
+            self.logger.info(f"Downloading company logo from: {logo_url}")
+            
+            # Download the logo with proper headers and timeout
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            
+            response = requests.get(logo_url, timeout=15, headers=headers)
             response.raise_for_status()
+            
+            # Validate content type
+            content_type = response.headers.get('content-type', '').lower()
+            if not any(img_type in content_type for img_type in ['image/png', 'image/jpeg', 'image/jpg', 'image/gif']):
+                self.logger.warning(f"Invalid content type for logo: {content_type}")
+                return None
+            
+            self.logger.info(f"Successfully downloaded company logo ({len(response.content)} bytes)")
             return response.content
+            
+        except requests.exceptions.RequestException as e:
+            self.logger.warning(f"Failed to download company logo from {company.logo_url if company else 'None'}: {e}")
+            return None
         except Exception as e:
-            self.logger.warning(f"Failed to download logo: {e}")
+            self.logger.warning(f"Unexpected error downloading company logo: {e}")
             return None
     
     def generate_enhanced_quote_pdf(self, quote, project, company, output_dir: str) -> str:
-        """Generate a professional PDF quote with logo and complete details"""
+        """Generate a professional PDF quote with company-specific logo"""
         try:
             os.makedirs(output_dir, exist_ok=True)
             
@@ -124,7 +152,7 @@ class QuoteGenerator:
         return self.generate_enhanced_quote_pdf(quote, project, company, output_dir)
     
     def _generate_professional_html_content(self, quote, project, company) -> str:
-        """Generate HTML content with logo and complete interior/exterior details"""
+        """Generate HTML content with company-specific logo and complete interior/exterior details"""
         
         # Get client info safely
         try:
@@ -208,12 +236,13 @@ class QuoteGenerator:
         elif quote.subtotal > 0:
             vat_rate = (quote.vat_amount / quote.subtotal) * 100
         
-        # Download logo
-        logo_data = self._download_logo()
+        # Download company-specific logo
+        logo_data = self._download_company_logo(company)
         logo_base64 = ""
         if logo_data:
             import base64
             logo_base64 = base64.b64encode(logo_data).decode()
+            self.logger.info(f"Company logo encoded for PDF (size: {len(logo_base64)} chars)")
         
         template_str = """
         <!DOCTYPE html>
@@ -225,12 +254,16 @@ class QuoteGenerator:
         </head>
         <body>
             <div class="quote-container">
-                <!-- Header Section with Logo -->
+                <!-- Header Section with Company Logo -->
                 <div class="header-section">
                     <div class="header-content">
                         <div class="logo-section">
                             {% if logo_base64 %}
-                            <img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" class="company-logo">
+                            <img src="data:image/png;base64,{{ logo_base64 }}" alt="{{ company.name }} Logo" class="company-logo">
+                            {% else %}
+                            <div class="company-name-fallback">
+                                <h2>{{ company.name }}</h2>
+                            </div>
                             {% endif %}
                         </div>
                         <div class="quote-info">
@@ -246,8 +279,8 @@ class QuoteGenerator:
                 <!-- Client and Company Information -->
                 <div class="contact-section">
                     <div class="client-info">
-                        <h2>{{ client_info.company_name or 'Client Name' }}</h2>
-                        <p>{{ client_info.address or 'Client Address' }}</p>
+                        <h2>{{ client_info.company_name or client_info.contact_name or 'Client Name' }}</h2>
+                        <p>{{ client_info.address or project.property_address or 'Client Address' }}</p>
                         <p>{{ project.property_address or 'Property Address' }}</p>
                         {% if client_info.email %}
                         <p>Email: {{ client_info.email }}</p>
@@ -259,15 +292,11 @@ class QuoteGenerator:
                     
                     <div class="company-info">
                         <h2>{{ company.name or 'Company' }}</h2>
-                        <p>{{ company.address or 'Address' }}</p>
-                        {% if company.city %}
-                        <p>{{ company.city }}</p>
+                        {% if company.address %}
+                        <p>{{ company.address }}</p>
                         {% endif %}
                         {% if company.vat_number %}
                         <p>VAT No: {{ company.vat_number }}</p>
-                        {% endif %}
-                        {% if company.registration_number %}
-                        <p>Chamber of Commerce: {{ company.registration_number }}</p>
                         {% endif %}
                         {% if company.phone %}
                         <p>Phone: {{ company.phone }}</p>
@@ -276,10 +305,7 @@ class QuoteGenerator:
                         <p>Email: {{ company.email }}</p>
                         {% endif %}
                         {% if company.website %}
-                        <p>Website: https://flotto.jaytechprinterimports.co.ke</p>
-                        {% endif %}
-                        {% if company.iban %}
-                        <p>IBAN: {{ company.iban }}</p>
+                        <p>Website: {{ company.website }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -317,7 +343,7 @@ class QuoteGenerator:
                                     {%- if item.condition_name %}
                                     <li class="item-details">• Condition: {{ item.condition_name }}</li>
                                     {%- endif %}
-                                    <li class="item-details">• Unit Price: £{{ "%.2f"|format(item.unit_price or 0) }}</li>
+                                    <li class="item-details">• Unit Price: €{{ "%.2f"|format(item.unit_price or 0) }}</li>
                                     {%- if item.steps and item.steps|length > 0 %}
                                     <li class="preparation-steps">
                                         <strong>Preparation Steps:</strong>
@@ -350,7 +376,7 @@ class QuoteGenerator:
                                     {%- if item.condition_name %}
                                     <li class="item-details">• Condition: {{ item.condition_name }}</li>
                                     {%- endif %}
-                                    <li class="item-details">• Unit Price: £{{ "%.2f"|format(item.unit_price or 0) }}</li>
+                                    <li class="item-details">• Unit Price: €{{ "%.2f"|format(item.unit_price or 0) }}</li>
                                     {%- if item.steps and item.steps|length > 0 %}
                                     <li class="preparation-steps">
                                         <strong>Preparation Steps:</strong>
@@ -381,8 +407,8 @@ class QuoteGenerator:
                         <ul class="work-list">
                             {%- for job in special_jobs %}
                             <li><strong>{{ job.name }}:</strong> {{ job.description or job.name }} (Qty: {{ job.quantity }} {{ job.unit or 'job(s)' }})</li>
-                            <li class="item-details">• Unit Price: £{{ "%.2f"|format(job.unit_price or 0) }}</li>
-                            <li class="item-details">• Total Cost: £{{ "%.2f"|format(job.total_cost or 0) }}</li>
+                            <li class="item-details">• Unit Price: €{{ "%.2f"|format(job.unit_price or 0) }}</li>
+                            <li class="item-details">• Total Cost: €{{ "%.2f"|format(job.total_cost or 0) }}</li>
                             {%- if job.location %}
                             <li class="item-details">• Location: {{ job.location }}</li>
                             {%- endif %}
@@ -430,22 +456,22 @@ class QuoteGenerator:
                             <tr>
                                 <td>{{ item.quantity|round(0) }}</td>
                                 <td>{{ item.description }}</td>
-                                <td>EUR {{ "%.2f"|format(item.total) }}</td>
+                                <td>€{{ "%.2f"|format(item.total) }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                         <tfoot>
                             <tr class="subtotal-row">
                                 <td colspan="2"><strong>Total excl. VAT</strong></td>
-                                <td><strong>EUR {{ "%.2f"|format(quote.subtotal) }}</strong></td>
+                                <td><strong>€{{ "%.2f"|format(quote.subtotal) }}</strong></td>
                             </tr>
                             <tr class="vat-row">
                                 <td colspan="2"><strong>VAT ({{ "%.0f"|format(vat_rate) }}%)</strong></td>
-                                <td><strong>EUR {{ "%.2f"|format(quote.vat_amount) }}</strong></td>
+                                <td><strong>€{{ "%.2f"|format(quote.vat_amount) }}</strong></td>
                             </tr>
                             <tr class="total-row">
                                 <td colspan="2"><strong>Total incl. VAT</strong></td>
-                                <td><strong>EUR {{ "%.2f"|format(quote.total_amount) }}</strong></td>
+                                <td><strong>€{{ "%.2f"|format(quote.total_amount) }}</strong></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -453,9 +479,20 @@ class QuoteGenerator:
 
                 <!-- Terms and Conditions -->
                 <div class="terms-section">
+                    {% if company.quote_terms_conditions %}
+                    <p class="terms-text">{{ company.quote_terms_conditions }}</p>
+                    {% else %}
                     <p class="terms-text">The price includes all materials, labor, travel costs, and leaving the site clean.</p>
+                    {% endif %}
                     <p class="terms-text">This quotation is valid until {{ quote.valid_until.strftime('%d/%m/%Y') if quote.valid_until else (datetime.now() + timedelta(days=30)).strftime('%d/%m/%Y') }}. Please return a signed copy if you wish to proceed.</p>
                 </div>
+                
+                <!-- Company Footer Text -->
+                {% if company.quote_footer_text %}
+                <div class="footer-section">
+                    <p class="footer-text">{{ company.quote_footer_text }}</p>
+                </div>
+                {% endif %}
                 
                 <!-- Digital Signature Section -->
                 <div class="signature-section">
@@ -535,6 +572,18 @@ class QuoteGenerator:
             max-height: 80px;
             height: auto;
             width: auto;
+        }
+        
+        .company-name-fallback {
+            max-width: 150px;
+        }
+        
+        .company-name-fallback h2 {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+            text-align: left;
         }
         
         .quote-info {
@@ -712,6 +761,21 @@ class QuoteGenerator:
             margin: 5px 0;
         }
         
+        /* Footer Section */
+        .footer-section {
+            margin-bottom: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .footer-text {
+            font-size: 10px;
+            line-height: 1.4;
+            margin: 5px 0;
+            font-style: italic;
+            color: #666;
+        }
+        
         /* Digital Signature Section */
         .signature-section {
             margin-top: 40px;
@@ -751,6 +815,26 @@ class QuoteGenerator:
             font-size: 9px;
         }
         
+        /* Signature Confirmation */
+        .signature-confirmation {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        
+        .signature-details {
+            font-size: 10px;
+        }
+        
+        .signature-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .signature-details td {
+            padding: 4px 8px;
+            border-bottom: 1px solid #d0d0d0;
+        }
+        
         /* Print Optimization */
         @media print {
             .quote-container {
@@ -767,6 +851,10 @@ class QuoteGenerator:
             }
             
             .preparation-steps {
+                page-break-inside: avoid;
+            }
+            
+            .signature-confirmation {
                 page-break-inside: avoid;
             }
         }

@@ -175,7 +175,7 @@ def send_payment_success_email(email: str, first_name: str, company_name: str, p
                     <h3 style="color: #059669; margin-top: 0;">Subscription Details</h3>
                     <p><strong>Company:</strong> {company_name}</p>
                     <p><strong>Plan:</strong> {plan_name.title()}</p>
-                    <p><strong>Amount:</strong> £{amount:.2f}</p>
+                    <p><strong>Amount:</strong> €{amount:.2f}</p>
                     <p><strong>Billing:</strong> {billing_cycle.title()}</p>
                 </div>
                 
@@ -388,7 +388,7 @@ def send_quote_email(client_email: str, quote, project, company):
                     <h3>Quote Summary</h3>
                     <p><strong>Quote Number:</strong> {quote.quote_number}</p>
                     <p><strong>Project:</strong> {project.name}</p>
-                    <p><strong>Total Amount:</strong> £{quote.total_amount:.2f}</p>
+                    <p><strong>Total Amount:</strong> €{quote.total_amount:.2f}</p>
                     <p><strong>Valid Until:</strong> {quote.valid_until.strftime('%B %d, %Y')}</p>
                 </div>
                 
@@ -476,7 +476,7 @@ def send_quote_with_signature_link_frontend(client_email: str, client_name: str,
                         </tr>
                         <tr>
                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Total Amount:</td>
-                            <td style="padding: 8px 0; color: #059669; font-weight: 700; font-size: 18px;">£{quote.total_amount:,.2f}</td>
+                            <td style="padding: 8px 0; color: #059669; font-weight: 700; font-size: 18px;">€{quote.total_amount:,.2f}</td>
                         </tr>
                         <tr>
                             <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Valid Until:</td>
@@ -590,7 +590,7 @@ def send_signature_confirmation_email(client_email: str, client_name: str, quote
                     <h3 style="color: #1e7e34; margin-top: 0;">Quote Details</h3>
                     <p><strong>Quote Number:</strong> {quote.quote_number}</p>
                     <p><strong>Project:</strong> {quote.project.name}</p>
-                    <p><strong>Total Amount:</strong> £{quote.total_amount:.2f}</p>
+                    <p><strong>Total Amount:</strong> €{quote.total_amount:.2f}</p>
                     <p><strong>Signed On:</strong> {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</p>
                 </div>
                 
@@ -660,7 +660,7 @@ def send_quote_signed_notification_email(company_email: str, company_name: str, 
                     <p><strong>Client:</strong> {client_name}</p>
                     <p><strong>Project:</strong> {quote.project.name}</p>
                     <p><strong>Quote Number:</strong> {quote.quote_number}</p>
-                    <p><strong>Total Amount:</strong> £{quote.total_amount:.2f}</p>
+                    <p><strong>Total Amount:</strong> €{quote.total_amount:.2f}</p>
                     <p><strong>Property:</strong> {quote.project.property_address}</p>
                     <p><strong>Client Email:</strong> {quote.project.client_email}</p>
                 </div>
@@ -739,7 +739,7 @@ def send_trial_reminder_email(email: str, first_name: str, company_name: str, da
                 <div style="background-color: #F3F4F6; padding: 20px; margin: 15px 0; border-radius: 8px;">
                     <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px; border: 2px solid #e5e7eb;">
                         <h4 style="margin: 0; color: #4f46e5;">STARTER</h4>
-                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">£9.99/month</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">€9.99/month</div>
                         <ul>
                             <li>Up to 5 projects per month</li>
                             <li>1 team member</li>
@@ -749,7 +749,7 @@ def send_trial_reminder_email(email: str, first_name: str, company_name: str, da
                     
                     <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 6px; border: 2px solid #4f46e5;">
                         <h4 style="margin: 0; color: #4f46e5;">PROFESSIONAL</h4>
-                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">£79/month</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">€79/month</div>
                         <ul>
                             <li>Up to 25 projects per month</li>
                             <li>10 team members</li>
@@ -759,7 +759,7 @@ def send_trial_reminder_email(email: str, first_name: str, company_name: str, da
                     
                     <div style="padding: 15px; background: white; border-radius: 6px; border: 2px solid #e5e7eb;">
                         <h4 style="margin: 0; color: #4f46e5;">ENTERPRISE</h4>
-                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">£199/month</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #4f46e5;">€199/month</div>
                         <ul>
                             <li>Unlimited projects</li>
                             <li>Unlimited team members</li>

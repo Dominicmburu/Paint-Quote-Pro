@@ -921,7 +921,7 @@ def quote_signature_page(quote_id):
                     <p>This quote was digitally signed on {{ quote.signed_at.strftime('%B %d, %Y at %I:%M %p') }}.</p>
                     <p>Quote #{{ quote.quote_number }}</p>
                     <p>Project: {{ quote.project.name }}</p>
-                    <p>Total: £{{ "%.2f"|format(quote.total_amount) }}</p>
+                    <p>Total: €{{ "%.2f"|format(quote.total_amount) }}</p>
                 </div>
             </body>
             </html>
@@ -1030,7 +1030,7 @@ def quote_signature_page(quote_id):
                     <h3>Quote Summary</h3>
                     <p><strong>Quote Number:</strong> {{ quote.quote_number }}</p>
                     <p><strong>Project:</strong> {{ quote.project.name }}</p>
-                    <p><strong>Total Amount:</strong> £{{ "%.2f"|format(quote.total_amount) }}</p>
+                    <p><strong>Total Amount:</strong> €{{ "%.2f"|format(quote.total_amount) }}</p>
                     <p><strong>Valid Until:</strong> {{ quote.valid_until.strftime('%B %d, %Y') }}</p>
                     <p><strong>Company:</strong> {{ quote.project.company.name }}</p>
                 </div>
@@ -1398,7 +1398,7 @@ def quote_signed_confirmation(quote_id):
                     <p><strong>Email:</strong> {{ signature.client_email }}</p>
                     <p><strong>Signed On:</strong> {{ signature.signed_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
                     <p><strong>Project:</strong> {{ quote.project.name }}</p>
-                    <p><strong>Total Amount:</strong> £{{ "%.2f"|format(quote.total_amount) }}</p>
+                    <p><strong>Total Amount:</strong> €{{ "%.2f"|format(quote.total_amount) }}</p>
                 </div>
                 {% endif %}
                 

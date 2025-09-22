@@ -1717,7 +1717,7 @@ def process_refund_admin(subscription_id):
         current_app.logger.info(f'Refund processed: {amount/100} for subscription {subscription_id}')
         
         return jsonify({
-            'message': f'Refund of £{amount/100:.2f} processed successfully',
+            'message': f'Refund of €{amount/100:.2f} processed successfully',
             'refund_id': refund_result.id if refund_result else None,
             'amount': amount/100
         })
@@ -2254,7 +2254,7 @@ def bulk_cancel_subscriptions():
 #                 f"{user.first_name} {user.last_name}" if user else '',
 #                 project.status or '',
 #                 getattr(project, 'property_type', '') or '',
-#                 f"£{estimated_value:.2f}" if estimated_value else '£0.00',
+#                 f"€{estimated_value:.2f}" if estimated_value else '€0.00',
 #                 project.created_at.strftime('%Y-%m-%d %H:%M:%S') if project.created_at else '',
 #                 project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if project.updated_at else ''
 #             ])
@@ -2760,7 +2760,7 @@ def export_projects_overview():
                 f"{user.first_name} {user.last_name}" if user else '',
                 project.status or '',
                 getattr(project, 'property_type', '') or '',
-                f"£{estimated_value:.2f}" if estimated_value else '£0.00',
+                f"€{estimated_value:.2f}" if estimated_value else '€0.00',
                 project.created_at.strftime('%Y-%m-%d %H:%M:%S') if project.created_at else '',
                 project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if project.updated_at else ''
             ])
@@ -3191,9 +3191,9 @@ def export_admin_quotes():
                 getattr(project, 'client_name', '') or '',
                 company.name if company else '',
                 f"{user.first_name} {user.last_name}" if user else '',
-                f"£{quote.subtotal:.2f}" if quote.subtotal else '£0.00',
-                f"£{quote.vat_amount:.2f}" if quote.vat_amount else '£0.00',
-                f"£{quote.total_amount:.2f}" if quote.total_amount else '£0.00',
+                f"€{quote.subtotal:.2f}" if quote.subtotal else '€0.00',
+                f"€{quote.vat_amount:.2f}" if quote.vat_amount else '€0.00',
+                f"€{quote.total_amount:.2f}" if quote.total_amount else '€0.00',
                 quote.valid_until.strftime('%Y-%m-%d') if quote.valid_until else '',
                 quote.sent_at.strftime('%Y-%m-%d %H:%M:%S') if quote.sent_at else '',
                 quote.created_at.strftime('%Y-%m-%d %H:%M:%S') if quote.created_at else '',
