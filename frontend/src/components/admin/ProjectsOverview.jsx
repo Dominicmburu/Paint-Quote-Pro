@@ -1,5 +1,3 @@
-// Fixed ProjectsOverview.jsx - Updated to use new endpoints
-
 import React, { useState, useEffect } from 'react';
 import {
   FileText,
@@ -181,7 +179,7 @@ const ProjectsOverview = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Estimated Value</label>
                 <p className="mt-1 text-sm text-gray-900">
-                  £{selectedProject.estimated_value ? selectedProject.estimated_value.toLocaleString() : 'N/A'}
+                  €{selectedProject.estimated_value ? selectedProject.estimated_value.toLocaleString() : 'N/A'}
                 </p>
               </div>
               <div>
@@ -522,9 +520,9 @@ const ProjectsOverview = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Value</p>
-              <p className="text-2xl font-bold text-gray-900">£{(stats.total_value || 0).toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">€{(stats.total_value || 0).toLocaleString()}</p>
               <p className="text-xs text-green-600 mt-1">
-                Avg: £{(stats.avg_value || 0).toLocaleString()}
+                Avg: €{(stats.avg_value || 0).toLocaleString()}
               </p>
             </div>
             <DollarSign className="h-8 w-8 text-green-600" />
@@ -730,7 +728,7 @@ const ProjectsOverview = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      £{project.estimated_value ? project.estimated_value.toLocaleString() : 'N/A'}
+                      €{project.estimated_value ? project.estimated_value.toLocaleString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {project.created_at ? new Date(project.created_at).toLocaleDateString() : 'N/A'}

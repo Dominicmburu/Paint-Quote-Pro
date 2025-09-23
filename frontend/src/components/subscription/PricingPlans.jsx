@@ -340,7 +340,7 @@ const PricingPlans = () => {
                   ) : (
                     <>
                       <span className="text-4xl font-bold text-gray-900">
-                        £{pricing.monthly}
+                        €{pricing.monthly}
                       </span>
                       <span className="text-gray-600">/{t('month')}</span>
                     </>
@@ -348,7 +348,7 @@ const PricingPlans = () => {
                   
                   {billingCycle === 'yearly' && pricing.yearly > 0 && (
                     <div className="text-sm text-gray-500">
-                      £{pricing.yearly} {t('billed annually')}
+                      €{pricing.yearly} {t('billed annually')}
                       {pricing.savings > 0 && (
                         <span className="text-green-600 font-medium"> ({t('Save')} {pricing.savings}%)</span>
                       )}

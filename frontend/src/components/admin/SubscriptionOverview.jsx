@@ -139,7 +139,7 @@ const SubscriptionOverview = () => {
           break;
         case 'refund':
           response = await api.post(`/admin/subscriptions/${subscriptionId}/refund`, data);
-          message = `Refund of £${(data.amount / 100).toFixed(2)} processed successfully`;
+          message = `Refund of €${(data.amount / 100).toFixed(2)} processed successfully`;
           break;
         case 'update':
           response = await api.put(`/admin/subscriptions/${subscriptionId}`, data);
@@ -213,11 +213,11 @@ const SubscriptionOverview = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">Plan</label>
-              <p className="text-sm text-gray-900">{subscription.plan_name} - £{subscription.amount?.toFixed(2)}</p>
+              <p className="text-sm text-gray-900">{subscription.plan_name} - €{subscription.amount?.toFixed(2)}</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Refund Amount (£)</label>
+              <label className="block text-sm font-medium text-gray-700">Refund Amount (€)</label>
               <input
                 type="number"
                 step="0.01"
@@ -375,7 +375,7 @@ const SubscriptionOverview = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
               <p className="text-2xl font-bold text-gray-900">
-                £{(stats.total_revenue || 0).toLocaleString()}
+                €{(stats.total_revenue || 0).toLocaleString()}
               </p>
               <p className={`text-xs mt-1 ${(stats.revenue_growth || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {(stats.revenue_growth || 0) >= 0 ? '+' : ''}{(stats.revenue_growth || 0).toFixed(1)}% from last month
@@ -435,7 +435,7 @@ const SubscriptionOverview = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip formatter={(value) => [`£${value.toLocaleString()}`, 'Revenue']} />
+                <Tooltip formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']} />
                 <Line type="monotone" dataKey="revenue" stroke="#7C3AED" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
@@ -606,7 +606,7 @@ const SubscriptionOverview = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      £{subscription.amount ? subscription.amount.toFixed(2) : '0.00'}
+                      €{subscription.amount ? subscription.amount.toFixed(2) : '0.00'}
                       <span className="text-gray-500">/{subscription.billing_cycle}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -744,11 +744,11 @@ const SubscriptionOverview = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Current MRR</span>
-              <span className="text-lg font-semibold">£{(stats.current_mrr || 0).toLocaleString()}</span>
+              <span className="text-lg font-semibold">€{(stats.current_mrr || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Previous MRR</span>
-              <span className="text-lg font-semibold">£{(stats.previous_mrr || 0).toLocaleString()}</span>
+              <span className="text-lg font-semibold">€{(stats.previous_mrr || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Growth</span>
@@ -834,7 +834,7 @@ const SubscriptionOverview = () => {
                     <td className="py-3 px-4 text-sm text-gray-900">{activeSubs.length}</td>
                     <td className="py-3 px-4 text-sm text-gray-900">{trialSubs.length}</td>
                     <td className="py-3 px-4 text-sm text-gray-900">{cancelledSubs.length}</td>
-                    <td className="py-3 px-4 text-sm text-gray-900">£{monthlyRevenue.toFixed(2)}</td>
+                    <td className="py-3 px-4 text-sm text-gray-900">€{monthlyRevenue.toFixed(2)}</td>
                   </tr>
                 );
               })}

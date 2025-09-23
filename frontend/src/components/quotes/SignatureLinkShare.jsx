@@ -1,4 +1,3 @@
-// components/quotes/SignatureLinkShare.jsx
 import React, { useState } from 'react';
 import { Copy, ExternalLink, Mail, MessageCircle } from 'lucide-react';
 
@@ -27,7 +26,7 @@ ${signatureUrl}
 Quote Details:
 - Quote Number: ${quote.quote_number}
 - Project: ${quote.project_name}
-- Total Amount: £${quote.total_amount.toLocaleString()}
+- Total Amount: €${quote.total_amount.toLocaleString()}
 
 This link will allow you to digitally sign the quote. The signature has the same legal validity as a handwritten signature.
 

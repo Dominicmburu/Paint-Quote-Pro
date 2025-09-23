@@ -34,5 +34,5 @@ export const FILE_UPLOAD = {
 };
 
 
-export const GOOGLE_TRANSLATE_API_KEY = ''; // Replace with your actual API key
-export const GOOGLE_TRANSLATE_API_URL = 'https://translation.googleapis.com/language/translate/v2';
+export const GOOGLE_TRANSLATE_KEY = ''; // Replace with your actual API key
+export const GOOGLE_TRANSLATE_URL = 'https://translation.googleapis.com/language/translate/v2';

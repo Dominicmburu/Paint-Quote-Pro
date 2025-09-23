@@ -1,4 +1,3 @@
-// 3. Updated InteriorWork.jsx - Remove Individual Cost Calculation
 import React, { useState } from 'react';
 import { Plus, Trash2, DoorClosed, ChevronDown, ChevronUp, CheckCircle, RefreshCw, AlertCircle } from 'lucide-react';
 import { usePricing } from '../../hooks/usePricing';
@@ -159,7 +158,7 @@ const InteriorWork = ({ interiorItems, setInteriorItems, customPricing }) => {
   };
 
   const getPriceDisplay = (type, item) => {
-    if (!pricing?.interior) return t('£0.00');
+    if (!pricing?.interior) return t('€0.00');
     
     let price = 0;
     if (type === 'doors') {
@@ -169,7 +168,7 @@ const InteriorWork = ({ interiorItems, setInteriorItems, customPricing }) => {
     } else {
       price = getPrice(type, null, item.condition);
     }
-    return t('£{{price}}', { price: price.toFixed(2) });
+    return t('€{{price}}', { price: price.toFixed(2) });
   };
 
   return (
@@ -223,25 +222,25 @@ const InteriorWork = ({ interiorItems, setInteriorItems, customPricing }) => {
             <div>
               <span className="font-medium text-blue-800">{t('Doors:')}</span>
               <div className="text-blue-600">
-                {t('Easy Prep: £{{price}}', { price: pricing.interior.doors?.easy_prep?.price || 0 })}<br />
-                {t('Medium Prep: £{{price}}', { price: pricing.interior.doors?.medium_prep?.price || 0 })}<br />
-                {t('Heavy Prep: £{{price}}', { price: pricing.interior.doors?.heavy_prep?.price || 0 })}
+                {t('Easy Prep: €{{price}}', { price: pricing.interior.doors?.easy_prep?.price || 0 })}<br />
+                {t('Medium Prep: €{{price}}', { price: pricing.interior.doors?.medium_prep?.price || 0 })}<br />
+                {t('Heavy Prep: €{{price}}', { price: pricing.interior.doors?.heavy_prep?.price || 0 })}
               </div>
             </div>
             <div>
               <span className="font-medium text-blue-800">{t('Fixed Windows:')}</span>
               <div className="text-blue-600">
-                {t('Small: £{{price}}', { price: pricing.interior.fixedWindows?.small?.price || 0 })}<br />
-                {t('Medium: £{{price}}', { price: pricing.interior.fixedWindows?.medium?.price || 0 })}<br />
-                {t('Large: £{{price}}', { price: pricing.interior.fixedWindows?.big?.price || 0 })}
+                {t('Small: €{{price}}', { price: pricing.interior.fixedWindows?.small?.price || 0 })}<br />
+                {t('Medium: €{{price}}', { price: pricing.interior.fixedWindows?.medium?.price || 0 })}<br />
+                {t('Large: €{{price}}', { price: pricing.interior.fixedWindows?.big?.price || 0 })}
               </div>
             </div>
             <div>
               <span className="font-medium text-blue-800">{t('Other Items:')}</span>
               <div className="text-blue-600">
-                {t('Stairs: £{{price}}', { price: pricing.interior.stairs?.price || 0 })}<br />
-                {t('Radiators: £{{price}}', { price: pricing.interior.radiators?.price || 0 })}<br />
-                {t('Skirting: £{{price}}', { price: pricing.interior.skirtingBoards?.price || 0 })}
+                {t('Stairs: €{{price}}', { price: pricing.interior.stairs?.price || 0 })}<br />
+                {t('Radiators: €{{price}}', { price: pricing.interior.radiators?.price || 0 })}<br />
+                {t('Skirting: €{{price}}', { price: pricing.interior.skirtingBoards?.price || 0 })}
               </div>
             </div>
             <div className="text-xs text-blue-700">
@@ -364,7 +363,7 @@ const InteriorWork = ({ interiorItems, setInteriorItems, customPricing }) => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{t('Calculated Cost')}</label>
                     <div className="text-sm font-medium text-green-700 px-3 py-2 bg-green-50 border border-green-200 rounded-md">
-                      {t('£{{cost}}', { 
+                      {t('€{{cost}}', { 
                         cost: ((parseFloat(item.quantity) || 1) * getPrice(type, item.size, item.condition)).toFixed(2) 
                       })}
                     </div>
@@ -373,7 +372,7 @@ const InteriorWork = ({ interiorItems, setInteriorItems, customPricing }) => {
                 
                 <div className="mt-2 text-sm text-gray-600">
                   {t('Selected: {{options}}', { options: getSelectedOptionsDisplay(item, type) })}
-                  {getPriceDisplay(type, item) !== t('£0.00') && (
+                  {getPriceDisplay(type, item) !== t('€0.00') && (
                     <span className="ml-2 text-blue-600">• {t('Unit Price: {{price}}', { price: getPriceDisplay(type, item) })}</span>
                   )}
                 </div>
@@ -381,7 +380,7 @@ const InteriorWork = ({ interiorItems, setInteriorItems, customPricing }) => {
                 {['doors', 'fixedWindows', 'turnWindows', 'skirtingBoards', 'otherItems'].includes(type) && (
                   <div className="flex justify-between items-center mt-2">
                     <div className="text-sm text-gray-600">
-                      {t('Item Total: £{{total}}', { 
+                      {t('Item Total: €{{total}}', { 
                         total: ((parseFloat(item.quantity) || 1) * getPrice(type, item.size, item.condition)).toFixed(2) 
                       })}
                     </div>

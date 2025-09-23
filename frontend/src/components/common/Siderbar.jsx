@@ -85,7 +85,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center space-x-2">
             <Palette className="h-8 w-8 text-purple-600" />
-            <span className="text-xl font-bold text-purple-700">Paint Quote Pro</span>
+            <span className="text-xl font-bold text-purple-700">Flotto</span>
           </div>
           <button
             onClick={onToggle}

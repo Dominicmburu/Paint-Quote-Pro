@@ -109,52 +109,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Why Choose Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">
-                {t('Why do painters and plasterers choose Flotto?')}
-              </h2>
-              <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                {t('Find out how other contractors get started with Flotto and be convinced.')}
-              </p>
-              <button
-                onClick={handleExperienceBenefits}
-                disabled={loading}
-                className="mybtn"
-              >
-                {loading ? t('Loading...') : isAuthenticated ? t('Go to Dashboard') : t('Experience the benefits yourself')}
-              </button>
-
-            </div>
-            <div className="relative">
-              <div className="flex justify-center">
-                <div className="relative group">
-                  <div className="relative overflow-hidden rounded-xl">
-                    <img
-                      src="./images/image2.png"
-                      alt="Red tape"
-                      className="w-full max-w-lg h-auto transform hover:scale-105 transition-transform duration-500 ease-in-out filter"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300"></div>
-                  </div>
-
-                  <div className="absolute -top-4 -right-4 w-8 h-8 bg-[#4bb4f5] rounded-full animate-bounce"></div>
-                  <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-[#4bb4f5] rounded-full animate-pulse"></div>
-                  <div className="absolute top-1/2 -right-6 w-4 h-4 bg-blue-400 rounded-full opacity-70"></div>
-                  <div className="absolute bottom-4 left-4 bg-[#4bb4f5] text-slate-800 px-4 py-2 rounded-lg font-bold text-sm">
-                    {t('"As a painter, I work about 5 hours a day on quotes. I\'m done in 30 minutes now!"')}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

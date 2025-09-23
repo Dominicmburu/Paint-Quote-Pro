@@ -1,6 +1,6 @@
 // hooks/useTranslation.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { GOOGLE_TRANSLATE_API_KEY, GOOGLE_TRANSLATE_API_URL } from '../utils/constants';
+import { GOOGLE_TRANSLATE_KEY, GOOGLE_TRANSLATE_URL } from '../utils/constants';
 
 const TranslationContext = createContext();
 
@@ -10,6 +10,7 @@ export const LANGUAGES = {
   es: { code: 'es', name: 'Español', flag: '🇪🇸' },
   fr: { code: 'fr', name: 'Français', flag: '🇫🇷' },
   de: { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  nl: { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
   it: { code: 'it', name: 'Italiano', flag: '🇮🇹' },
   pt: { code: 'pt', name: 'Português', flag: '🇵🇹' },
   zh: { code: 'zh', name: '中文', flag: '🇨🇳' },
@@ -19,8 +20,8 @@ export const LANGUAGES = {
 };
 
 // Google Cloud Translation API configuration
-const GOOGLE_TRANSLATE_API_KEY = GOOGLE_TRANSLATE_API_KEY;
-const GOOGLE_TRANSLATE_API_URL = GOOGLE_TRANSLATE_API_URL;
+const GOOGLE_TRANSLATE_API_KEY = GOOGLE_TRANSLATE_KEY;
+const GOOGLE_TRANSLATE_API_URL = GOOGLE_TRANSLATE_URL;
 
 export const TranslationProvider = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');

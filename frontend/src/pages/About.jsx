@@ -23,7 +23,7 @@ const About = () => {
     {
       name: "Sarah Johnson",
       role: t("CEO & Founder"),
-      bio: t("Former painting contractor with 15 years of experience in the industry. Sarah built Paint Quote Pro from her own frustrations with manual quoting."),
+      bio: t("Former painting contractor with 15 years of experience in the industry. Sarah built Flotto from her own frustrations with manual quoting."),
       image: "https://i.pinimg.com/736x/b7/97/a0/b797a0b5290bc94d8312d91953c9d555.jpg"
     },
     {
@@ -35,7 +35,7 @@ const About = () => {
     {
       name: "Emma Rodriguez",
       role: t("Head of Product"),
-      bio: t("UX specialist focused on creating intuitive tools for tradespeople. Emma ensures Paint Quote Pro is easy to use for every painter."),
+      bio: t("UX specialist focused on creating intuitive tools for tradespeople. Emma ensures Flotto is easy to use for every painter."),
       image: "https://i.pinimg.com/736x/31/4f/66/314f664ff072c17757f786528a59a399.jpg"
     }
   ];
@@ -72,7 +72,7 @@ const About = () => {
       <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
-            {t('About Paint Quote Pro')}
+            {t('About Flotto')}
           </h1>
           <p className="text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto leading-relaxed">
             {t("We're on a mission to revolutionize how painting professionals create quotes and grow their businesses. Discover the story behind the platform that's transforming the industry.")}
@@ -106,7 +106,7 @@ const About = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-8">{t('Our Story')}</h2>
               <div className="space-y-6 text-lg text-slate-600 leading-relaxed">
                 <p>
-                  {t("Paint Quote Pro was born from real frustration. Our founder, Sarah Johnson, was a successful painting contractor who spent countless hours creating quotes for her business. Despite her expertise, she often lost jobs to competitors who could deliver quotes faster.")}
+                  {t("Flotto was born from real frustration. Our founder, Sarah Johnson, was a successful painting contractor who spent countless hours creating quotes for her business. Despite her expertise, she often lost jobs to competitors who could deliver quotes faster.")}
                 </p>
                 <p>
                   <strong className="text-slate-800">{t('"I knew my work was excellent, but I was losing jobs because my quotes took too long,"')}</strong> 
@@ -116,7 +116,7 @@ const About = () => {
                   {t("Combining her deep industry expertise with cutting-edge AI technology, Sarah partnered with tech expert Mike Chen to create a solution that helps painting professionals work smarter, not harder.")}
                 </p>
                 <p>
-                  {t("Today, hundreds of painters across the UK use Paint Quote Pro to save time, create more professional quotes, and win more jobs. We're proud to be the trusted partner helping painters grow their businesses.")}
+                  {t("Today, hundreds of painters across the UK use Flotto to save time, create more professional quotes, and win more jobs. We're proud to be the trusted partner helping painters grow their businesses.")}
                 </p>
               </div>
             </div>
@@ -208,7 +208,7 @@ const About = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">{t('Meet Our Team')}</h2>
             <p className="text-xl text-slate-600">
-              {t("The passionate people behind Paint Quote Pro")}
+              {t("The passionate people behind Flotto")}
             </p>
           </div>
 
@@ -276,7 +276,7 @@ const About = () => {
               <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">{t("What Our Customers Say")}</h3>
               <div className="space-y-6">
                 <div className="bg-gray-50 rounded-xl p-6">
-                  <p className="text-slate-600 italic mb-4">{t('"Finally, software built by people who actually understand painting. Paint Quote Pro has transformed how I run my business."')}</p>
+                  <p className="text-slate-600 italic mb-4">{t('"Finally, software built by people who actually understand painting. Flotto has transformed how I run my business."')}</p>
                   <p className="font-semibold text-slate-800">- {t("David Thompson, Thompson Decorators")}</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-6">

@@ -1,4 +1,3 @@
-// components/quotes/QuoteStatus.jsx
 import React from 'react';
 import { FileCheck, Clock, CheckCircle, AlertCircle, Edit2 } from 'lucide-react';
 

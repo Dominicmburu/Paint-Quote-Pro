@@ -410,7 +410,7 @@ const QuoteSettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Wall Paint Price (£/litre)
+                Wall Paint Price (€/litre)
               </label>
               <input
                 type="number"
@@ -424,7 +424,7 @@ const QuoteSettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ceiling Paint Price (£/litre)
+                Ceiling Paint Price (€/litre)
               </label>
               <input
                 type="number"
@@ -438,7 +438,7 @@ const QuoteSettings = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Primer Price (£/litre)
+                Primer Price (€/litre)
               </label>
               <input
                 type="number"
@@ -459,7 +459,7 @@ const QuoteSettings = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Hourly Rate (£)
+                Hourly Rate (€)
               </label>
               <input
                 type="number"

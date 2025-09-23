@@ -1,4 +1,3 @@
-// components/clients/ClientForm.jsx
 import React from 'react';
 import { Building, User, Mail, Phone, MapPin, CreditCard, Globe } from 'lucide-react';
 

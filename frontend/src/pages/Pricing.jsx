@@ -184,12 +184,12 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section with Why Choose Paint Quote Pro */}
+      {/* Hero Section with Why Choose Flotto */}
       <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
-              {t('Why Choose Paint Quote Pro?')}
+              {t('Why Choose Flotto?')}
             </h1>
             <p className="text-xl text-slate-600 max-w-4xl mx-auto">
               {t('Transform your painting business with AI-powered quoting, professional project management, and tools that help you win more jobs faster.')}
@@ -263,7 +263,7 @@ const Pricing = () => {
                   <div className="mb-6">
                     <div className="flex items-baseline justify-center">
                       <span className="text-4xl font-bold text-slate-800">
-                        £{isYearly ? plan.yearlyPrice : plan.price}
+                        €{isYearly ? plan.yearlyPrice : plan.price}
                       </span>
                       <span className="text-slate-600 ml-2">
                         {t('/p/m')} {isYearly ? t('excl. VAT') : t('excl. VAT')}
@@ -271,7 +271,7 @@ const Pricing = () => {
                     </div>
                     {isYearly && (
                       <p className="text-sm text-[#4bb4f5] mt-1">
-                        {t('Save')} £{(plan.price * 12) - plan.yearlyPrice} {t('per year')}
+                        {t('Save')} €{(plan.price * 12) - plan.yearlyPrice} {t('per year')}
                       </p>
                     )}
                   </div>
@@ -322,9 +322,9 @@ const Pricing = () => {
               <tbody className="divide-y divide-gray-100">
                 <tr className="bg-amber-50">
                   <td className="px-6 py-4 text-sm font-semibold text-slate-800">{t('Price')}</td>
-                  <td className="px-6 py-4 text-center text-sm text-slate-600">{t('£7.50 p/m excl. VAT')}</td>
-                  <td className="px-6 py-4 text-center text-sm text-slate-600 bg-blue-50">{t('£12.50 p/m excl. VAT')}</td>
-                  <td className="px-6 py-4 text-center text-sm text-slate-600">{t('£25.- p/m excl. VAT')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-slate-600">{t('€7.50 p/m excl. VAT')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-slate-600 bg-blue-50">{t('€12.50 p/m excl. VAT')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-slate-600">{t('€25.- p/m excl. VAT')}</td>
                 </tr>
                 {featureComparison.map((category, categoryIndex) => (
                   <React.Fragment key={categoryIndex}>

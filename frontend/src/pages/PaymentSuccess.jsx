@@ -126,7 +126,7 @@ const PaymentSuccess = () => {
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
             </div>
             <h2 className="text-2xl font-bold text-[#4bb4f5] mb-4">
-              {t('Welcome to Paint Quote Pro!')}
+              {t('Welcome to Flotto!')}
             </h2>
             <p className="text-gray-600 text-lg">
               {t('Your {{plan}} subscription is now active. You\'re ready to create professional paint quotes in minutes!', {
@@ -153,7 +153,7 @@ const PaymentSuccess = () => {
               <div>
                 <span className="text-gray-600">{t('Billing:')}</span>
                 <span className="font-semibold text-[#4bb4f5] ml-2">
-                  £{sessionDetails?.amount}/{sessionDetails?.billing_cycle}
+                  €{sessionDetails?.amount}/{sessionDetails?.billing_cycle}
                 </span>
               </div>
               <div>

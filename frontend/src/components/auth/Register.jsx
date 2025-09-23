@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { Eye, EyeOff, Loader2, Mail, Lock, User, Building, Phone, Globe, Hash, Percent } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail, Lock, User, Building, Phone, Globe, Hash, Percent, Image } from 'lucide-react';
 import { useTranslation } from '../../hooks/useTranslation';
 
 const Register = () => {
@@ -17,6 +17,7 @@ const Register = () => {
     company_phone: '',
     company_address: '',
     company_website: '',
+    logo_url: '', // Ensure this is in the initial state
     preferred_paint_brand: 'Dulux',
     vat_number: '',
     vat_rate: 0.20
@@ -42,10 +43,18 @@ const Register = () => {
       return;
     }
 
-    // Prepare data for backend (remove confirm_password)
+    // Prepare data for backend - explicitly ensure logo_url is included
     const { confirm_password, ...submitData } = formData;
     
-    const result = await register(submitData);
+    // Explicitly ensure logo_url is included and not undefined/null
+    const finalSubmitData = {
+      ...submitData,
+      logo_url: submitData.logo_url || '' // Ensure it's at least an empty string, not undefined
+    };
+    
+    console.log('Submitting data:', finalSubmitData); // Debug log to verify logo_url is included
+    
+    const result = await register(finalSubmitData);
     
     if (result.success) {
       navigate('/dashboard');
@@ -58,10 +67,10 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prevFormData => ({
+      ...prevFormData,
       [name]: type === 'number' ? parseFloat(value) : value
-    });
+    }));
   };
 
   return (
@@ -329,6 +338,28 @@ const Register = () => {
                       placeholder="https://www.smithpainting.com"
                     />
                   </div>
+                </div>
+
+                {/* Logo URL Field - This is the key addition */}
+                <div>
+                  <label htmlFor="logo_url" className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('Company Logo URL')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Image className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="logo_url"
+                      name="logo_url"
+                      type="url"
+                      value={formData.logo_url}
+                      onChange={handleChange}
+                      className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4bb4f5] focus:border-transparent"
+                      placeholder="https://example.com/logo.png"
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">{t('URL to your company logo image (PNG, JPG, SVG supported)')}</p>
                 </div>
 
                 <div>

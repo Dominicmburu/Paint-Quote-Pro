@@ -1,4 +1,0 @@
-"id","name","email","phone","address","website","logo_url","preferred_paint_brand","vat_number","vat_rate","quote_footer_text","quote_terms_conditions","created_at","updated_at"
-1,"Paint Quote Pro Demo","admin@paintquotepro.com",NULL,NULL,NULL,NULL,"Dulux",NULL,"0.2",NULL,NULL,"2025-07-12 18:27:41.368799","2025-07-12 18:27:41.368807"
-2,"client 1","mburudominic381@gmail.com","+254706526569","0706707144","http://localhost:5173/register",NULL,"Dulux","","0.2",NULL,NULL,"2025-07-12 18:29:22.065945","2025-07-12 18:29:22.065952"
-3,"AlterHero","","","","",NULL,"Dulux","","0.2",NULL,NULL,"2025-07-13 07:58:30.090455","2025-07-13 07:58:30.09046"

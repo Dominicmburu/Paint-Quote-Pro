@@ -90,28 +90,6 @@ const Settings = () => {
         })}
       </div>
 
-      {/* Quick Links */}
-      <div className="mt-12 bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">{t('Quick Links')}</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button
-            onClick={() => navigate('/subscription')}
-            className="text-left p-4 bg-white rounded-md border border-gray-200 hover:border-purple-300 transition-colors"
-          >
-            <h4 className="font-medium text-gray-900">{t('Subscription & Billing')}</h4>
-            <p className="text-sm text-gray-500 mt-1">{t('Manage your subscription plan and billing information')}</p>
-          </button>
-          
-          <button
-            onClick={() => navigate('/quotes/settings')}
-            className="text-left p-4 bg-white rounded-md border border-gray-200 hover:border-purple-300 transition-colors"
-          >
-            <h4 className="font-medium text-gray-900">{t('Quote Settings')}</h4>
-            <p className="text-sm text-gray-500 mt-1">{t('Configure default values for quote generation')}</p>
-          </button>
-        </div>
-      </div>
-
       {/* Help Section */}
       <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
         <h4 className="text-sm font-medium text-blue-900 mb-3">💡 {t('Settings Help:')}</h4>

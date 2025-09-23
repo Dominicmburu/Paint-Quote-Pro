@@ -1,4 +1,3 @@
-// Updated QuotePreview.jsx - Complete removal of General Services
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
@@ -113,7 +112,7 @@ const QuotePreview = () => {
         }
 
         organized.rooms[roomName].totals.room_total += item.total;
-        console.log(`✅ Added ${item.surface} item for ${roomName}: £${item.total}`);
+        console.log(`✅ Added ${item.surface} item for ${roomName}: €${item.total}`);
       } else if (category in organized) {
         organized[category].push(item);
         console.log(`✅ Added ${category} item: ${item.description}`);
@@ -315,7 +314,7 @@ const QuotePreview = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">{t('Quote Total')}</h3>
-                  <div className="text-3xl font-bold">£{quote.total_amount.toFixed(2)}</div>
+                  <div className="text-3xl font-bold">€{quote.total_amount.toFixed(2)}</div>
                   <div className="text-sm opacity-90">{t('Valid until:')} {new Date(quote.valid_until).toLocaleDateString()}</div>
                 </div>
               </div>
@@ -362,19 +361,19 @@ const QuotePreview = () => {
                           <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                               <span>{t('Room Work:')}</span>
-                              <span className="font-medium">£{summary.cost_breakdown.rooms.toFixed(2)}</span>
+                              <span className="font-medium">€{summary.cost_breakdown.rooms.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>{t('Interior Items:')}</span>
-                              <span className="font-medium">£{summary.cost_breakdown.interior.toFixed(2)}</span>
+                              <span className="font-medium">€{summary.cost_breakdown.interior.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>{t('Exterior Items:')}</span>
-                              <span className="font-medium">£{summary.cost_breakdown.exterior.toFixed(2)}</span>
+                              <span className="font-medium">€{summary.cost_breakdown.exterior.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>{t('Special Jobs:')}</span>
-                              <span className="font-medium">£{summary.cost_breakdown.special.toFixed(2)}</span>
+                              <span className="font-medium">€{summary.cost_breakdown.special.toFixed(2)}</span>
                             </div>
                             {/* 🔧 REMOVED: General Services row */}
                           </div>
@@ -385,16 +384,16 @@ const QuotePreview = () => {
                           <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                               <span>{t('Subtotal:')}</span>
-                              <span className="font-medium">£{quote.subtotal.toFixed(2)}</span>
+                              <span className="font-medium">€{quote.subtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>{t('VAT (20%):')}</span>
-                              <span className="font-medium">£{quote.vat_amount.toFixed(2)}</span>
+                              <span className="font-medium">€{quote.vat_amount.toFixed(2)}</span>
                             </div>
                             <div className="border-t border-green-200 pt-2 mt-2">
                               <div className="flex justify-between font-bold">
                                 <span>{t('Total Amount:')}</span>
-                                <span className="text-lg">£{quote.total_amount.toFixed(2)}</span>
+                                <span className="text-lg">€{quote.total_amount.toFixed(2)}</span>
                               </div>
                             </div>
                           </div>
@@ -449,7 +448,7 @@ const QuotePreview = () => {
                             </h4>
                             <div className="text-sm text-blue-700">
                               <span className="bg-blue-100 px-2 py-1 rounded">
-                                {t('Total:')} £{roomData.totals.room_total.toFixed(2)}
+                                {t('Total:')} €{roomData.totals.room_total.toFixed(2)}
                               </span>
                             </div>
                           </div>
@@ -483,17 +482,17 @@ const QuotePreview = () => {
                                         {item.treatment?.replace('_', ' ')?.replace(/\b\w/g, l => l.toUpperCase()) || t('Treatment')}
                                       </div>
                                       <div className="text-sm text-gray-600">
-                                        {item.quantity.toFixed(2)}m² × £{item.unit_price.toFixed(2)}/m²
+                                        {item.quantity.toFixed(2)}m² × €{item.unit_price.toFixed(2)}/m²
                                       </div>
                                     </div>
                                     <div className="text-right">
-                                      <div className="font-bold text-gray-900">£{item.total.toFixed(2)}</div>
+                                      <div className="font-bold text-gray-900">€{item.total.toFixed(2)}</div>
                                     </div>
                                   </div>
                                 ))}
                                 <div className="flex justify-between items-center pt-2 border-t border-blue-200">
                                   <span className="font-medium text-blue-900">{t('Wall Work Subtotal:')}</span>
-                                  <span className="font-bold text-blue-900">£{roomData.totals.wall_total.toFixed(2)}</span>
+                                  <span className="font-bold text-blue-900">€{roomData.totals.wall_total.toFixed(2)}</span>
                                 </div>
                               </div>
                             </div>
@@ -514,17 +513,17 @@ const QuotePreview = () => {
                                         {item.treatment?.replace('_', ' ')?.replace(/\b\w/g, l => l.toUpperCase()) || t('Treatment')}
                                       </div>
                                       <div className="text-sm text-gray-600">
-                                        {item.quantity.toFixed(2)}m² × £{item.unit_price.toFixed(2)}/m²
+                                        {item.quantity.toFixed(2)}m² × €{item.unit_price.toFixed(2)}/m²
                                       </div>
                                     </div>
                                     <div className="text-right">
-                                      <div className="font-bold text-gray-900">£{item.total.toFixed(2)}</div>
+                                      <div className="font-bold text-gray-900">€{item.total.toFixed(2)}</div>
                                     </div>
                                   </div>
                                 ))}
                                 <div className="flex justify-between items-center pt-2 border-t border-green-200">
                                   <span className="font-medium text-green-900">{t('Ceiling Work Subtotal:')}</span>
-                                  <span className="font-bold text-green-900">£{roomData.totals.ceiling_total.toFixed(2)}</span>
+                                  <span className="font-bold text-green-900">€{roomData.totals.ceiling_total.toFixed(2)}</span>
                                 </div>
                               </div>
                             </div>
@@ -563,7 +562,7 @@ const QuotePreview = () => {
                                   {item.description.replace('Interior - ', '')}
                                 </div>
                                 <div className="text-sm text-gray-600">
-                                  {item.quantity} {item.unit} × £{item.unit_price.toFixed(2)} {t('each')}
+                                  {item.quantity} {item.unit} × €{item.unit_price.toFixed(2)} {t('each')}
                                 </div>
                                 {item.specifications?.notes && (
                                   <div className="text-xs text-gray-500 mt-1">
@@ -572,14 +571,14 @@ const QuotePreview = () => {
                                 )}
                               </div>
                               <div className="text-right">
-                                <div className="font-bold text-gray-900">£{item.total.toFixed(2)}</div>
+                                <div className="font-bold text-gray-900">€{item.total.toFixed(2)}</div>
                               </div>
                             </div>
                           ))}
 
                           <div className="flex justify-between items-center py-3 px-4 bg-orange-100 rounded-lg border-2 border-orange-300">
                             <span className="font-bold text-orange-900">{t('Interior Work Total:')}</span>
-                            <span className="font-bold text-orange-900 text-lg">£{summary.cost_breakdown.interior.toFixed(2)}</span>
+                            <span className="font-bold text-orange-900 text-lg">€{summary.cost_breakdown.interior.toFixed(2)}</span>
                           </div>
                         </div>
                       </>
@@ -613,7 +612,7 @@ const QuotePreview = () => {
                                   {item.description.replace('Exterior - ', '')}
                                 </div>
                                 <div className="text-sm text-gray-600">
-                                  {item.quantity} {item.unit} × £{item.unit_price.toFixed(2)} {t('each')}
+                                  {item.quantity} {item.unit} × €{item.unit_price.toFixed(2)} {t('each')}
                                 </div>
                                 {item.specifications?.notes && (
                                   <div className="text-xs text-gray-500 mt-1">
@@ -622,14 +621,14 @@ const QuotePreview = () => {
                                 )}
                               </div>
                               <div className="text-right">
-                                <div className="font-bold text-gray-900">£{item.total.toFixed(2)}</div>
+                                <div className="font-bold text-gray-900">€{item.total.toFixed(2)}</div>
                               </div>
                             </div>
                           ))}
 
                           <div className="flex justify-between items-center py-3 px-4 bg-blue-100 rounded-lg border-2 border-blue-300">
                             <span className="font-bold text-blue-900">{t('Exterior Work Total:')}</span>
-                            <span className="font-bold text-blue-900 text-lg">£{summary.cost_breakdown.exterior.toFixed(2)}</span>
+                            <span className="font-bold text-blue-900 text-lg">€{summary.cost_breakdown.exterior.toFixed(2)}</span>
                           </div>
                         </div>
                       </>
@@ -664,11 +663,11 @@ const QuotePreview = () => {
                                     {item.description.replace('Special Job - ', '')}
                                   </div>
                                   <div className="text-sm text-gray-600 mt-1">
-                                    {item.quantity} {item.unit} × £{item.unit_price.toFixed(2)} {t('per')} {item.unit}
+                                    {item.quantity} {item.unit} × €{item.unit_price.toFixed(2)} {t('per')} {item.unit}
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <div className="font-bold text-[#4bb4f5] text-xl">£{item.total.toFixed(2)}</div>
+                                  <div className="font-bold text-[#4bb4f5] text-xl">€{item.total.toFixed(2)}</div>
                                 </div>
                               </div>
 
@@ -721,7 +720,7 @@ const QuotePreview = () => {
 
                           <div className="flex justify-between items-center py-3 px-4 bg-purple-100 rounded-lg border-2 border-purple-300">
                             <span className="font-bold text-[#4bb4f5]">{t('Special Jobs Total:')}</span>
-                            <span className="font-bold text-[#4bb4f5] text-lg">£{summary.cost_breakdown.special.toFixed(2)}</span>
+                            <span className="font-bold text-[#4bb4f5] text-lg">€{summary.cost_breakdown.special.toFixed(2)}</span>
                           </div>
                         </div>
                       </>
@@ -743,16 +742,16 @@ const QuotePreview = () => {
               <div className="max-w-md ml-auto space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">{t('Subtotal:')}</span>
-                  <span className="font-medium text-gray-900">£{quote.subtotal.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900">€{quote.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">{t('VAT (20%):')}</span>
-                  <span className="font-medium text-gray-900">£{quote.vat_amount.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900">€{quote.vat_amount.toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-3">
                   <div className="flex justify-between">
                     <span className="text-lg font-semibold text-gray-900">{t('Total Amount:')}</span>
-                    <span className="text-2xl font-bold text-[#4bb4f5]">£{quote.total_amount.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-[#4bb4f5]">€{quote.total_amount.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -860,7 +859,7 @@ const QuotePreview = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('Room Work:')}</span>
                     <div className="text-right">
-                      <div className="font-medium">£{summary.cost_breakdown.rooms.toFixed(2)}</div>
+                      <div className="font-medium">€{summary.cost_breakdown.rooms.toFixed(2)}</div>
                       <div className="text-xs text-gray-500">
                         {((summary.cost_breakdown.rooms / quote.subtotal) * 100).toFixed(1)}%
                       </div>
@@ -869,7 +868,7 @@ const QuotePreview = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('Interior Work:')}</span>
                     <div className="text-right">
-                      <div className="font-medium">£{summary.cost_breakdown.interior.toFixed(2)}</div>
+                      <div className="font-medium">€{summary.cost_breakdown.interior.toFixed(2)}</div>
                       <div className="text-xs text-gray-500">
                         {((summary.cost_breakdown.interior / quote.subtotal) * 100).toFixed(1)}%
                       </div>
@@ -878,7 +877,7 @@ const QuotePreview = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('Exterior Work:')}</span>
                     <div className="text-right">
-                      <div className="font-medium">£{summary.cost_breakdown.exterior.toFixed(2)}</div>
+                      <div className="font-medium">€{summary.cost_breakdown.exterior.toFixed(2)}</div>
                       <div className="text-xs text-gray-500">
                         {((summary.cost_breakdown.exterior / quote.subtotal) * 100).toFixed(1)}%
                       </div>
@@ -887,7 +886,7 @@ const QuotePreview = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('Special Jobs:')}</span>
                     <div className="text-right">
-                      <div className="font-medium">£{summary.cost_breakdown.special.toFixed(2)}</div>
+                      <div className="font-medium">€{summary.cost_breakdown.special.toFixed(2)}</div>
                       <div className="text-xs text-gray-500">
                         {((summary.cost_breakdown.special / quote.subtotal) * 100).toFixed(1)}%
                       </div>

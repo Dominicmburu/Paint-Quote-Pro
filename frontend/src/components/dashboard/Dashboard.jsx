@@ -263,7 +263,7 @@ const Dashboard = () => {
             <p className="text-gray-500 mb-6">
               {searchTerm || statusFilter !== 'all' 
                 ? t('Try adjusting your search or filter criteria.')
-                : t('Create your first project to get started with Paint Quote Pro.')
+                : t('Create your first project to get started with Flotto.')
               }
             </p>
             {(!searchTerm && statusFilter === 'all') && (

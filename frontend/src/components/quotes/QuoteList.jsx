@@ -1,4 +1,3 @@
-// src/components/quotes/QuoteList.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -209,7 +208,7 @@ const QuoteList = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center text-sm text-gray-900">
                           <DollarSign className="h-4 w-4 mr-1 text-gray-400" />
-                          £{quote.total_amount.toLocaleString()}
+                          €{quote.total_amount.toLocaleString()}
                         </div>
                       </td>
                       

@@ -1,4 +1,3 @@
-// services/pricingService.js
 import api from './api';
 
 class PricingService {

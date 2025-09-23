@@ -326,7 +326,7 @@ const Features = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              {t('Why Paint Quote Pro vs Manual Quoting?')}
+              {t('Why Flotto vs Manual Quoting?')}
             </h2>
           </div>
 
@@ -358,7 +358,7 @@ const Features = () => {
             </div>
 
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-[#4bb4f5] mb-6">{t('Paint Quote Pro')}</h3>
+              <h3 className="text-2xl font-bold text-[#4bb4f5] mb-6">{t('Flotto')}</h3>
               <ul className="space-y-4">
                 <li className="flex items-center text-[#4bb4f5]">
                   <CheckCircle className="h-5 w-5 mr-3" />

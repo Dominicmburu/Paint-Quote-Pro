@@ -82,7 +82,7 @@ const TrialExpired = () => {
     {
       icon: <Trophy className="h-6 w-6 text-purple-600" />,
       title: t("Total Quote Value"),
-      value: `£${trialStats.totalValue.toLocaleString()}`,
+      value: `€${trialStats.totalValue.toLocaleString()}`,
       description: t("worth of quotes generated")
     }
   ];
@@ -116,7 +116,7 @@ const TrialExpired = () => {
               <Calendar className="h-12 w-12 text-purple-600 mx-auto" />
             </div>
             <h2 className="text-2xl font-bold text-purple-700 mb-4">
-              {t('Thanks for trying Paint Quote Pro!')}
+              {t('Thanks for trying Flotto!')}
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               {t('Your 14-day free trial has ended, but the good news is you can continue right where you left off. Choose a plan below to keep creating professional paint quotes.')}
@@ -143,7 +143,7 @@ const TrialExpired = () => {
               {t('You\'re already seeing the impact! 🎉')}
             </h3>
             <p className="text-green-700">
-              {t('In just {{days}} days, you\'ve created {{projects}} projects and generated £{{amount}} worth of quotes. Imagine what you could achieve with unlimited access!', {
+              {t('In just {{days}} days, you\'ve created {{projects}} projects and generated €{{amount}} worth of quotes. Imagine what you could achieve with unlimited access!', {
                 days: trialStats.timeUsed,
                 projects: trialStats.projectsCreated,
                 amount: trialStats.totalValue.toLocaleString()
@@ -206,14 +206,14 @@ const TrialExpired = () => {
                 <h4 className="text-xl font-bold text-purple-700">{plan.name}</h4>
                 <div className="mt-4">
                   <div className="text-4xl font-bold text-purple-700">
-                    £{isYearly ? plan.yearlyPrice : plan.price}
+                    €{isYearly ? plan.yearlyPrice : plan.price}
                   </div>
                   <div className="text-gray-500">
                     /{isYearly ? t('year') : t('month')}
                   </div>
                   {isYearly && plan.savings && (
                     <div className="text-green-600 text-sm font-medium mt-1">
-                      {t('Save £{{amount}} per year', { amount: plan.savings })}
+                      {t('Save €{{amount}} per year', { amount: plan.savings })}
                     </div>
                   )}
                 </div>

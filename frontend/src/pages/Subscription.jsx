@@ -63,6 +63,8 @@ const Subscription = () => {
     }
   };
 
+  console.log('Rendering Subscription Component with subscription:', subscription);
+
   const getStatusText = () => {
     if (!subscription) return t('No Active Subscription');
     
@@ -70,7 +72,7 @@ const Subscription = () => {
       case 'active':
         return t('Active Subscription');
       case 'trial':
-        return t('Free Trial ({{days}} days left)', { days: subscription.days_remaining });
+        return t(`Free Trial (${ subscription.days_remaining } days left)`);
       case 'past_due':
         return t('Payment Required');
       case 'cancelled':

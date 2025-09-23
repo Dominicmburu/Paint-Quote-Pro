@@ -498,7 +498,7 @@ const PaintBrandSettings = () => {
                             placeholder="0.00"
                           />
                         ) : (
-                          <span className="text-sm text-gray-900">£{product.price_per_litre?.toFixed(2)}</span>
+                          <span className="text-sm text-gray-900">€{product.price_per_litre?.toFixed(2)}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -589,7 +589,7 @@ const PaintBrandSettings = () => {
             {Object.entries(materialCosts).map(([key, value]) => (
               <div key={key}>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} (£)
+                  {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} (€)
                 </label>
                 <input
                   type="number"

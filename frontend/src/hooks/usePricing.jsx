@@ -1,4 +1,3 @@
-// hooks/usePricing.js
 import { useState, useEffect } from 'react';
 import pricingService from '../services/pricingService';
 

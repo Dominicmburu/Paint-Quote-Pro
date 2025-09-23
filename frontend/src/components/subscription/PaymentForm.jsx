@@ -148,7 +148,7 @@ const PaymentForm = ({ onSubmit, loading = false, error = '', plan = null }) => 
                 {plan.name} Plan - {plan.billingCycle}
               </p>
               <p className="text-sm text-purple-700">
-                £{plan.price}/{plan.billingCycle === 'yearly' ? 'year' : 'month'}
+                €{plan.price}/{plan.billingCycle === 'yearly' ? 'year' : 'month'}
               </p>
             </div>
           </div>

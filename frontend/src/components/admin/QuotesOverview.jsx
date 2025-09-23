@@ -288,9 +288,9 @@ const QuotesOverview = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Value</p>
-              <p className="text-2xl font-bold text-gray-900">£{(stats.total_value || 0).toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">€{(stats.total_value || 0).toLocaleString()}</p>
               <p className="text-xs text-gray-600 mt-1">
-                Accepted: £{(stats.accepted_value || 0).toLocaleString()}
+                Accepted: €{(stats.accepted_value || 0).toLocaleString()}
               </p>
             </div>
             <DollarSign className="h-8 w-8 text-green-600" />
@@ -301,7 +301,7 @@ const QuotesOverview = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Avg Value</p>
-              <p className="text-2xl font-bold text-gray-900">£{(stats.avg_value || 0).toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">€{(stats.avg_value || 0).toLocaleString()}</p>
               <p className="text-xs text-gray-600 mt-1">
                 Per quote
               </p>
@@ -374,7 +374,7 @@ const QuotesOverview = () => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
-            <Tooltip formatter={(value) => [`£${value.toLocaleString()}`, 'Average Value']} />
+            <Tooltip formatter={(value) => [`€${value.toLocaleString()}`, 'Average Value']} />
             <Line type="monotone" dataKey="average_value" stroke="#8B5CF6" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
@@ -517,7 +517,7 @@ const QuotesOverview = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      £{quote.total_amount ? quote.total_amount.toLocaleString() : 'N/A'}
+                      €{quote.total_amount ? quote.total_amount.toLocaleString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {quote.created_at ? new Date(quote.created_at).toLocaleDateString() : 'N/A'}
@@ -565,7 +565,7 @@ const QuotesOverview = () => {
                     <div className="text-xs text-gray-500">{company.quote_count} quotes</div>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-green-600">£{company.total_value.toLocaleString()}</span>
+                <span className="text-sm font-semibold text-green-600">€{company.total_value.toLocaleString()}</span>
               </div>
             ))}
           </div>
@@ -630,7 +630,7 @@ const QuotesOverview = () => {
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-500">Total Amount</label>
-                      <p className="text-lg font-bold text-gray-900">£{selectedQuote.total_amount?.toLocaleString()}</p>
+                      <p className="text-lg font-bold text-gray-900">€{selectedQuote.total_amount?.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
@@ -679,8 +679,8 @@ const QuotesOverview = () => {
                           <tr key={index}>
                             <td className="px-4 py-3 text-sm text-gray-900">{item.description}</td>
                             <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
-                            <td className="px-4 py-3 text-sm text-gray-900">£{item.unit_price?.toLocaleString()}</td>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-900">£{item.total?.toLocaleString()}</td>
+                            <td className="px-4 py-3 text-sm text-gray-900">€{item.unit_price?.toLocaleString()}</td>
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900">€{item.total?.toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -693,15 +693,15 @@ const QuotesOverview = () => {
                       <div className="w-64">
                         <div className="flex justify-between py-1">
                           <span className="text-sm text-gray-600">Subtotal:</span>
-                          <span className="text-sm font-medium">£{selectedQuote.subtotal?.toLocaleString()}</span>
+                          <span className="text-sm font-medium">€{selectedQuote.subtotal?.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between py-1">
                           <span className="text-sm text-gray-600">VAT:</span>
-                          <span className="text-sm font-medium">£{selectedQuote.vat_amount?.toLocaleString()}</span>
+                          <span className="text-sm font-medium">€{selectedQuote.vat_amount?.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between py-2 border-t font-bold">
                           <span className="text-sm">Total:</span>
-                          <span className="text-sm">£{selectedQuote.total_amount?.toLocaleString()}</span>
+                          <span className="text-sm">€{selectedQuote.total_amount?.toLocaleString()}</span>
                         </div>
                       </div>
                     </div>

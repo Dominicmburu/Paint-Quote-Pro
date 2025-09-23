@@ -226,10 +226,10 @@ const PaymentCancelled = () => {
                                 <div className="text-center mb-4">
                                     <h4 className="text-lg font-bold text-purple-700">{plan.name}</h4>
                                     <div className="text-3xl font-bold text-purple-700 mt-2">
-                                        £{plan.price}
+                                        €{plan.price}
                                         <span className="text-sm text-gray-500 font-normal">/{t('month')}</span>
                                     </div>
-                                    <p className="text-green-600 text-xs font-medium mt-1">{t('Save')} £{plan.savings}/{t('yr')}</p>
+                                    <p className="text-green-600 text-xs font-medium mt-1">{t('Save')} €{plan.savings}/{t('yr')}</p>
                                     <p className="text-gray-600 text-sm mt-2">{plan.description}</p>
                                 </div>
 
@@ -262,7 +262,7 @@ const PaymentCancelled = () => {
                         <h3 className="text-xl font-bold">{t('Remember: 14-Day Free Trial')}</h3>
                     </div>
                     <p className="text-purple-100 mb-6">
-                        {t('You can try Paint Quote Pro free for 14 days. No credit card needed to start.')}
+                        {t('You can try Flotto free for 14 days. No credit card needed to start.')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
@@ -283,7 +283,7 @@ const PaymentCancelled = () => {
                 {/* Testimonials */}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8">
                     <h3 className="text-xl font-bold text-purple-700 mb-6 text-center">
-                        {t('Why customers love Paint Quote Pro')}
+                        {t('Why customers love Flotto')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[

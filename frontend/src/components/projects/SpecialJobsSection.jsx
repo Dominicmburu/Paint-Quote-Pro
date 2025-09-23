@@ -1,4 +1,3 @@
-// 5. Updated SpecialJobsSection.jsx - Remove Individual Cost Calculation
 import React, { useState } from 'react';
 import { AlertTriangle, Plus, Trash2, Info, CheckSquare, Square, CheckCircle } from 'lucide-react';
 import { usePricing } from '../../hooks/usePricing';
@@ -172,7 +171,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
                 )}
                 <div className="font-medium">{data.name}</div>
               </div>
-              <div className="text-xs text-orange-600">{t('£{{price}} per unit', { price: getPrice(type).toFixed(2) })}</div>
+              <div className="text-xs text-orange-600">{t('€{{price}} per unit', { price: getPrice(type).toFixed(2) })}</div>
             </div>
           ))}
         </div>
@@ -221,7 +220,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('Unit Price (£)')}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('Unit Price (€)')}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -233,10 +232,10 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('Calculated Total (£)')}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('Calculated Total (€)')}</label>
                   <input
                     type="text"
-                    value={t('£{{total}}', { 
+                    value={t('€{{total}}', { 
                       total: ((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)).toFixed(2) 
                     })}
                     readOnly
@@ -265,7 +264,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
               <div className="mt-4 flex justify-end">
                 <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2">
                   <span className="text-sm font-medium text-orange-900">
-                    {t('Job Total: £{{total}}', { 
+                    {t('Job Total: €{{total}}', { 
                       total: ((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)).toFixed(2) 
                     })}
                   </span>
@@ -279,7 +278,7 @@ const SpecialJobsSection = ({ specialJobs, setSpecialJobs, customPricing }) => {
             <div className="flex items-center justify-between">
               <span className="text-lg font-medium text-orange-900">{t('Special Jobs Total:')}</span>
               <span className="text-xl font-bold text-orange-900">
-                {t('£{{total}}', { 
+                {t('€{{total}}', { 
                   total: specialJobs.reduce((sum, job) => sum + ((parseFloat(job.quantity) || 1) * (parseFloat(job.unitPrice) || 0)), 0).toFixed(2) 
                 })}
               </span>

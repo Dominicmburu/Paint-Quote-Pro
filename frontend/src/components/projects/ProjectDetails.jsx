@@ -1,4 +1,3 @@
-// 1. Updated ProjectDetails.jsx - Main Component with Centralized Total Calculation and Translation Support
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
@@ -125,7 +124,7 @@ const ProjectDetails = () => {
               parsePricingValue('walls.sanding.light.price', 5.00);
             const cost = wallArea * price;
             roomsTotal += cost;
-            console.log(`🔨 Wall sanding/filling: ${wallArea}m² × £${price} = £${cost.toFixed(2)}`);
+            console.log(`🔨 Wall sanding/filling: ${wallArea}m² × €${price} = €${cost.toFixed(2)}`);
           }
 
           // Wall Priming
@@ -135,7 +134,7 @@ const ProjectDetails = () => {
               parsePricingValue('walls.priming.price', 4.50);
             const cost = wallArea * price;
             roomsTotal += cost;
-            console.log(`🎨 Wall priming: ${wallArea}m² × £${price} = £${cost.toFixed(2)}`);
+            console.log(`🎨 Wall priming: ${wallArea}m² × €${price} = €${cost.toFixed(2)}`);
           }
 
           // Wall 1 Coat
@@ -143,7 +142,7 @@ const ProjectDetails = () => {
             const price = pricing.walls?.one_coat || pricing.walls?.painting?.one_coat?.price || 0;
             const cost = wallArea * price;
             roomsTotal += cost;
-            console.log(`🖌️ Wall 1 coat: ${wallArea}m² × £${price} = £${cost.toFixed(2)}`);
+            console.log(`🖌️ Wall 1 coat: ${wallArea}m² × €${price} = €${cost.toFixed(2)}`);
           }
 
           // Wall 2 Coats
@@ -151,7 +150,7 @@ const ProjectDetails = () => {
             const price = pricing.walls?.two_coats || pricing.walls?.painting?.two_coat?.price || 0;
             const cost = wallArea * price;
             roomsTotal += cost;
-            console.log(`🖌️🖌️ Wall 2 coats: ${wallArea}m² × £${price} = £${cost.toFixed(2)}`);
+            console.log(`🖌️🖌️ Wall 2 coats: ${wallArea}m² × €${price} = €${cost.toFixed(2)}`);
           }
         }
 
@@ -162,7 +161,7 @@ const ProjectDetails = () => {
             const price = pricing.ceiling?.sanding_filling || pricing.ceiling?.preparation?.light?.price || 0;
             const cost = ceilingArea * price;
             roomsTotal += cost;
-            console.log(`🔨 Ceiling sanding/filling: ${ceilingArea}m² × £${price} = £${cost.toFixed(2)}`);
+            console.log(`🔨 Ceiling sanding/filling: ${ceilingArea}m² × €${price} = €${cost.toFixed(2)}`);
           }
 
           // Ceiling Priming
@@ -170,7 +169,7 @@ const ProjectDetails = () => {
             const price = pricing.ceiling?.priming || pricing.ceiling?.preparation?.light?.price || 0;
             const cost = ceilingArea * price;
             roomsTotal += cost;
-            console.log(`🎨 Ceiling priming: ${ceilingArea}m² × £${price} = £${cost.toFixed(2)}`);
+            console.log(`🎨 Ceiling priming: ${ceilingArea}m² × €${price} = €${cost.toFixed(2)}`);
           }
 
           // Ceiling 1 Coat
@@ -178,7 +177,7 @@ const ProjectDetails = () => {
             const price = pricing.ceiling?.one_coat || pricing.ceiling?.painting?.one_coat?.price || 0;
             const cost = ceilingArea * price;
             roomsTotal += cost;
-            console.log(`🖌️ Ceiling 1 coat: ${ceilingArea}m² × £${price} = £${cost.toFixed(2)}`);
+            console.log(`🖌️ Ceiling 1 coat: ${ceilingArea}m² × €${price} = €${cost.toFixed(2)}`);
           }
 
           // Ceiling 2 Coats
@@ -186,7 +185,7 @@ const ProjectDetails = () => {
             const price = pricing.ceiling?.two_coats || pricing.ceiling?.painting?.two_coat?.price || 0;
             const cost = ceilingArea * price;
             roomsTotal += cost;
-            console.log(`🖌️🖌️ Ceiling 2 coats: ${ceilingArea}m² × £${price} = £${cost.toFixed(2)}`);
+            console.log(`🖌️🖌️ Ceiling 2 coats: ${ceilingArea}m² × €${price} = €${cost.toFixed(2)}`);
           }
         }
       });
@@ -211,20 +210,20 @@ const ProjectDetails = () => {
             const mappedCondition = conditionMapping[item.condition] || 'easy_prep';
             unitPrice = pricing.interior?.doors?.[mappedCondition]?.price || 0;
 
-            console.log(`🚪 Interior Door: condition=${item.condition} → mapped=${mappedCondition} → price=£${unitPrice}`);
+            console.log(`🚪 Interior Door: condition=${item.condition} → mapped=${mappedCondition} → price=€${unitPrice}`);
 
           } else if (type === 'fixedWindows' || type === 'turnWindows') {
             unitPrice = pricing.interior?.[type]?.[item.size]?.price || 0;
-            console.log(`🪟 Interior Window ${type}: size=${item.size} → price=£${unitPrice}`);
+            console.log(`🪟 Interior Window ${type}: size=${item.size} → price=€${unitPrice}`);
 
           } else if (type === 'stairs' || type === 'radiators' || type === 'skirtingBoards' || type === 'otherItems') {
             unitPrice = pricing.interior?.[type]?.price || 0;
-            console.log(`🏠 Interior ${type}: price=£${unitPrice}`);
+            console.log(`🏠 Interior ${type}: price=€${unitPrice}`);
           }
 
           const itemCost = quantity * unitPrice;
           interiorTotal += itemCost;
-          console.log(`💰 Interior ${type}: ${quantity} × £${unitPrice} = £${itemCost.toFixed(2)}`);
+          console.log(`💰 Interior ${type}: ${quantity} × €${unitPrice} = €${itemCost.toFixed(2)}`);
         });
       });
 
@@ -247,20 +246,20 @@ const ProjectDetails = () => {
             const mappedDoorType = doorTypeMapping[item.doorType] || 'front_door';
             unitPrice = pricing.exterior?.doors?.[mappedDoorType]?.price || 0;
 
-            console.log(`🚪 Exterior Door: doorType=${item.doorType} → mapped=${mappedDoorType} → price=£${unitPrice}`);
+            console.log(`🚪 Exterior Door: doorType=${item.doorType} → mapped=${mappedDoorType} → price=€${unitPrice}`);
 
           } else if (type === 'fixedWindows' || type === 'turnWindows' || type === 'dormerWindows') {
             unitPrice = pricing.exterior?.[type]?.[item.size]?.price || 0;
-            console.log(`🪟 Exterior Window ${type}: size=${item.size} → price=£${unitPrice}`);
+            console.log(`🪟 Exterior Window ${type}: size=${item.size} → price=€${unitPrice}`);
 
           } else if (type === 'fasciaBoards' || type === 'rainPipe' || type === 'otherItems') {
             unitPrice = pricing.exterior?.[type]?.price || 0;
-            console.log(`🏠 Exterior ${type}: price=£${unitPrice}`);
+            console.log(`🏠 Exterior ${type}: price=€${unitPrice}`);
           }
 
           const itemCost = quantity * unitPrice;
           exteriorTotal += itemCost;
-          console.log(`💰 Exterior ${type}: ${quantity} × £${unitPrice} = £${itemCost.toFixed(2)}`);
+          console.log(`💰 Exterior ${type}: ${quantity} × €${unitPrice} = €${itemCost.toFixed(2)}`);
         });
       });
 
@@ -270,7 +269,7 @@ const ProjectDetails = () => {
         const quantity = parseFloat(job.quantity) || 1;
         const jobCost = unitPrice * quantity;
         specialJobsTotal += jobCost;
-        console.log(`🔧 Special job ${job.name}: ${quantity} × £${unitPrice} = £${jobCost.toFixed(2)}`);
+        console.log(`🔧 Special job ${job.name}: ${quantity} × €${unitPrice} = €${jobCost.toFixed(2)}`);
       });
 
       const grandTotal = roomsTotal + interiorTotal + exteriorTotal + specialJobsTotal;
@@ -1394,19 +1393,19 @@ const ProjectDetails = () => {
                 <div className="space-y-2 text-sm text-gray-600 mb-4">
                   <div className="flex justify-between">
                     <span>{t('Rooms')} ({rooms.length})</span>
-                    <span className="font-medium text-blue-600">£{totalCosts.rooms.toFixed(2)}</span>
+                    <span className="font-medium text-blue-600">€{totalCosts.rooms.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>{t('Interior')} ({Object.values(interiorItems).reduce((sum, items) => sum + items.length, 0)})</span>
-                    <span className="font-medium text-purple-600">£{totalCosts.interior.toFixed(2)}</span>
+                    <span className="font-medium text-purple-600">€{totalCosts.interior.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>{t('Exterior')} ({Object.values(exteriorItems).reduce((sum, items) => sum + items.length, 0)})</span>
-                    <span className="font-medium text-green-600">£{totalCosts.exterior.toFixed(2)}</span>
+                    <span className="font-medium text-green-600">€{totalCosts.exterior.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>{t('Special Jobs')} ({specialJobs.length})</span>
-                    <span className="font-medium text-orange-600">£{totalCosts.specialJobs.toFixed(2)}</span>
+                    <span className="font-medium text-orange-600">€{totalCosts.specialJobs.toFixed(2)}</span>
                   </div>
                   <hr className="border-gray-200" />
                 </div>
@@ -1414,7 +1413,7 @@ const ProjectDetails = () => {
                 {/* Total amount with live updates */}
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-lg font-bold text-gray-900">{t('Total Amount')}:</span>
-                  <span className="text-3xl font-bold text-teal-600">£{totalCosts.total.toFixed(2)}</span>
+                  <span className="text-3xl font-bold text-teal-600">€{totalCosts.total.toFixed(2)}</span>
                 </div>
 
                 {/* Live update indicator */}

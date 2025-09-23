@@ -16,7 +16,7 @@ export const formatDate = (dateString) => {
 
 export const formatCurrency = (amount, currency = 'GBP') => {
   if (amount === null || amount === undefined || isNaN(amount)) {
-    return '£0.00';
+    return '€0.00';
   }
 
   try {
@@ -27,7 +27,7 @@ export const formatCurrency = (amount, currency = 'GBP') => {
       maximumFractionDigits: 2
     }).format(amount);
   } catch (error) {
-    return `£${parseFloat(amount).toFixed(2)}`;
+    return `€${parseFloat(amount).toFixed(2)}`;
   }
 };
 

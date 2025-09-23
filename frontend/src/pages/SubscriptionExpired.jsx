@@ -183,7 +183,7 @@ const SubscriptionExpired = () => {
                 <div className="text-center mb-4">
                   <h4 className="text-lg font-bold text-purple-700">{plan.name}</h4>
                   <div className="text-3xl font-bold text-purple-700 mt-2">
-                    £{plan.price}
+                    €{plan.price}
                     <span className="text-sm text-gray-500 font-normal">/month</span>
                   </div>
                   <p className="text-gray-600 text-sm mt-2">{plan.description}</p>

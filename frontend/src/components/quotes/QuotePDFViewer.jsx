@@ -1,4 +1,3 @@
-// src/components/quotes/QuotePDFViewer.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Download, ArrowLeft, FileText, AlertCircle } from 'lucide-react';
@@ -156,7 +155,7 @@ const QuotePDFViewer = () => {
                             </div>
                             <div>
                                 <p className="text-sm text-gray-600">Total Amount</p>
-                                <p className="text-xl font-bold text-blue-600">£{quote.total_amount?.toLocaleString()}</p>
+                                <p className="text-xl font-bold text-blue-600">€{quote.total_amount?.toLocaleString()}</p>
                             </div>
                         </div>
 

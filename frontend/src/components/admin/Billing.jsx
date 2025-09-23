@@ -266,7 +266,7 @@ const Billing = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">£{(stats.total_revenue || 0).toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">€{(stats.total_revenue || 0).toLocaleString()}</p>
               <p className="text-xs text-green-600 mt-1">
                 +{(stats.revenue_growth || 0).toFixed(1)}% growth
               </p>
@@ -292,7 +292,7 @@ const Billing = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">MRR</p>
-              <p className="text-2xl font-bold text-gray-900">£{(stats.current_mrr || 0).toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">€{(stats.current_mrr || 0).toLocaleString()}</p>
               <p className="text-xs text-purple-600 mt-1">
                 +{(stats.mrr_growth || 0).toFixed(1)}% growth
               </p>
@@ -367,7 +367,7 @@ const Billing = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip formatter={(value) => [`£${value.toLocaleString()}`, 'Revenue']} />
+              <Tooltip formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']} />
               <Area type="monotone" dataKey="revenue" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
             </AreaChart>
           </ResponsiveContainer>
@@ -392,7 +392,7 @@ const Billing = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`£${value.toLocaleString()}`, 'Revenue']} />
+              <Tooltip formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -413,7 +413,7 @@ const Billing = () => {
                   <div key={subscription.id} className="flex justify-between items-center bg-white rounded p-2">
                     <div>
                       <span className="text-sm font-medium">{subscription.company_name}</span>
-                      <span className="text-sm text-gray-500 ml-2">£{calculateAmount(subscription)}/month</span>
+                      <span className="text-sm text-gray-500 ml-2">€{calculateAmount(subscription)}/month</span>
                     </div>
                     <div className="flex space-x-2">
                       <span className={`text-xs px-2 py-1 rounded ${getStatusColor(subscription.status)}`}>
@@ -547,7 +547,7 @@ const Billing = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <span className="text-green-600 font-medium">
-                        £{calculateAmount(subscription)}/{subscription.billing_cycle === 'yearly' ? 'year' : 'month'}
+                        €{calculateAmount(subscription)}/{subscription.billing_cycle === 'yearly' ? 'year' : 'month'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -618,15 +618,15 @@ const Billing = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Total Revenue</span>
-              <span className="text-sm font-semibold">£{(stats.total_revenue || 0).toLocaleString()}</span>
+              <span className="text-sm font-semibold">€{(stats.total_revenue || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Monthly Recurring Revenue</span>
-              <span className="text-sm font-semibold">£{(stats.current_mrr || 0).toLocaleString()}</span>
+              <span className="text-sm font-semibold">€{(stats.current_mrr || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Previous MRR</span>
-              <span className="text-sm font-semibold">£{(stats.previous_mrr || 0).toLocaleString()}</span>
+              <span className="text-sm font-semibold">€{(stats.previous_mrr || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center border-t pt-2">
               <span className="text-sm font-medium text-gray-900">MRR Growth</span>
@@ -686,7 +686,7 @@ const Billing = () => {
             </div>
             <div className="text-sm text-gray-600">Starter Plan</div>
             <div className="text-xs text-gray-500 mt-1">
-              £{(subscriptions.filter(s => s.plan_name === 'starter').length * 29).toLocaleString()}/month
+              €{(subscriptions.filter(s => s.plan_name === 'starter').length * 29).toLocaleString()}/month
             </div>
           </div>
           <div className="bg-purple-50 p-4 rounded-lg text-center">
@@ -695,7 +695,7 @@ const Billing = () => {
             </div>
             <div className="text-sm text-gray-600">Professional Plan</div>
             <div className="text-xs text-gray-500 mt-1">
-              £{(subscriptions.filter(s => s.plan_name === 'professional').length * 59).toLocaleString()}/month
+              €{(subscriptions.filter(s => s.plan_name === 'professional').length * 59).toLocaleString()}/month
             </div>
           </div>
           <div className="bg-green-50 p-4 rounded-lg text-center">
@@ -704,7 +704,7 @@ const Billing = () => {
             </div>
             <div className="text-sm text-gray-600">Enterprise Plan</div>
             <div className="text-xs text-gray-500 mt-1">
-              £{(subscriptions.filter(s => s.plan_name === 'enterprise').length * 99).toLocaleString()}/month
+              €{(subscriptions.filter(s => s.plan_name === 'enterprise').length * 99).toLocaleString()}/month
             </div>
           </div>
         </div>
@@ -751,7 +751,7 @@ const Billing = () => {
               </div>
               <div className="text-right">
                 <span className="text-sm font-semibold text-gray-900">
-                  £{calculateAmount(subscription)}/{subscription.billing_cycle === 'yearly' ? 'yr' : 'mo'}
+                  €{calculateAmount(subscription)}/{subscription.billing_cycle === 'yearly' ? 'yr' : 'mo'}
                 </span>
                 <div className="text-xs text-gray-500">
                   {subscription.created_at ? new Date(subscription.created_at).toLocaleDateString() : 'N/A'}

@@ -273,7 +273,7 @@ const QuoteHistory = () => {
                     
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        £{quote.total_amount?.toFixed(2) || '0.00'}
+                        €{quote.total_amount?.toFixed(2) || '0.00'}
                       </div>
                       <div className="text-sm text-gray-500">
                         {quote.line_items?.length || 0} items
@@ -383,7 +383,7 @@ const QuoteHistory = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Value</p>
               <p className="text-2xl font-bold text-gray-900">
-                £{quotes.reduce((sum, quote) => sum + (quote.total_amount || 0), 0).toFixed(2)}
+                €{quotes.reduce((sum, quote) => sum + (quote.total_amount || 0), 0).toFixed(2)}
               </p>
             </div>
           </div>

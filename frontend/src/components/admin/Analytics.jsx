@@ -112,8 +112,8 @@ const Analytics = () => {
     csv += `Active Users,${overview.active_users || 0},-\n`;
     csv += `Active Subscriptions,${subscriptions.active || 0},-\n`;
     csv += `Trial Subscriptions,${subscriptions.trial || 0},-\n`;
-    csv += `Total Revenue,£${(revenue.total_revenue || 0).toLocaleString()},-\n`;
-    csv += `Monthly Revenue,£${(revenue.monthly_revenue || 0).toLocaleString()},-\n`;
+    csv += `Total Revenue,€${(revenue.total_revenue || 0).toLocaleString()},-\n`;
+    csv += `Monthly Revenue,€${(revenue.monthly_revenue || 0).toLocaleString()},-\n`;
     
     return csv;
   };
@@ -219,9 +219,9 @@ const Analytics = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">£{(revenue.total_revenue || 0).toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">€{(revenue.total_revenue || 0).toLocaleString()}</p>
               <p className="text-xs mt-1 text-green-600">
-                Monthly: £{(revenue.monthly_revenue || 0).toLocaleString()}
+                Monthly: €{(revenue.monthly_revenue || 0).toLocaleString()}
               </p>
             </div>
             <div className="flex-shrink-0">
@@ -350,7 +350,7 @@ const Analytics = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey={revenueData.length > 0 ? "month" : "date"} />
               <YAxis />
-              <Tooltip formatter={(value) => [`£${value.toLocaleString()}`, 'Revenue']} />
+              <Tooltip formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']} />
               <Line 
                 type="monotone" 
                 dataKey={revenueData.length > 0 ? "revenue" : "revenue"} 
@@ -472,11 +472,11 @@ const Analytics = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Total Revenue</span>
-              <span className="text-lg font-semibold">£{(revenue.total_revenue || 0).toLocaleString()}</span>
+              <span className="text-lg font-semibold">€{(revenue.total_revenue || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Monthly Revenue</span>
-              <span className="text-lg font-semibold">£{(revenue.monthly_revenue || 0).toLocaleString()}</span>
+              <span className="text-lg font-semibold">€{(revenue.monthly_revenue || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Active Subscriptions</span>
@@ -547,7 +547,7 @@ const Analytics = () => {
         </div>
         <div className="bg-white p-4 rounded-lg border text-center">
           <div className="text-xl font-bold text-gray-900">
-            £{overview.total_users ? Math.round((revenue.total_revenue || 0) / overview.total_users) : 0}
+            €{overview.total_users ? Math.round((revenue.total_revenue || 0) / overview.total_users) : 0}
           </div>
           <div className="text-xs text-gray-600">Revenue Per User</div>
         </div>

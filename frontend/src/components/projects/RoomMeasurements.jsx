@@ -1,4 +1,3 @@
-// Updated RoomMeasurements.jsx - Total Wall Area Approach
 import React, { useEffect, useCallback } from 'react';
 import { Plus, Trash2, Square, Building, AlertCircle, RefreshCw } from 'lucide-react';
 import { usePricing } from '../../hooks/usePricing';
@@ -84,7 +83,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
   // Get pricing for display
   const getPriceDisplay = (category, type) => {
     try {
-      if (!pricing) return '£0.00';
+      if (!pricing) return '€0.00';
       
       let price = 0;
       
@@ -124,10 +123,10 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
         }
       }
       
-      return `£${price.toFixed(2)}`;
+      return `€${price.toFixed(2)}`;
     } catch (error) {
       console.error('Error getting price display:', error);
-      return '£0.00';
+      return '€0.00';
     }
   };
 
@@ -282,7 +281,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
               <div className="text-right">
                 <div className="text-sm font-medium text-gray-900">{t('Room Total')}</div>
                 <div className="text-lg font-bold text-teal-600">
-                  £{calculateRoomCost(room).toFixed(2)}
+                  €{calculateRoomCost(room).toFixed(2)}
                 </div>
               </div>
               <button
@@ -373,7 +372,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     <div className="text-gray-600">{getPriceDisplay('walls', 'sanding_filling')}/m²</div>
                     {room.wall_treatments?.sanding_filling && (
                       <div className="text-blue-600 font-medium">
-                        £{((parseFloat(room.walls_surface_m2) || 0) * (pricing?.walls?.sanding?.light?.price || 0)).toFixed(2)}
+                        €{((parseFloat(room.walls_surface_m2) || 0) * (pricing?.walls?.sanding?.light?.price || 0)).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -391,7 +390,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     <div className="text-gray-600">{getPriceDisplay('walls', 'priming')}/m²</div>
                     {room.wall_treatments?.priming && (
                       <div className="text-blue-600 font-medium">
-                        £{((parseFloat(room.walls_surface_m2) || 0) * (pricing?.walls?.priming?.one_coat?.price || 0)).toFixed(2)}
+                        €{((parseFloat(room.walls_surface_m2) || 0) * (pricing?.walls?.priming?.one_coat?.price || 0)).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -409,7 +408,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     <div className="text-gray-600">{getPriceDisplay('walls', 'one_coat')}/m²</div>
                     {room.wall_treatments?.one_coat && (
                       <div className="text-blue-600 font-medium">
-                        £{((parseFloat(room.walls_surface_m2) || 0) * (pricing?.walls?.painting?.one_coat?.price || 0)).toFixed(2)}
+                        €{((parseFloat(room.walls_surface_m2) || 0) * (pricing?.walls?.painting?.one_coat?.price || 0)).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -427,7 +426,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     <div className="text-gray-600">{getPriceDisplay('walls', 'two_coats')}/m²</div>
                     {room.wall_treatments?.two_coats && (
                       <div className="text-blue-600 font-medium">
-                        £{((parseFloat(room.walls_surface_m2) || 0) * (pricing?.walls?.painting?.two_coat?.price || 0)).toFixed(2)}
+                        €{((parseFloat(room.walls_surface_m2) || 0) * (pricing?.walls?.painting?.two_coat?.price || 0)).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -459,7 +458,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     <div className="text-gray-600">{getPriceDisplay('ceiling', 'sanding_filling')}/m²</div>
                     {room.ceiling_treatments?.sanding_filling && (
                       <div className="text-green-600 font-medium">
-                        £{((parseFloat(room.area_m2) || 0) * (pricing?.ceiling?.preparation?.light?.price || 0)).toFixed(2)}
+                        €{((parseFloat(room.area_m2) || 0) * (pricing?.ceiling?.preparation?.light?.price || 0)).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -477,7 +476,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     <div className="text-gray-600">{getPriceDisplay('ceiling', 'priming')}/m²</div>
                     {room.ceiling_treatments?.priming && (
                       <div className="text-green-600 font-medium">
-                        £{((parseFloat(room.area_m2) || 0) * (pricing?.ceiling?.preparation?.light?.price || 0)).toFixed(2)}
+                        €{((parseFloat(room.area_m2) || 0) * (pricing?.ceiling?.preparation?.light?.price || 0)).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -495,7 +494,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     <div className="text-gray-600">{getPriceDisplay('ceiling', 'one_coat')}/m²</div>
                     {room.ceiling_treatments?.one_coat && (
                       <div className="text-green-600 font-medium">
-                        £{((parseFloat(room.area_m2) || 0) * (pricing?.ceiling?.painting?.one_coat?.price || 0)).toFixed(2)}
+                        €{((parseFloat(room.area_m2) || 0) * (pricing?.ceiling?.painting?.one_coat?.price || 0)).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -513,7 +512,7 @@ const RoomMeasurements = ({ rooms, setRooms, customPricing }) => {
                     <div className="text-gray-600">{getPriceDisplay('ceiling', 'two_coats')}/m²</div>
                     {room.ceiling_treatments?.two_coats && (
                       <div className="text-green-600 font-medium">
-                        £{((parseFloat(room.area_m2) || 0) * (pricing?.ceiling?.painting?.two_coat?.price || 0)).toFixed(2)}
+                        €{((parseFloat(room.area_m2) || 0) * (pricing?.ceiling?.painting?.two_coat?.price || 0)).toFixed(2)}
                       </div>
                     )}
                   </div>

@@ -56,7 +56,7 @@ const Contact = () => {
             </div>
             <h2 className="text-3xl font-bold text-slate-800 mb-4">{t('Thank you for your message!')}</h2>
             <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-              {t("We've received your message and our team will get back to you within 24 hours during business days. We look forward to helping you with Paint Quote Pro!")}
+              {t("We've received your message and our team will get back to you within 24 hours during business days. We look forward to helping you with Flotto!")}
             </p>
             <button
               onClick={() => setSent(false)}
@@ -77,7 +77,7 @@ const Contact = () => {
       <section className="bg-gradient-to-br from-[#4bb4f5] via-[#4bb4f5] to-[#4bb4f5] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
-            {t('Get in Touch with Paint Quote Pro')}
+            {t('Get in Touch with Flotto')}
           </h1>
           <p className="text-xl md:text-2xl text-slate-700 max-w-4xl mx-auto leading-relaxed mb-8">
             {t("Have questions about revolutionizing your painting business? We're here to help you succeed. Our team of painting industry experts is ready to support your journey.")}
@@ -236,7 +236,7 @@ const Contact = () => {
                       <MapPin className="h-6 w-6 text-[#4bb4f5]" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-slate-800 text-lg mb-2">{t('Paint Quote Pro Ltd')}</h3>
+                      <h3 className="font-bold text-slate-800 text-lg mb-2">{t('Flotto Ltd')}</h3>
                       <p className="text-slate-600 leading-relaxed">
                         {t('Innovation Street 15 - 5B')}<br />
                         {t('London W1A 0AX')}<br />
@@ -279,7 +279,7 @@ const Contact = () => {
                       <Users className="h-5 w-5 text-amber-600 mt-1 mr-3 flex-shrink-0" />
                       <div>
                         <h4 className="font-bold text-slate-800 mb-2">{t('Do you provide training and support?')}</h4>
-                        <p className="text-slate-600 leading-relaxed">{t("Absolutely! We offer comprehensive onboarding calls, video tutorials, and ongoing support to ensure you get the most out of Paint Quote Pro.")}</p>
+                        <p className="text-slate-600 leading-relaxed">{t("Absolutely! We offer comprehensive onboarding calls, video tutorials, and ongoing support to ensure you get the most out of Flotto.")}</p>
                       </div>
                     </div>
                   </div>
@@ -315,7 +315,7 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-800 mb-4">{t('Join Hundreds of Successful Painters')}</h2>
-            <p className="text-xl text-slate-600">{t('See what Paint Quote Pro customers are saying')}</p>
+            <p className="text-xl text-slate-600">{t('See what Flotto customers are saying')}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -325,7 +325,7 @@ const Contact = () => {
                   <Star key={i} className="h-4 w-4 text-amber-400 fill-current" />
                 ))}
               </div>
-              <p className="text-slate-600 italic mb-4">{t('"Paint Quote Pro has completely transformed my business. I\'m creating quotes 5x faster and winning more jobs than ever before."')}</p>
+              <p className="text-slate-600 italic mb-4">{t('"Flotto has completely transformed my business. I\'m creating quotes 5x faster and winning more jobs than ever before."')}</p>
               <p className="font-semibold text-slate-800">{t('Sarah Mitchell')}</p>
               <p className="text-slate-500 text-sm">{t('Mitchell Painting Services')}</p>
             </div>

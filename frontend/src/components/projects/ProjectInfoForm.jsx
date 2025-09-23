@@ -1,4 +1,3 @@
-// components/projects/ProjectInfoForm.jsx
 import React from 'react';
 import { FileText, Home, Building } from 'lucide-react';
 import { useTranslation } from '../../hooks/useTranslation';

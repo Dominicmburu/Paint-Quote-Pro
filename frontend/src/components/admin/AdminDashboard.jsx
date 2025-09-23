@@ -138,7 +138,7 @@ const AdminDashboard = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip formatter={(value) => [`£${value.toLocaleString()}`, 'Revenue']} />
+              <Tooltip formatter={(value) => [`€${value.toLocaleString()}`, 'Revenue']} />
               <Line type="monotone" dataKey="revenue" stroke="#7C3AED" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>

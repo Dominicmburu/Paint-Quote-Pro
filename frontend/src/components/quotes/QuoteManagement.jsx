@@ -1,4 +1,3 @@
-// src/components/quotes/QuoteManagement.jsx - Updated with frontend URLs
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -92,7 +91,7 @@ ${signatureUrl}
 Quote Details:
 - Quote Number: ${quote.quote_number}
 - Project: ${quote.project_name}
-- Total Amount: £${quote.total_amount.toLocaleString()}
+- Total Amount: €${quote.total_amount.toLocaleString()}
 
 This link will allow you to digitally sign the quote securely.
 
@@ -147,7 +146,7 @@ ${quote.company.name}`);
                     </div>
                     <div>
                         <span className="text-gray-600">Total Amount:</span>
-                        <span className="ml-2 font-medium text-lg">£{quote.total_amount.toLocaleString()}</span>
+                        <span className="ml-2 font-medium text-lg">€{quote.total_amount.toLocaleString()}</span>
                     </div>
                 </div>
 
@@ -260,10 +259,10 @@ ${quote.company.name}`);
                                         {item.quantity} {item.unit}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        £{item.unit_price.toLocaleString()}
+                                        €{item.unit_price.toLocaleString()}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        £{item.total.toLocaleString()}
+                                        €{item.total.toLocaleString()}
                                     </td>
                                 </tr>
                             ))}
@@ -274,7 +273,7 @@ ${quote.company.name}`);
                                     Subtotal:
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-900">
-                                    £{quote.subtotal.toLocaleString()}
+                                    €{quote.subtotal.toLocaleString()}
                                 </td>
                             </tr>
                             <tr>
@@ -282,7 +281,7 @@ ${quote.company.name}`);
                                     VAT (20%):
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-900">
-                                    £{quote.vat_amount.toLocaleString()}
+                                    €{quote.vat_amount.toLocaleString()}
                                 </td>
                             </tr>
                             <tr>
@@ -290,7 +289,7 @@ ${quote.company.name}`);
                                     Total:
                                 </td>
                                 <td className="px-6 py-4 text-lg font-bold text-gray-900">
-                                    £{quote.total_amount.toLocaleString()}
+                                    €{quote.total_amount.toLocaleString()}
                                 </td>
                             </tr>
                         </tfoot>

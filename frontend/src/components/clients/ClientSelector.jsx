@@ -1,4 +1,3 @@
-// components/clients/ClientSelector.jsx (Fixed)
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, User, Building } from 'lucide-react';
 import api from '../../services/api';

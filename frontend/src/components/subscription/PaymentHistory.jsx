@@ -116,7 +116,7 @@ const PaymentHistory = () => {
   };
 
   const formatCurrency = (amount, currency = 'GBP') => {
-    if (!amount) return t('£0.00');
+    if (!amount) return t('€0.00');
     return new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency: currency

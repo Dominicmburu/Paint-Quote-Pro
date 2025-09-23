@@ -1,4 +1,3 @@
-// src/components/quotes/PublicQuoteSignature.jsx - Updated version
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, FileText, Download, AlertCircle } from 'lucide-react';
@@ -28,12 +27,11 @@ const PublicQuoteSignature = () => {
         loadSignaturePadScript();
     }, [quoteId]);
 
-    // Initialize signature pad after script loads and canvas is available
     useEffect(() => {
         if (scriptLoaded && canvasRef.current && !signaturePad) {
             initializeSignaturePad();
         }
-    }, [scriptLoaded, quote]); // Also depend on quote so it initializes after the form is rendered
+    }, [scriptLoaded, quote]); 
 
     const loadQuote = async () => {
         try {
@@ -309,19 +307,15 @@ const PublicQuoteSignature = () => {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
                     <div className="text-center">
-                        <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                        <CheckCircle className="h-16 w-16 text-[#4bb4f5] mx-auto mb-4" />
                         <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('Quote Already Signed')}</h2>
                         <p className="text-gray-600 mb-4">
-                            {t('This quote was digitally signed on {{date}}.', {
-                                date: new Date(quote.signed_at).toLocaleDateString()
-                            })}
+                            {t(`This quote was digitally signed on ${new Date(quote.signed_at).toLocaleDateString()}.`, {})}
                         </p>
                         <div className="bg-gray-50 p-4 rounded-lg">
-                            <p className="text-sm text-gray-600">{t('Quote #{{number}}', { number: quote.quote_number })}</p>
-                            <p className="text-sm text-gray-600">{t('Project: {{name}}', { name: quote.project_name })}</p>
-                            <p className="text-lg font-semibold">{t('Total: £{{amount}}', { 
-                                amount: quote.total_amount.toLocaleString() 
-                            })}</p>
+                            <p className="text-sm text-gray-600">{t(`Quote #${quote.quote_number}`)}</p>
+                            <p className="text-sm text-gray-600">{t(`Project: ${quote.project_name}`)}</p>
+                            <p className="text-lg font-semibold">{t(`Total: €${quote.total_amount.toLocaleString()}`)}</p>
                         </div>
                     </div>
                 </div>
@@ -334,7 +328,7 @@ const PublicQuoteSignature = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                     {/* Header */}
-                    <div className="bg-green-600 text-white p-6">
+                    <div className="bg-[#4bb4f5] text-white p-6">
                         <h1 className="text-2xl font-bold">{t('Digital Quote Signature')}</h1>
                         <p className="text-blue-100 mt-1">{t('Please review and sign the quote below')}</p>
                     </div>
@@ -354,7 +348,7 @@ const PublicQuoteSignature = () => {
                             <div>
                                 <p className="text-sm text-gray-600">{t('Total Amount')}</p>
                                 <p className="text-xl font-bold text-blue-600">
-                                    {t('£{{amount}}', { amount: quote.total_amount.toLocaleString() })}
+                                    {t(`€${ quote.total_amount.toLocaleString() }`)}
                                 </p>
                             </div>
                             <div>
@@ -445,7 +439,7 @@ const PublicQuoteSignature = () => {
                                         {t('Clear Signature')}
                                     </button>
                                     {signaturePad && !signaturePad.isEmpty() && (
-                                        <span className="px-3 py-2 text-sm text-green-600 bg-green-50 rounded-md">
+                                        <span className="px-3 py-2 text-sm text-[#4bb4f5] bg-green-50 rounded-md">
                                             ✓ {t('Signature captured')}
                                         </span>
                                     )}
@@ -478,7 +472,7 @@ const PublicQuoteSignature = () => {
 
                             {success && (
                                 <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                                    <p className="text-green-800 text-sm">{success}</p>
+                                    <p className="text-[#4bb4f5] text-sm">{success}</p>
                                 </div>
                             )}
 
